@@ -1,0 +1,3 @@
+[submodule "site/modules/RockFrontend"]
+	path = site/modules/RockFrontend
+	url = https://github.com/baumrock/RockFrontend
