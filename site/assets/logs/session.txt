@@ -1,0 +1,4 @@
+2022-10-16 18:30:30	entelec9	http://localhost:8888/sls2023/processwire/login/	Successful login for 'entelec9'
+2022-10-18 14:02:38	?	?	User 'entelec9' - Session timed out (session older than 86400 seconds) (IP: 127.0.0.1)
+2022-10-18 14:02:45	entelec9	http://localhost:8888/sls2023/processwire/login/	Successful login for 'entelec9'
+2022-10-18 14:06:37	entelec9	http://localhost:8888/sls2023/processwire/login/	Successful login for 'entelec9'

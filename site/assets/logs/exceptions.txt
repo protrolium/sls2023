@@ -1,0 +1,6 @@
+2022-10-16 19:17:54	guest	http://localhost:8888/sls2023/?rockfrontend-livereload=QdiTLklX1XHKDkyF7REYRE0tzt7MAyylmQhB2lBs	File `sites/templates/sections/footer.less` not found. in uikit.theme.less (in /site/modules/Less/wikimedia/less.php/lib/Less/Parser.php line 2668)
+2022-10-16 19:17:54	entelec9	http://localhost:8888/sls2023/	File `sites/templates/sections/footer.less` not found. in uikit.theme.less (in /site/modules/Less/wikimedia/less.php/lib/Less/Parser.php line 2668)
+2022-10-16 19:17:58	entelec9	http://localhost:8888/sls2023/	File `sites/templates/sections/footer.less` not found. in uikit.theme.less (in /site/modules/Less/wikimedia/less.php/lib/Less/Parser.php line 2668)
+2022-10-16 19:17:59	entelec9	http://localhost:8888/sls2023/	File `sites/templates/sections/footer.less` not found. in uikit.theme.less (in /site/modules/Less/wikimedia/less.php/lib/Less/Parser.php line 2668)
+2022-10-18 16:50:23	guest	http://localhost:8888/sls2023/?rockfrontend-livereload=ElIgEvvbgZKUh15urBoPd9CHsM6LoxPhLZr	File `/site/templates/styles/main.less` not found. (in /site/modules/Less/wikimedia/less.php/lib/Less/Parser.php line 2668)
+2022-10-18 22:37:46	guest	http://localhost:8888/sls2023/?rockfrontend-livereload=WwN6WLNavUnePxtJGEsxxeBZJZWl8MTpioCwKUp	You must assign a template to the page before setting custom field values (title__data) (in /wire/core/Page.php line 850)

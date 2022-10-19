@@ -1,0 +1,46 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7.0
+
+executors:
+  executor:
+    docker:
+      - image: cimg/base:stable
+
+jobs:
+  build:
+    executor: executor
+    working_directory: ~/uikit
+    steps:
+      # Install node
+      - node/install:
+          lts: true
+          install-npm: false
+          install-yarn: true
+
+      # Checkout repository
+      - checkout
+
+      # Download Node dependencies
+      - node/install-packages:
+          pkg-manager: yarn
+
+      # Run ESlint
+      - run:
+          name: ESlint
+          command: yarn eslint
+
+      - run:
+          name: Compile
+          command: |
+            if [ "${CIRCLE_BRANCH}" = "master" ];then
+              yarn compile
+            fi
+      - run:
+          name: Deploy to NPM
+          command: |
+            if [ "${CIRCLE_BRANCH}" = "develop" ];then
+              echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
+              node ./build/publishDev.js
+            fi

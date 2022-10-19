@@ -1,0 +1,9 @@
+<main>
+    <h1>{$page->artist} {$page->title}</h1>
+    <a n:if="$page->editable()" href="{$page->editUrl()}">edit</a>
+
+    <div>
+        {$page->get('video_embed')|noescape}
+    </div>
+
+</main>

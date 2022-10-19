@@ -1,0 +1,15 @@
+<main>
+    I am the rendered MAIN and you are viewing {$page->title}
+    <a n:if="$page->editable()" href="{$page->editUrl()}">edit</a>
+
+    <div>
+    {$page->get('body')|noescape}
+    </div>
+
+    {* <div>
+        <img 
+            n:foreach="$page->gallery as $img"
+            src="{$img->size(100,100)->url}"
+            alt="…"
+        /> *}
+</main>

@@ -1,0 +1,111 @@
+.pw-edit-buttons {
+  z-index: 99;
+}
+body:not(.uk-offcanvas-container) .alfred:hover {
+  outline: 4px groove #ececec;
+  z-index: 1;
+}
+.alfred-icon {
+  pointer-events: all;
+  border-radius: 0;
+  background-color: white;
+  color: black !important;
+  text-transform: none;
+  border: 3px solid #ececec !important;
+  width: 30px !important;
+  height: 30px !important;
+  box-sizing: content-box;
+  display: inline-block;
+  text-align: center;
+}
+.alfred {
+  position: relative;
+}
+.alfred .icons,
+.alfred .add-top,
+.alfred .add-bottom,
+.alfred .add-left,
+.alfred .add-right {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+}
+.alfred .icons img,
+.alfred .add-top img,
+.alfred .add-bottom img,
+.alfred .add-left img,
+.alfred .add-right img {
+  display: inline-block;
+  width: 15px !important;
+  height: 30px !important;
+  padding: 0;
+  margin: 0;
+  vertical-align: top;
+}
+.alfred .icons a.icon,
+.alfred .add-top a.icon,
+.alfred .add-bottom a.icon,
+.alfred .add-left a.icon,
+.alfred .add-right a.icon {
+  pointer-events: all;
+  border-radius: 0;
+  background-color: white;
+  color: black !important;
+  text-transform: none;
+  border: 3px solid #ececec !important;
+  width: 30px !important;
+  height: 30px !important;
+  box-sizing: content-box;
+  display: inline-block;
+  text-align: center;
+}
+.alfred .add-top {
+  top: -30px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.alfred .add-bottom {
+  bottom: -30px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.alfred .add-left {
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  text-align: center;
+}
+.alfred .add-right {
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  text-align: center;
+}
+.alfred .icons {
+  top: -1px;
+  right: 0;
+  text-align: right;
+}
+.alfred.rpb-widget:hover {
+  outline: 4px groove orange !important;
+}
+.alfred.rpb-widget .icon {
+  border: 3px solid orange !important;
+}
+.alfred:hover > .alfredelements > .icons {
+  display: inline-block;
+}
+.alfred:hover > .alfredelements > .add-top {
+  display: inline-block;
+}
+.alfred:hover > .alfredelements > .add-bottom {
+  display: inline-block;
+}
+.alfred:hover > .alfredelements > .add-left {
+  display: inline-block;
+}
+.alfred:hover > .alfredelements > .add-right {
+  display: inline-block;
+}

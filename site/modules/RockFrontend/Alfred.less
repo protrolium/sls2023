@@ -1,0 +1,122 @@
+// variables
+@grey: #ececec;
+// we use groove outline style to make the outline visible on every possible bg
+@outline: 4px groove @grey;
+
+// pw-frontend-editing tweaks
+.pw-edit-buttons {
+  z-index: 99;
+}
+
+// block hover
+body:not(.uk-offcanvas-container) .alfred:hover {
+  outline: @outline;
+  z-index: 1;
+}
+
+// mixin for icons
+.alfred-icon {
+  pointer-events: all;
+  border-radius: 0;
+  background-color: white;
+  color: black !important;
+  text-transform: none;
+  border: 3px solid @grey !important; // important fixes hover issue
+  width: 30px !important;
+  height: 30px !important;
+  box-sizing: content-box;
+
+  display: inline-block;
+  text-align: center;
+}
+
+// the alfred class is added by JS on init()
+.alfred {
+  position: relative;
+
+  .icons,
+  .add-top,
+  .add-bottom,
+  .add-left,
+  .add-right {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+    img {
+      display: inline-block;
+      width: 15px !important;
+      height: 30px !important; // makes them vertically centered
+      padding: 0;
+      margin: 0;
+      vertical-align: top;
+    }
+    a.icon {
+      .alfred-icon;
+    }
+  }
+
+  // position buttons to add a new block element at the top or the bottom
+  // they are not centered so that other icons stay visible on small blocks
+  // see https://i.imgur.com/PaW11A8.png
+  .add-top {
+    top: -30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+  .add-bottom {
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+  .add-left {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    text-align: center;
+  }
+  .add-right {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+    text-align: center;
+  }
+
+  // wrapping div with all icons
+  .icons {
+    top: -1px; // icon-border = 3px, half container-groove = 2px, looks better
+    right: 0;
+    text-align: right;
+  }
+
+  // modifier for rockpagebuilder widgets
+  &.rpb-widget {
+    &:hover {
+      outline: 4px groove orange !important;
+    }
+    .icon {
+      border: 3px solid orange !important;
+    }
+  }
+
+  &:hover {
+    > .alfredelements {
+      > .icons {
+        display: inline-block;
+      }
+      > .add-top {
+        display: inline-block;
+      }
+      > .add-bottom {
+        display: inline-block;
+      }
+      > .add-left {
+        display: inline-block;
+      }
+      > .add-right {
+        display: inline-block;
+      }
+    }
+  }
+}

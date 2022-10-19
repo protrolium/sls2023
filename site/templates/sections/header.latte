@@ -1,0 +1,41 @@
+<header>
+    <!-- This is a button toggling the off-canvas -->
+    <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+        <div class="uk-navbar-right">
+            <button class="hamburger-nav" uk-toggle="target: #menu" type="button">
+                <span uk-icon="icon: menu; ratio: 1.5;"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- This is the off-canvas menu -->
+    <div id="menu" uk-offcanvas="flip: true; mode: slide;">
+        <div class="uk-offcanvas-bar">
+            <button class="uk-offcanvas-close" type="button" uk-close></button>
+
+            <nav id="tm-menu" class="tm-boxed-padding" uk-navbar>
+                <div class="uk-navbar">
+                    <ul style="list-style: none;">
+                        <li><a href="{$home->url}">{$pages->get('/')->title}</a></li>
+                        <li n:foreach="$home->children() as $item">
+                            <a href="{$item->url}" n:class="$rockfrontend->isActive($item) ? 'uk-active'">
+                                {$item->title}
+                            </a>
+                            <!-- displaying children in a dropdown -->
+                            {* <div class="uk-navbar-dropdown" n:if="$item->numChildren()">
+                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                    <li 
+                                    n:foreach="$item->children() as $child" 
+                                    n:class="$rockfrontend->isActive($child) ? 'uk-active'"
+                                    >
+                                        <a href="{$child->url}">{$child->title|noescape}</a>
+                                    </li>
+                                </ul>
+                            </div> *}
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>

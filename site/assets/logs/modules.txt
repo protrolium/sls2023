@@ -1,0 +1,41 @@
+2022-10-16 18:30:19	?	?	Saved module info caches
+2022-10-16 18:30:19	?	?	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:19	guest	http://localhost:8888/sls2023/http404/	Saved module info caches
+2022-10-16 18:30:19	guest	http://localhost:8888/sls2023/http404/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:19	guest	http://localhost:8888/sls2023/http404/	Installed module 'ProcessRecentPages'
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Saved module info caches
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Saved module info caches
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Installed module 'AdminThemeUikit'
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Saved module info caches
+2022-10-16 18:30:20	guest	http://localhost:8888/sls2023/http404/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:25	guest	http://localhost:8888/sls2023/processwire/login/	Saved module info caches
+2022-10-16 18:30:25	guest	http://localhost:8888/sls2023/processwire/login/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:26	guest	http://localhost:8888/sls2023/processwire/login/	Installed module 'ProcessLogger'
+2022-10-16 18:30:26	guest	http://localhost:8888/sls2023/processwire/login/	Saved module info caches
+2022-10-16 18:30:26	guest	http://localhost:8888/sls2023/processwire/login/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:26	guest	http://localhost:8888/sls2023/processwire/login/	Installed module 'InputfieldIcon'
+2022-10-16 18:30:26	guest	http://localhost:8888/sls2023/processwire/login/	Saved module info caches
+2022-10-16 18:30:26	guest	http://localhost:8888/sls2023/processwire/login/	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:30	?	?	Saved module info caches
+2022-10-16 18:30:30	?	?	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:31	?	?	Saved module info caches
+2022-10-16 18:30:31	?	?	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:30:31	?	?	Saved module info caches
+2022-10-16 18:30:31	?	?	Found 2 module(s) missing file: FieldtypeNumber => /Applications/MAMP/htdocs/sls2023/site/modules/FieldtypeNumber/FieldtypeNumber.module, ProcessPage => /Applications/MAMP/htdocs/sls2023/site/modules/ProcessPage/ProcessPage.module
+2022-10-16 18:35:29	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1	Saved module info caches
+2022-10-16 18:36:35	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'PageFrontEdit'
+2022-10-16 18:36:35	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-10-16 18:36:35	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'RockFrontend'
+2022-10-16 18:36:35	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-10-16 18:36:35	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockFrontend	Installed module 'TextformatterMarkdownExtra'
+2022-10-16 18:36:35	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockFrontend	Saved module info caches
+2022-10-16 19:12:07	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-16 19:12:08	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-16 19:12:08	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Installed module 'Less'
+2022-10-16 19:12:09	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-16 19:31:01	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=Less&collapse_info=1	Installed module 'InputfieldToggle'
+2022-10-16 19:31:01	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=Less&collapse_info=1	Saved module info caches
+2022-10-16 19:54:41	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=98	Installed module 'InputfieldTextTags'
+2022-10-16 19:54:41	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=98	Saved module info caches
