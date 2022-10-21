@@ -1,0 +1,20 @@
+<div class="uk-container uk-container-small">
+    <div n:foreach="$page->children() as $item" class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
+        <div class="uk-card-media-left">
+            <a href="{$item->url}" alt="">
+                <img src="{$item->featured_image->url}" alt="">
+            </a>
+        </div>
+        <div>
+            <div class="uk-card-body">
+                <a href="{$item->url}" alt="">
+                    <h2 class="uk-card-title">
+                        {$item->title|noescape}<br>{$item->subtitle|noescape}
+                    </h2>
+                </a>
+                <p>{$item->date} • {foreach $item->artist as $a}<a href="{$a->url}">{$a->title} </a>{/foreach}</p>
+                <p>{$item->body|noescape}</p>
+            </div>
+        </div>
+    </div>
+</div>

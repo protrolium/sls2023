@@ -1,0 +1,9 @@
+<main>
+    <ul style="list-style: none;">
+        <li n:foreach="$page->children() as $item">
+            <a href="{$item->url}" n:class="$rockfrontend->isActive($item) ? 'uk-active'">
+                {$item->title|noescape}
+            </a>
+        </li>
+    </ul>
+</main>
