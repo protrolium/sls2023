@@ -6,3 +6,8 @@
 
 # Ignore config.php database information
 site/config.php
+
+# Ignore sessions / logs
+site/assets/cache/
+site/assets/logs/
+site/assets/sessions/
