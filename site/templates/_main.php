@@ -32,8 +32,8 @@ $rockfrontend
 		<title><?php echo $page->title; ?></title>
 	</head>
 	<body id="html-body">
-		<?= $rockfrontend->render("sections/header.latte") ?>
+		<?= $rockfrontend->render("sections/includes/header.latte") ?>
 		<?= $rockfrontend->renderLayout($page) ?>
-		<?= $rockfrontend->render("sections/footer.latte") ?>
+		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
 	</body>
 </html>

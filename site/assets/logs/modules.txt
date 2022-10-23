@@ -39,3 +39,5 @@
 2022-10-16 19:31:01	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=Less&collapse_info=1	Saved module info caches
 2022-10-16 19:54:41	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=98	Installed module 'InputfieldTextTags'
 2022-10-16 19:54:41	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=98	Saved module info caches
+2022-10-20 21:11:22	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=105	Installed module 'InputfieldPageAutocomplete'
+2022-10-20 21:11:23	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=105	Saved module info caches

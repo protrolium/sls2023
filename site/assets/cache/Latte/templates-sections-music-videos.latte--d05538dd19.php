@@ -26,7 +26,7 @@ final class Templated05538dd19 extends Latte\Runtime\Template
 		}
 		echo '
     <div>
-    ';
+        ';
 		echo $page->get('video_embed') /* line 6 */;
 		echo '
     </div>
