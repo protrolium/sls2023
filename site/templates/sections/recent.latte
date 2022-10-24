@@ -1,20 +1,59 @@
-<div class="uk-container uk-container-small">
-    <div n:foreach="$page->children() as $item" class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
-        <div class="uk-card-media-left">
-            <a href="{$item->url}" alt="">
-                <img src="{$item->featured_image->url}" alt="">
-            </a>
-        </div>
-        <div>
-            <div class="uk-card-body">
-                <a href="{$item->url}" alt="">
-                    <h2 class="uk-card-title">
-                        {$item->title|noescape}<br>{$item->subtitle|noescape}
-                    </h2>
-                </a>
-                <p>{$item->date} • {foreach $item->artist as $a}<a href="{$a->url}">{$a->title} </a>{/foreach}</p>
-                <p>{$item->body|noescape}</p>
+<div class="uk-padding-small">
+
+    <h2>{$page->title} Activity</h2>
+    
+    <div class="uk-child-width-1-3@m uk-grid-small" uk-grid>
+
+        {foreach $page->children() as $item}
+
+            <div class="uk-card">
+
+                {* mini heading *}
+                <div class="uk-width-1-1">
+                    <div class="card-mini-heading uk-clearfix">
+                        
+                        <div class="uk-inline">
+                            <p class="uk-text-small uk-margin-remove-bottom">
+                                {$item->date}
+                            </p>
+                        </div>
+
+                        <div class="uk-inline uk-float-right">
+                            <p class="uk-inline uk-text-small uk-margin-remove-bottom">
+                                {foreach $item->artist as $a}
+                                    <a href="{$a->url}">{$a->title}</a>&nbsp;
+                                {/foreach}
+                            </p>
+                        </div>
+                    
+                    </div>
+                </div>
+
+                {* card image *}
+                <div class="uk-card-media-top uk-cover-container">
+                    <a href="{$item->url}" alt="">
+                        <img class="" src="{$item->featured_image->url}" alt="" uk-cover>
+                            <canvas width="400" height="400"></canvas>
+                    </a>
+                </div>
+
+                {* card text headings *}
+                <div class="uk-card-body uk-padding-remove-left">
+                    <a href="{$item->url}" alt="">
+                        
+                        <h1 class="uk-heading-small uk-margin-remove-bottom">
+                            {$item->title|noescape|upper}
+                        </h1>
+
+                        <h3 class="uk-margin-remove uk-text-truncate">
+                            {$item->subtitle|noescape}
+                        </h3>
+                    </a>
+                    {* <p>{$item->body|noescape}</p> *}
+                </div>
             </div>
-        </div>
+
+        {/foreach}
+
     </div>
 </div>
