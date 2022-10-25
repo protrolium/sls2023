@@ -1,12 +1,22 @@
 <div class="uk-padding-small">
 
-    <h2>{$page->title} Activity</h2>
-    
-    <div class="uk-child-width-1-3@m uk-grid-small" uk-grid>
+    <div class="uk-clearfix" uk-height-match>
+        <div class="uk-inline">
+            <p class="uk-heading-small uk-text-lighter">{$page->title|upper} ⟶</p>
+        </div>
+
+        <div class="uk-float-right uk-visible@m">
+            <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
+                Events • Concerts • Broadcast • Virtual
+            </p>
+        </div>
+    </div>
+
+    <div class="recent-horz-flow uk-child-width-1-3@m uk-grid-small" uk-grid>
 
         {foreach $page->children() as $item}
 
-            <div class="uk-card">
+            <div class="uk-card recent-horz-flow-child">
 
                 {* mini heading *}
                 <div class="uk-width-1-1">
@@ -19,9 +29,9 @@
                         </div>
 
                         <div class="uk-inline uk-float-right">
-                            <p class="uk-inline uk-text-small uk-margin-remove-bottom">
+                            <p class="uk-inline uk-text-light uk-margin-remove-bottom">
                                 {foreach $item->artist as $a}
-                                    <a href="{$a->url}">{$a->title}</a>&nbsp;
+                                    <a href="{$a->url}">{$a->title|upper}</a>&nbsp;
                                 {/foreach}
                             </p>
                         </div>
@@ -33,7 +43,7 @@
                 <div class="uk-card-media-top uk-cover-container">
                     <a href="{$item->url}" alt="">
                         <img class="" src="{$item->featured_image->url}" alt="" uk-cover>
-                            <canvas width="400" height="400"></canvas>
+                            <canvas id="recent-image" width="400" height="400"></canvas>
                     </a>
                 </div>
 
@@ -41,11 +51,11 @@
                 <div class="uk-card-body uk-padding-remove-left">
                     <a href="{$item->url}" alt="">
                         
-                        <h1 class="uk-heading-small uk-margin-remove-bottom">
+                        <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter">
                             {$item->title|noescape|upper}
                         </h1>
 
-                        <h3 class="uk-margin-remove uk-text-truncate">
+                        <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate">
                             {$item->subtitle|noescape}
                         </h3>
                     </a>

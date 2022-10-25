@@ -1,0 +1,43 @@
+{* Form + Horizontal Social Links *}
+<div class="uk-width-1-1" uk-grid>
+                
+    <div class="uk-width-1-2" uk-form-custom="target: true">
+        <input class="uk-input uk-text-lighter" type="text" placeholder="E-MAIL">
+    </div>
+
+    <div class="uk-padding-remove-left">
+        <button class="uk-button uk-button-default">Submit</button>
+    </div>
+
+</div>
+
+<div class="uk-margin">
+
+    <a 
+        class="uk-margin-right uk-text-lighter" 
+        href="{$pages->get('about')->url}f">
+            {$pages->get('about')->title}
+    </a>
+    
+    <a 
+        class="uk-margin-right uk-text-lighter" 
+        href="{$pages->get('instagram')->hyperlink}"
+        target="_blank">
+            {$pages->get('instagram')->title}
+    </a>
+    
+    <a 
+        class="uk-margin-right uk-text-lighter" 
+        href="{$pages->get('twitter')->hyperlink}"
+        target="_blank">
+            {$pages->get('twitter')->title}
+    </a>
+
+    <a 
+        class="uk-margin-right uk-text-lighter" 
+        href="{$pages->get('discord')->hyperlink}"
+        target="_blank">
+            {$pages->get('discord')->title}
+    </a>
+
+</div>

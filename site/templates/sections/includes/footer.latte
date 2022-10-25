@@ -1,3 +1,25 @@
 <footer>
-    I am the rendered
+    <div class="uk-padding-large" uk-grid>
+
+        <div class="uk-width-1-2@m uk-margin-bottom uk-margin-large-top">
+
+            <img src="{$pages->get('sls-logo')->image->url}" width="150px" alt="">
+            
+            <span class="uk-text-large uk-text-lighter uk-text-middle uk-padding-small uk-text-uppercase">
+                Strangeloop Studios
+            </span>
+
+        </div>
+
+        <div class="uk-width-1-2@l uk-margin-bottom">
+            {$rockfrontend->render("/sections/includes/footer-nav.latte")}
+        </div>
+
+        <div class="uk-margin-small-top">
+            <span class="uk-margin-right uk-text-lighter">&copy; {$datetime->date('Y')} Spirit Bomb Ltd.</span>
+            <span class="uk-margin-right uk-text-lighter">All Rights Reserved</span>
+            <span class="uk-margin-right uk-text-lighter">Culture Is A Virus</span>
+        </div>
+
+    </div>
 </footer>

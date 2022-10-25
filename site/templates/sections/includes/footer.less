@@ -1,4 +1,25 @@
 footer {
-    padding: 40px;
-    border: 5px solid pink;
+    border-top: solid 1px black;
+    background: linear-gradient(179deg, #ffffff, #e0e4ff, #deffe7, #f8e4ff);
+    background-size: 800% 800%;
+
+    -webkit-animation: footer-gradient 29s ease infinite;
+    -moz-animation: footer-gradient 29s ease infinite;
+    animation: footer-gradient 29s ease infinite;
+}
+
+@-webkit-keyframes footer-gradient {
+    0%{background-position:17% 0%}
+    50%{background-position:84% 100%}
+    100%{background-position:17% 0%}
+}
+@-moz-keyframes footer-gradient {
+    0%{background-position:17% 0%}
+    50%{background-position:84% 100%}
+    100%{background-position:17% 0%}
+}
+@keyframes footer-gradient {
+    0%{background-position:17% 0%}
+    50%{background-position:84% 100%}
+    100%{background-position:17% 0%}
 }
