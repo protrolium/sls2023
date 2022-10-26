@@ -23,6 +23,7 @@ $rockfrontend
 	->scripts()
 	->add("/site/templates/uikit-3.15.10/dist/js/uikit.min.js")
 	->add("/site/templates/uikit-3.15.10/dist/js/uikit-icons.min.js")
+	->add("/site/templates/scripts/main.js")
 	;
 ?>
 <!DOCTYPE html>
@@ -30,6 +31,16 @@ $rockfrontend
 	<head id="html-head">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title><?php echo $page->title; ?></title>
+
+		<!-- favicons -->
+		<link rel="apple-touch-icon" sizes="180x180" href="<?php echo $config->urls->assets?>favicon/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="<?php echo $config->urls->assets?>favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="<?php echo $config->urls->assets?>favicon/favicon-16x16.png">
+		<link rel="manifest" href="<?php echo $config->urls->assets?>favicon/site.webmanifest">
+		<link rel="mask-icon" href="<?php echo $config->urls->assets?>favicon/safari-pinned-tab.svg" color="#5bbad5">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
+
 	</head>
 	<body id="html-body">
 		<?= $rockfrontend->render("sections/includes/header.latte") ?>

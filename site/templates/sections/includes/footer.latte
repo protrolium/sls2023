@@ -18,7 +18,7 @@
         <div class="uk-margin-small-top">
             <span class="uk-margin-right uk-text-lighter">&copy; {$datetime->date('Y')} Spirit Bomb Ltd.</span>
             <span class="uk-margin-right uk-text-lighter">All Rights Reserved</span>
-            <span class="uk-margin-right uk-text-lighter">Culture Is A Virus</span>
+            <span class="uk-margin-right uk-text-lighter">{$pages->get('taglines')->children()->shuffle()->first()->title|noescape}</span>
         </div>
 
     </div>

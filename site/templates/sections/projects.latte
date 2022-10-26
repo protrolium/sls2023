@@ -7,16 +7,16 @@
 
         <div class="uk-float-right uk-visible@m">
             <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
-                Events • Concerts • Broadcast • Virtual
+                Tours • Installations • Live Visuals • Animation
             </p>
         </div>
     </div>
 
-    <div class="recent-horz-flow uk-child-width-1-3@m uk-grid-small" uk-grid>
+    <div class="uk-child-width-1-3@m uk-grid-small" uk-grid>
 
         {foreach $page->children() as $item}
 
-            <div class="uk-card recent-horz-flow-child">
+            <div class="uk-card">
 
                 {* mini heading *}
                 <div class="uk-width-1-1">
@@ -24,31 +24,32 @@
                         
                         <div class="uk-inline">
                             <p class="uk-text-small uk-margin-remove-bottom">
-                                {$item->date}
+                                {* {$item->date} *}
                             </p>
                         </div>
 
+                        {var $randomChild = $item->children()->shuffle()->first()}
+                        
                         <div class="uk-inline uk-float-right">
                             <p class="uk-inline uk-text-light uk-margin-remove-bottom">
-                                {foreach $item->artist as $a}
-                                    <a href="{$a->url}">{$a->title|upper}</a>&nbsp;
-                                {/foreach}
+                                <a href="{$randomChild->url|stripHtml}">{$randomChild->title|upper}</a>&nbsp;
                             </p>
                         </div>
                     
                     </div>
                 </div>
 
-                {* card image *}
-                <div class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" style="background-image: url('{$item->featured_image->url}');">
-                    <a href="{$item->url}" alt="">
-                        <canvas width="600" height="600"></canvas>
-                        {* <img class="" src="{$item->featured_image->url}" alt="" uk-cover> *}
-                    </a>
+                {* card image which grabs a random featured image from each of Projects' children pages *}
+                <div 
+                    class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary" 
+                    style="background-image: url('{$randomChild->featured_image->url}');">
+                        <a href="{$item->url}" alt="">
+                            <canvas width="600" height="600"></canvas>
+                        </a>
                 </div>
 
                 {* card text headings *}
-                <div class="uk-card-body">
+                <div class="uk-card-body uk-padding-remove-left">
                     <a href="{$item->url}" alt="">
                         
                         <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
@@ -56,7 +57,7 @@
                         </h1>
 
                         <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
-                            {$item->subtitle|noescape}
+                            {* {$item->subtitle|noescape} *}
                         </h3>
                     </a>
                     {* <p>{$item->body|noescape}</p> *}
