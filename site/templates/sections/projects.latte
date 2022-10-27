@@ -1,6 +1,6 @@
 <div class="uk-padding-small">
 
-    <div class="uk-clearfix" uk-height-match>
+    <div class="uk-clearfix uk-margin-auto-top" uk-height-match>
         <div class="uk-inline">
             <p class="uk-heading-small uk-text-lighter">{$page->title|upper} ⤓</p>
         </div>
@@ -13,7 +13,7 @@
     </div>
 
     <div
-        class="uk-child-width-1-3@m uk-grid-small uk-margin" uk-grid 
+        class="uk-child-width-1-3@m uk-grid-small" uk-grid 
         uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 600; repeat: false;">
 
         {foreach $page->children() as $item}
@@ -65,14 +65,16 @@
                 {if $randomChild??->featured_video}
                     <div class="uk-cover-container">
                         <canvas width="1200" height="1200"></canvas>
-                        <video src="{$randomChild->featured_video->url}" autoplay loop muted playsinline uk-cover></video>
+                        <a href="{$item->url}" alt="">
+                            <video src="{$randomChild->featured_video->url}" autoplay loop muted playsinline uk-cover></video>
+                        </a>
                     </div>
                 {/if}
                 
                 {* check to see if featured_image field is null *}
                 {if !$randomChild->featured_video}
                     <div 
-                        class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary"
+                        class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-red"
                         style="background-image: url('{$randomChild->featured_image->url}');">
                             <a href="{$item->url}" alt="">
                                 <canvas width="1200" height="1200"></canvas>

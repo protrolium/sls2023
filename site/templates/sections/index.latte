@@ -1,9 +1,40 @@
 <main>
-    <ul style="list-style: none;">
-        <li n:foreach="$page->children() as $item">
-            <a href="{$item->url}" n:class="$rockfrontend->isActive($item) ? 'uk-active'">
-                {$item->title|noescape}
-            </a>
-        </li>
-    </ul>
+    <div class="uk-padding-small" uk-flex>
+        <div class="uk-width-1-1">
+            <div class="uk-clearfix uk-margin-auto-top" uk-height-match>
+                <div class="uk-inline">
+                    <p class="uk-heading-small uk-text-lighter">{$page->title|upper}</p>
+                </div>
+
+                <div class="uk-float-right uk-visible@m">
+                    <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
+                    </p>
+                </div>
+            </div>
+            
+            <div class="uk-margin-large-left">
+                {foreach $page->children() as $item}
+                    <div class="uk-margin uk-width-1-2">
+                        
+                        <a class="uk-inline index-item" href="{$item->url}">
+                            <h2 class="uk-text-light uk-margin-remove-bottom">{$item->artist->first->title|upper} <span class="uk-text-success">{$item->title|upper|noescape}</span></h2>
+                        </a>
+
+                        {* image hover div *}
+                        <div 
+                            class="previewImg uk-cover-container uk-background-cover uk-align-right"
+                            style="background-image: url('{$item->featured_image->url}');">
+                                <a href="{$item->url}" alt="">
+                                    <canvas width="854" height="480"></canvas>
+                            </a>
+                        </div>
+
+                    </div>
+                {/foreach}
+            </div>
+        </div>
+    </div>
 </main>
+
+
+{* n:class="$rockfrontend->isActive($item) ? 'uk-active'" *}
