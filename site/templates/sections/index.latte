@@ -18,8 +18,13 @@
             
             {* begin index list *}
             <div class="uk-animation-fade" uk-scrollspy="cls: uk-animation-fade; target: .index-item-border-top; delay: 400; repeat: false;">
+                
+                {* helper to get grandchildren pages and discard parent pages with children *}
+                {var $children = $page->children()->not("children.count>0")}
+                {var $grandChildren = $page->children("children.count>0")->children()}
+                {var $items = $children->append($grandChildren)->sort("-date")}
 
-                {foreach $page->children() as $item}
+                {foreach $items as $item}
                     
                     <div class="index-item-border-top">
                         <div class="uk-clearfix">
