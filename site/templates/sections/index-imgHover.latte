@@ -1,0 +1,50 @@
+<main>
+    <div class="uk-padding-small uk-animation-fade">
+        
+        <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
+            
+            {* page title *}
+            <div class="uk-clearfix" uk-height-match>
+                <div class="uk-inline">
+                    <p class="uk-heading-small uk-text-lighter">{$page->title|upper}</p>
+                </div>
+
+                <div class="uk-float-right uk-visible@m">
+                    <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
+                    </p>
+                </div>
+            </div>
+            
+            {* begin index list *}
+            <div class=" uk-margin-large-top">
+
+                {foreach $page->children() as $item}
+
+                    <div class="uk-margin uk-margin-left uk-width-1-1">
+                        
+                        <a class="uk-inline index-item" href="{$item->url}">
+                            <h2 class="uk-text-lighter uk-margin-remove-bottom">
+                                {$item->artist->first->title|upper}&nbsp;
+                                <span class="uk-text-muted">{$item->title|upper|noescape}</span></h2>
+                        </a>
+
+                        {* image hover div *}
+                        <div 
+                            class="previewImg uk-cover-container uk-background-cover"
+                            style="background-image: url('{$item->featured_image->url}');">
+                                <a href="{$item->url}" alt="">
+                                    <canvas width="854" height="480"></canvas>
+                            </a>
+                        </div>
+
+                    </div>
+
+                {/foreach}
+            </div>
+        
+        </div>
+    </div>
+</main>
+
+
+{* n:class="$rockfrontend->isActive($item) ? 'uk-active'" *}

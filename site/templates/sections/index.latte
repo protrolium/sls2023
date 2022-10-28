@@ -1,9 +1,13 @@
 <main>
-    <div class="uk-padding-small" uk-flex>
-        <div class="uk-width-1-1">
-            <div class="uk-clearfix uk-margin-auto-top" uk-height-match>
+    <div class="uk-padding-small">
+        
+        <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
+            
+            {* page title *}
+            <div class="uk-clearfix" uk-height-match>
                 <div class="uk-inline">
-                    <p class="uk-heading-small uk-text-lighter">{$page->title|upper}</p>
+                    <p class="uk-heading-small uk-text-lighter">
+                    <a class="uk-text-secondary" href="{$page->parent->url}" alt="">{$page->parent->title|upper}</a> → {$page->title|upper}</p>
                 </div>
 
                 <div class="uk-float-right uk-visible@m">
@@ -12,26 +16,75 @@
                 </div>
             </div>
             
-            <div class="uk-margin-large-left">
-                {foreach $page->children() as $item}
-                    <div class="uk-margin uk-width-1-2">
-                        
-                        <a class="uk-inline index-item" href="{$item->url}">
-                            <h2 class="uk-text-light uk-margin-remove-bottom">{$item->artist->first->title|upper} <span class="uk-text-success">{$item->title|upper|noescape}</span></h2>
-                        </a>
+            {* begin index list *}
+            <div class="uk-animation-fade" uk-scrollspy="cls: uk-animation-fade; target: .index-item-border-top; delay: 400; repeat: false;">
 
-                        {* image hover div *}
+                {foreach $page->children() as $item}
+                    
+                    <div class="index-item-border-top">
+                        <div class="uk-clearfix">
+                            
+                            <div class="uk-inline">
+                                 <h1 class="uk-text-lighter">
+                                    {if $item->template == 'music-videos'}
+                                        {$item->artist->first->title|upper}                                        
+                                    {/if}
+
+                                    {if $item->template == 'broadcast'}
+                                        {$item->title|upper}                                        
+                                    {/if}
+                                </h1>                                
+                            </div>
+
+                            <div class="uk-inline uk-float-right">
+                                <h1 class="uk-text-lighter uk-text-muted" href="{$item->url}">
+                                    {if $item->template == 'music-videos'}
+                                        {$item->title|upper|noescape}
+                                    {/if}
+                                    
+                                    {if $item->template == 'broadcast'}
+                                        {$item->subtitle}                                        
+                                    {/if}
+
+                                </h1>
+                            </div>
+                        </div>
+
+                        {* featured image div *}
                         <div 
-                            class="previewImg uk-cover-container uk-background-cover uk-align-right"
-                            style="background-image: url('{$item->featured_image->url}');">
+                            class="uk-cover-container uk-background-cover"
+                            style="background-image: url('{$item->featured_image->url}');"
+                            uk-img="loading: lazy">
                                 <a href="{$item->url}" alt="">
-                                    <canvas width="854" height="480"></canvas>
+                                    <canvas width="1280" height="480"></canvas>
                             </a>
                         </div>
 
                     </div>
+
+                    {* item footer info *}
+                    <div class="uk-margin-large-bottom">
+                        <div class="uk-clearfix uk-margin-small-bottom">
+                            <div class="uk-float-left">
+                                <p class="uk-text-lighter uk-margin-remove">
+                                    <span uk-icon="icon: world; ratio: 1.1;"></span>&nbsp;
+                                    <span class="uk-text-default uk-text-middle">{$item->date}</span>
+                                </p>
+                            </div>
+
+                            <div class="uk-float-right">
+                                <p class="uk-text-lighter uk-margin-remove">
+                                    {if $item->collaborator??->first}
+                                        <span uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
+                                        <span class="uk-text-default uk-text-middle">{$item->collaborator->first->title}</span>
+                                    {/if}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 {/foreach}
             </div>
+        
         </div>
     </div>
 </main>
