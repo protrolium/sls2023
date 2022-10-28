@@ -22,8 +22,9 @@
                 {* helper to get grandchildren pages and discard parent pages with children *}
                 {var $children = $page->children()->not("children.count>0")}
                 {var $grandChildren = $page->children("children.count>0")->children()}
-                {var $items = $children->append($grandChildren)->sort("-date")}
-
+                {var $items = $children->append($grandChildren)->sort("-date")}  
+                
+                {* loop through items *}
                 {foreach $items as $item}
                     
                     <div class="index-item-border-top">
@@ -31,26 +32,40 @@
                             
                             <div class="uk-inline">
                                  <h1 class="uk-text-lighter">
-                                    {if $item->template == 'music-videos'}
-                                        {$item->artist->first->title|upper}                                        
+                                    {if $item->template != 'broadcast'}
+                                        {* if no aritst present use organization *}
+                                        {if $item->artist??->first}
+                                            {$item->artist->first->title|upper}                                        
+                                        {else}
+                                            {$item->organization|upper}
+                                        {/if}    
                                     {/if}
-
+                                    
                                     {if $item->template == 'broadcast'}
-                                        {$item->title|upper}                                        
+                                        {* if no aritst present use organization *}
+                                        {if $item->artist??->first}
+                                            {$item->artist->first->title|upper}
+                                        {else}
+                                            {$item->organization|upper}                                        
+                                        {/if}
                                     {/if}
                                 </h1>                                
                             </div>
 
                             <div class="uk-inline uk-float-right">
                                 <h1 class="uk-text-lighter uk-text-muted" href="{$item->url}">
-                                    {if $item->template == 'music-videos'}
-                                        {$item->title|upper|noescape}
+                                    {if $item->template != "broadcast" && $item->template != "concert-visuals"}
+                                        {$item->title|upper}
                                     {/if}
                                     
-                                    {if $item->template == 'broadcast'}
-                                        {$item->subtitle}                                        
+                                    {* if no subtitle present use the title *}
+                                    {if $item->template == 'broadcast' || $item->template == 'concert-visuals'}
+                                        {if $item??->subtitle}
+                                            {$item->subtitle|upper}
+                                        {else}
+                                            {$item->title|upper}
+                                        {/if}                                        
                                     {/if}
-
                                 </h1>
                             </div>
                         </div>
