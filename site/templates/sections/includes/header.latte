@@ -1,4 +1,4 @@
-<header class="uk-width-1-1" uk-sticky="sel-target: .uk-navbar-container;">
+<header class="uk-width-1-1"> <!-- uk-sticky="sel-target: .uk-navbar-container;"-->
 
     <!-- This is a button toggling the off-canvas -->
     <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
@@ -8,7 +8,9 @@
         </div>
 
         <div class="uk-navbar-left sls-nav-title uk-padding-small uk-visible@m">
-            <a class="uk-text-lighter uk-text-large uk-text-emphasis" href="#">Strangeloop Studios</a>
+            <a class="uk-text-lighter uk-text-large uk-text-emphasis" href="{$pages->get('/')->url}">
+                Strangeloop Studios
+            </a>
         </div>
 
         <div class="uk-navbar-right uk-padding-small">
