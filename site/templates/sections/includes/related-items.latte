@@ -1,18 +1,26 @@
 <div class="uk-width-1-1 uk-padding-small">
 
     <div class="">
-        <ul class="uk-subnav uk-subnav-pill uk-margin-auto related-items-nav" uk-switcher="animation: uk-animation-fade">
+        <ul class="uk-subnav uk-subnav-pill uk-margin-auto related-items-nav uk-text-light" 
+            uk-switcher="animation: uk-animation-fade">
+
             {var $projects = $pages->get('/projects')->children()}
+            
             {foreach $projects as $project}
                 <li><a href="#">{$project->title}</a></li>
             {/foreach}
+
         </ul>
 
         <ul class="uk-switcher related-items">
 
             {foreach $projects as $project}
+
+            {* make sure we don't show the current page *}
+            {var $thisPage = $page->id}
+            
                 <li>
-                    {foreach $project->children()->shuffle()->slice(0, 3) as $item}
+                    {foreach $project->children()->not($thisPage)->shuffle()->slice(0, 3) as $item}
                         <div
                             class="uk-child-width-1-1@m uk-padding-small uk-margin-remove-top" uk-grid 
                             uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 400; repeat: false;">
