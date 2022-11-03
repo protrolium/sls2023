@@ -7,7 +7,14 @@
             {var $projects = $pages->get('/projects')->children()}
             
             {foreach $projects as $project}
-                <li><a href="#">{$project->title}</a></li>
+            
+                {* set the uk-active class to the appropriate subnav item depending on the page's parent *}
+                {if $project->id == $page->parent->id}
+                    <li class="uk-active"><a href="#">{$project->title}</a></li>
+                {else}
+                    <li><a href="#">{$project->title}</a></li>
+                {/if}
+                
             {/foreach}
 
         </ul>

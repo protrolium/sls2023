@@ -9,10 +9,45 @@
 // font-family: 'Oswald', sans-serif;
 // font-family: 'Silkscreen', cursive;
 
+:root[data-theme="theme-light"] {
+    --primary-color: #0072a3;
+    --text-color: #333333;
+    --bg-color: #fafafa;
+    --component-bg-color: #ffffff;
+    --uk-text-secondary: #222222;
+    --uk-text-emphasis: #333333;
+}:root[data-theme="theme-dark"] {
+    --primary-color: #49afd9;
+    --text-color: #e3f5fc;
+    --bg-color: #1b2a32;
+    --component-bg-color: #22343c;
+    --uk-text-secondary: #e3f5fc;
+    --uk-text-emphasis: #fafafa;
+}
+
 html {
     /* 1 */
     font-family: 'Oswald', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: var(--text-color);
 }
+
+body {
+    background-color: var(--bg-color)
+}
+  
+// .component {
+//     background-color: var(--component-bg-color);
+//     color: var(--text-color);
+//     border: 1px solid var(--primary-color);
+// }
+
+.uk-text-secondary {
+    color: var(--uk-text-secondary) !important;
+  }
+
+.uk-text-emphasis {
+    color: var(--uk-text-emphasis) !important;
+  }
 
 h1,
 .uk-h1,
@@ -32,6 +67,7 @@ h6,
 .uk-heading-xlarge,
 .uk-heading-2xlarge {
     font-family: 'Oswald', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: var(--text-color);
 }
 
 .uk-background-red {
