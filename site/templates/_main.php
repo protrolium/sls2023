@@ -23,11 +23,13 @@ $rockfrontend
 	->scripts()
 	->add("/site/templates/uikit-3.15.10/dist/js/uikit.min.js")
 	->add("/site/templates/uikit-3.15.10/dist/js/uikit-icons.min.js")
+	->add("/site/templates/scripts/main.js")
 	;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head id="html-head">
+
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title><?php echo $page->title; ?></title>
 
@@ -42,12 +44,20 @@ $rockfrontend
 
 	</head>
 	<body id="html-body">
+		<!-- make sure we are in dark mode -->
+		<script type="text/javascript">
+			const selectedTheme = localStorage.getItem('dark-mode');
+			if (selectedTheme === "enabled") {
+				html.dataset.theme = `theme-dark`;
+			};
+		</script>
+
 		<?= $rockfrontend->render("sections/includes/header.latte") ?>
 		<?= $rockfrontend->renderLayout($page) ?>
 		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
 
-		<script type="module" defer>
-			<?= $rockfrontend->scripts()->add("/site/templates/scripts/main.js") ?>
-		</script>
+		<!-- <script>
+			
+		</script> -->
 	</body>
 </html>

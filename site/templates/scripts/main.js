@@ -7,48 +7,56 @@ function switchTheme(theme) {
     html.dataset.theme = `theme-${theme}`;
 }
 
-// logos switcher
-function toggleTheme() {
+function switchAssets(theme) {
 
     const logosList = document.querySelectorAll("#logo-header, #logo-footer");
     const logosArray = [...logosList];
     const logosLightList = document.querySelectorAll("#logo-light-header, #logo-light-footer");
     const logosLightArray = [...logosLightList];
 
-    if (html.dataset.theme === 'theme-light') {
-        switchTheme('dark');
-        localStorage.setItem("dark-mode", "enabled");
-
+    if (theme === "dark") {
         document.getElementById("dark-mode-btn").innerHTML = '🌕';
+        document.getElementById("header-nav").style.color = "#fff";
         logosArray.forEach(element => {
             element.classList.add("uk-hidden");
         });
         
         logosLightArray.forEach(element => {
             element.classList.remove("uk-hidden");
+        });
+    } else {
+        document.getElementById("dark-mode-btn").innerHTML = '🌑';
+        document.getElementById("header-nav").style.color = "#000";
+        logosArray.forEach(element => {
+            element.classList.remove("uk-hidden");
+        });
+        
+        logosLightArray.forEach(element => {
+            element.classList.add("uk-hidden");
         });
     }
-    else {
-        switchTheme('light');
-        localStorage.setItem("dark-mode", "disabled");
+}
 
-        document.getElementById("dark-mode-btn").innerHTML = '🌑';
-        logosArray.forEach(element => {
-            element.classList.remove("uk-hidden");
-        });
-        
-        logosLightArray.forEach(element => {
-            element.classList.add("uk-hidden");
-        });
+// logos switcher
+function toggleTheme() {
+    if (html.dataset.theme === 'theme-light') {
+        switchTheme('dark');
+        switchAssets('dark');
+        localStorage.setItem("dark-mode", "enabled");
+    } else {
+        switchTheme('light');
+        switchAssets('light');
+        localStorage.setItem("dark-mode", "disabled");
     }
 }
 
 if (darkMode === "enabled") { // set state of darkMode on page load
     document.addEventListener('DOMContentLoaded', (event) => {
-        toggleTheme();
+        switchAssets('dark');
     });
 }
 
+/*
 // listen to os preference
 const isOsDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const matchMediaPrefDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -65,3 +73,4 @@ function onSystemThemeChange(e) {
     const isDark = e.matches;
     document.querySelector('html').dataset.theme = `theme-${isDark ? 'dark' : 'light'}`;
 }
+*/
