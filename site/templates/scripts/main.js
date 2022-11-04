@@ -1,9 +1,7 @@
-// const mySettings = ProcessWire.config.mySettings;
-// console.log(mySettings);
-
 // theme switcher
 const html = document.querySelector('html');
 html.dataset.theme = `theme-light`;
+let darkMode = localStorage.getItem('dark-mode');
 
 function switchTheme(theme) {
     html.dataset.theme = `theme-${theme}`;
@@ -19,8 +17,9 @@ function toggleTheme() {
 
     if (html.dataset.theme === 'theme-light') {
         switchTheme('dark');
+        localStorage.setItem("dark-mode", "enabled");
+
         document.getElementById("dark-mode-btn").innerHTML = '🌕';
-        
         logosArray.forEach(element => {
             element.classList.add("uk-hidden");
         });
@@ -28,11 +27,12 @@ function toggleTheme() {
         logosLightArray.forEach(element => {
             element.classList.remove("uk-hidden");
         });
-        
-    } else {
+    }
+    else {
         switchTheme('light');
+        localStorage.setItem("dark-mode", "disabled");
+
         document.getElementById("dark-mode-btn").innerHTML = '🌑';
-        
         logosArray.forEach(element => {
             element.classList.remove("uk-hidden");
         });
@@ -41,6 +41,12 @@ function toggleTheme() {
             element.classList.add("uk-hidden");
         });
     }
+}
+
+if (darkMode === "enabled") { // set state of darkMode on page load
+    document.addEventListener('DOMContentLoaded', (event) => {
+        toggleTheme();
+    });
 }
 
 // listen to os preference
@@ -57,6 +63,5 @@ function stopListeningToOSTheme() {
 
 function onSystemThemeChange(e) {
     const isDark = e.matches;
-    document.querySelector('html').dataset.theme = 
-    `theme-${isDark ? 'dark' : 'light'}`;
+    document.querySelector('html').dataset.theme = `theme-${isDark ? 'dark' : 'light'}`;
 }
