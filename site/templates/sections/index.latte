@@ -12,9 +12,9 @@
                         {* shorten the name of the parent page *}
                         {if $page->parent->title == 'Concert Visuals'}
                             <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('concert-visuals')->url}" alt="">
-                                Visuals</a> → {$page->title|upper}
+                                Visuals</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
                         {else}
-                            {$page->parent->title|upper}</a> → {$page->title|upper}
+                            {$page->parent->title|upper}</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
                         {/if}
                     </p>
                 </div>
