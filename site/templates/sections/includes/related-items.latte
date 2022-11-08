@@ -8,8 +8,8 @@
             
             {foreach $projects as $project}
             
-                {* set the uk-active class to the appropriate subnav item depending on the page's parent *}
-                {if $project->id == $page->parent->id}
+                {* set the uk-active class to the appropriate subnav item depending on the page's parent (including grandchildren of the page) *}
+                {if $project->id == $page->parent->id or $project->id == $page->parent->parent->id}
                     <li class="uk-active"><a href="#">{$project->title}</a></li>
                 {else}
                     <li><a href="#">{$project->title}</a></li>
@@ -23,11 +23,12 @@
 
             {foreach $projects as $project}
 
-            {* make sure we don't show the current page *}
+            {* make sure we don't show the current page (or if artists with multiple projects, the artist parent page *}
             {var $thisPage = $page->id}
+            {var $artistParentPage = $page->parent->id}
             
                 <li>
-                    {foreach $project->children()->not($thisPage)->shuffle()->slice(0, 3) as $item}
+                    {foreach $project->children()->not($thisPage)->not($artistParentPage)->shuffle()->slice(0, 3) as $item}
                         <div
                             class="uk-child-width-1-1@m uk-padding-small uk-margin-remove-top" uk-grid 
                             uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 400; repeat: false;">
@@ -58,7 +59,8 @@
                                                             {if $item??->organization}
                                                                 <span>•</span>
                                                             {/if}
-
+                                                        {else}
+                                                            {$item->title|upper|noescape}
                                                         {/if}
 
                                                         {* if the page has the organization field, display it *}

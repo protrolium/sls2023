@@ -7,15 +7,21 @@
             <div class="uk-clearfix uk-blend-luminosity" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
-                    <a class="uk-text-secondary uk-text-uppercase" href="{$page->parent->url}" alt="">
+                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('concert-visuals')->url}" alt="">
                         Visuals</a> 
-                        → {$page->title|upper}
+                        → {$page->artist->first->title|upper}
                     </p>
                 </div>
 
                 <div class="uk-float-right uk-visible@l">
                     <p class="uk-heading-small uk-text-uppercase uk-text-lighter">
-                        <span class="uk-text-muted">{$page->subtitle|upper|noescape}</span>
+                        
+                        {* make sure we get the $page->title if we're on a grandchild of the visuals page, otherwise get the subtitle *}
+                        {if $page->parent->parent == $pages->get('concert-visuals')}
+                            <span class="uk-text-muted">{$page->title|upper|noescape}</span>
+                        {else}
+                            <span class="uk-text-muted">{$page->subtitle|upper|noescape}</span>
+                        {/if}
                     </p>
                 </div>
             </div>
@@ -23,15 +29,18 @@
             {* page content *}
             <div class="">
 
-                <div class="page-item uk-width-1-1 uk-cover uk-cover-container" uk-flex>
-                    <img src="{$page->get('featured_image')->url}" alt="{$page->get('featured_image')->description}" class="uk-width-1-1">
+                <div 
+                    class="page-item uk-width-1-1 uk-cover uk-cover-container" 
+                    uk-flex uk-img="loading: lazy"
+                    uk-scrollspy="cls:uk-animation-fade">
+                        <img 
+                            src="{$page->get('featured_image')->url}" 
+                            alt="{$page->get('featured_image')->description}" 
+                            class="uk-width-1-1" />
                 </div>
                 
-                <div class="page-item uk-flex uk-grid-collapse" uk-grid>
+                <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m" style="font-family: 'Silkscreen', cursive;">
-                        <p class="uk-margin-remove">Title: 
-                            <span class="uk-text-lighter">{$page->title|noescape}</span>
-                        </p>
                         <p class="uk-margin-remove">Artist: 
                             {foreach $page->artist as $artist}
                                 <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
@@ -40,12 +49,18 @@
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">Collaborators: 
                                 {foreach $page->collaborator as $collaborator}
-                                    <span class="uk-text-lighter"><a href="{$collaborator->url}">{$collaborator->title}</a></span>
+                                    <span class="uk-text-lighter uk-text-nowrap">
+                                        <a href="{$collaborator->url}">{$collaborator->title}</a>
+                                    </span>
                                 {/foreach}
                             </p>
                         {/if}
                         <p class="uk-margin-remove">Date: 
-                            <span class="uk-text-lighter">{$page->date}<span>
+                            {if $page??->date_range != ''}
+                                <span class="uk-text-lighter">{$page->date_range}</span>
+                            {else}
+                                <span class="uk-text-lighter">{$page->date}</span>
+                            {/if}
                         </p>
                     </div>
 
@@ -70,16 +85,7 @@
                 {/if}
 
                 {* gallery *}
-                <div class="page-item uk-margin-auto uk-margin-remove-top" uk-grid uk-lightbox>
-                    {foreach $page->gallery as $image}
-                        <div class="uk-width-1-2@s uk-grid-collapse uk-padding-remove uk-margin-remove-top uk-cover-container" uk-img="loading: lazy">
-                            <a href="{$image->url}" data-caption="{$image->description}" data-fancybox="gallery">
-                                <img src="{$image->url}" alt="{$image->description}" uk-cover/>
-                                <canvas width="1280" height="720"></canvas>
-                            </a>
-                        </div>
-                    {/foreach}
-                </div>
+                {$rockfrontend->render("/sections/includes/gallery.latte")}
 
                 {* video embed 3, if it exits *}
                 {if $page??->video_embed_3}

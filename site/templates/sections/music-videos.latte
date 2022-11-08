@@ -23,11 +23,13 @@
             {* page content *}
             <div class="">
 
-                <div class="page-item uk-width-1-1 video-container" uk-flex>
-                    {$page->get('video_embed_1')|noescape}
+                <div 
+                    class="page-item uk-width-1-1 video-container" 
+                    uk-flex uk-scrollspy="cls:uk-animation-fade">
+                        {$page->get('video_embed_1')|noescape}
                 </div>
                 
-                <div class="page-item uk-flex uk-grid-collapse" uk-grid>
+                <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m" style="font-family: 'Silkscreen', cursive;">
                         <p class="uk-margin-remove">Title: 
                             <span class="uk-text-lighter">{$page->title|noescape}</span>
@@ -76,16 +78,7 @@
                 {/if}
 
                 {* gallery *}
-                <div class="page-item uk-margin-auto uk-margin-remove-top" uk-grid uk-lightbox>
-                    {foreach $page->gallery as $image}
-                        <div class="uk-width-1-2@s uk-grid-collapse uk-padding-remove uk-margin-remove-top uk-cover-container" uk-img="loading: lazy">
-                            <a href="{$image->url}" data-caption="{$image->description}" data-fancybox="gallery">
-                                <img src="{$image->url}" alt="{$image->description}" uk-cover/>
-                                <canvas width="1280" height="720"></canvas>
-                            </a>
-                        </div>
-                    {/foreach}
-                </div>
+                {$rockfrontend->render("/sections/includes/gallery.latte")}
 
                 {* video embed 3, if it exits *}
                 {if $page??->video_embed_3}
