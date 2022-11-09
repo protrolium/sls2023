@@ -30,6 +30,10 @@
                 class="uk-animation-fade" 
                 uk-scrollspy="cls: uk-animation-fade; target: .index-item-border-top; delay: 400; repeat: false;">
             
+                {* get children as well as nested-children pages *}
+                {* {var $items = $page->find("children.count=0, sort=-date")} *}
+
+                {* get all first-level children *}
                 {var $items = $page->children()}
 
                 {* loop through items *}
@@ -43,7 +47,7 @@
 
                                     {* if page has children, display some info relevant to the item *}
                                     {if $item->template == 'default-page'}
-                                        {$item->title|upper}                              
+                                        {$item->title|upper}                 
                                     {/if}
 
                                     {* if no aritst present use organization *}
@@ -81,14 +85,16 @@
                                         {elseif $item->template == 'default-page'}
                                             {$item->parent->title|upper|noescape}
                                         
-                                        {* if subtitle is empty and we are on the concert-visuals index, display the parent name (concert visuals) *}
+                                        {* if subtitle is empty and we are on the concert-visuals index, display the parent name (i.e. concert visuals) *}
                                         {elseif $item->parent == $pages->get('concert-visuals')}
                                             {$item->parent->title|upper|noescape}
 
+                                        {* display the title on artist child pages  *}
                                         {else}
                                             {$item->title|upper|noescape}
                                         {/if}
 
+                                    {* display title on other templates (i.e. music-videos) *}
                                     {else}
                                         {$item->title|upper|noescape}                                       
                                    
@@ -117,11 +123,16 @@
                                 <p class="uk-text-lighter uk-margin-remove">
                                     
                                     <span uk-icon="icon: world; ratio: 1.1;"></span>&nbsp;
+
                                     {* display the date range if it exists *}
                                     {if $item??->date_range}
-                                        <span class="uk-text-default uk-text-middle">{$item->date_range}</span>
+                                        <span class="uk-text-default uk-text-middle">
+                                            {$item->date_range}
+                                        </span>
                                     {else}
-                                        <span class="uk-text-default uk-text-middle">{$item->date}</span>
+                                        <span class="uk-text-default uk-text-middle">
+                                            {$item->date}
+                                        </span>
                                     {/if}
 
                                     {* display child info if $item is a parent *}
