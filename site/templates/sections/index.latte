@@ -16,6 +16,7 @@
                         {else}
                             {$page->parent->title|upper}</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
                         {/if}
+                        
                     </p>
                 </div>
 
@@ -53,7 +54,7 @@
                                     {* if no aritst present use organization *}
                                     {if $item->template != 'broadcast'}
                                         {if $item->artist??->first}
-                                            {$item->artist->first->title|upper}                                        
+                                            {$item->title|upper|noescape}                             
                                         {else}
                                             {$item->organization|upper}
                                         {/if}    
@@ -61,11 +62,10 @@
                                     
                                     {* if no aritst present use organization *}
                                     {if $item->template == 'broadcast'}
-                                        {if $item->artist??->first}
-                                            {$item->artist->first->title|upper}
-                                        {else}
-                                            {$item->organization|upper}                                        
-                                        {/if}
+                                        {$item->title|upper|noescape}
+                                    {else}
+                                        {$item->organization|upper}                                        
+                                        
                                     {/if}
 
                                 </h1>                                
@@ -91,7 +91,7 @@
 
                                         {* display the title on artist child pages  *}
                                         {else}
-                                            {$item->title|upper|noescape}
+                                            {* {$item->title|upper|noescape} *}
                                         {/if}
 
                                     {* display title on other templates (i.e. music-videos) *}

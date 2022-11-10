@@ -9,7 +9,11 @@
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('concert-visuals')->url}" alt="">
                         Visuals</a> 
-                        → <span class="uk-text-nowrap">{$page->artist->first->title|upper}</span>
+                        → {if $page->parent->parent->parent == $pages->get('projects')}
+                            <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
+                        {else}
+                            <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
+                        {/if}
                     </p>
                 </div>
 
@@ -40,22 +44,35 @@
                 </div>
                 
                 <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
-                    <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m" style="font-family: 'Silkscreen', cursive;">
-                        <p class="uk-margin-remove">Artist: 
+                    <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories">Project:</span>
+                            
+                            {* if we are on an artist's child page, display the title, else display the project subtitle *}
+                            {if $page->parent->parent->parent == $pages->get('projects')}
+                                <span class="uk-text-lighter uk-text-nowrap">{$page->title}</span>
+                            {else}
+                                <span class="uk-text-lighter uk-text-nowrap">{$page->subtitle}</span>
+                            {/if}
+                        
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories">Artist:</span>
                             {foreach $page->artist as $artist}
                                 <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
                             {/foreach}
                         </p>
                         {if $page??->collaborator != ''}
-                            <p class="uk-margin-remove">Collaborators: 
+                            <p class="uk-margin-remove">
+                                <span class="project-item-categories">Collaborators:</span>
                                 {foreach $page->collaborator as $collaborator}
                                     <span class="uk-text-lighter uk-text-nowrap">
-                                        <a href="{$collaborator->url}">{$collaborator->title}</a>
+                                        <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
                                     </span>
                                 {/foreach}
                             </p>
                         {/if}
-                        <p class="uk-margin-remove">Date: 
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories">Date:</span>
                             {if $page??->date_range != ''}
                                 <span class="uk-text-lighter">{$page->date_range}</span>
                             {else}
@@ -64,17 +81,8 @@
                         </p>
                     </div>
 
-                    {* body text area 1 *}
-                    <div class="page-item uk-text-large uk-text-light uk-padding-large uk-width-expand@m">
-                        {$page->body|breakLines|stripHtml|noescape}
-                    </div>
-
-                    {* body text area 2 *}
-                    {if $page??->body_2 != ''}
-                        <div class="page-item uk-text-large uk-text-light uk-padding-large uk-width-1-1@m">
-                            {$page->body_2|breakLines|stripHtml|noescape}
-                        </div>
-                    {/if}
+                    {* body text area *}
+                    {$rockfrontend->render("/sections/includes/project-body-text.latte")}
                 </div>
 
                 {* video embed 2, if it exits *}
