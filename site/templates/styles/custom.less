@@ -1,13 +1,15 @@
+// no longer advised to use @import method
+
 // Import UIkit default theme (or uikit.less with only core styles) 
-@import "../uikit-3.15.10/src/less/uikit.theme.less";
-@import (inline) "google-fonts.css";
+//@import "../uikit-3.15.10/src/less/uikit.theme.less";
+//@import (inline) "google-fonts.css";
 
 // available fonts
 
 // font-family: 'Cabin', sans-serif;
 // font-family: 'Major Mono Display', monospace;
 // font-family: 'Oswald', sans-serif;
-// font-family: 'Silkscreen', cursive;
+// font-family: 'Silkscreen', monospace;
 
 :root[data-theme="theme-light"] {
     --primary-color: #0072a3;
@@ -36,7 +38,6 @@
 }
 
 html {
-    /* 1 */
     font-family: 'Oswald', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     color: var(--text-color);
 }
@@ -90,7 +91,7 @@ h6,
 
 // card image heading on /recents
 .card-mini-heading {
-    border-top: solid 1px black;
+    border-top: var(--index-item-border-top);
     padding: 10px 0;
 }
 

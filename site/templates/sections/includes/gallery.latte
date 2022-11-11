@@ -1,13 +1,14 @@
 {* image gallery module *}
 <div 
     class="page-item uk-margin-auto uk-margin-remove-top"
-    uk-grid uk-lightbox
-    uk-scrollspy="cls: uk-animation-fade; target: .gallery-item; delay: 300; repeat: false">
+    uk-grid uk-lightbox>
+    {* had this as a div attribute for image-by-image lazy loading *}
+    {* uk-scrollspy="cls: uk-animation-fade; target: .gallery-item; delay: 250; repeat: false" *}
     
     {foreach $page->gallery as $image}
         <div 
             class="gallery-item uk-width-1-2@s uk-grid-collapse uk-padding-remove uk-margin-remove-top uk-cover-container" 
-            uk-img="loading: lazy">
+            >
 
             <a href="{$image->url}" data-caption="{$image->description}" data-fancybox="gallery">
                 <img src="{$image->url}" alt="{$image->description}" uk-cover/>

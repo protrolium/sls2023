@@ -51,8 +51,9 @@
                                     
                                     {* display the title (artist name) and add the organization of the last child *}
                                         {$randomChild->title|upper|noescape}
-                                        <span>•</span>
-                                        {$randomChild->children()->last()->organization|upper|noescape}
+                                        {if $randomChild->children()->first->template == 'broadcast'}
+                                            <span>•</span>
+                                        {/if}
 
                                     {/if}
 

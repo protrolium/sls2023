@@ -87,17 +87,19 @@
 
                 {* video embed 2, if it exits *}
                 {if $page??->video_embed_2}
-                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex>
+                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
                         {$page->get('video_embed_2')|noescape}
                     </div>
                 {/if}
 
                 {* gallery *}
-                {$rockfrontend->render("/sections/includes/gallery.latte")}
+                <div uk-scrollspy="cls: uk-animation-fade; delay: 250; repeat: false">
+                    {$rockfrontend->render("/sections/includes/gallery.latte")}
+                </div>
 
                 {* video embed 3, if it exits *}
                 {if $page??->video_embed_3}
-                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex>
+                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
                         {$page->get('video_embed_3')|noescape}
                     </div>
                 {/if}

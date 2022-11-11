@@ -1,16 +1,20 @@
 <div class="uk-width-1-1 uk-padding-small">
 
-    <div class="">
+    <div>
         <ul class="uk-subnav uk-subnav-pill uk-margin-auto related-items-nav uk-text-light" 
-            uk-switcher="animation: uk-animation-fade">
+            uk-switcher="animation: uk-animation-fade;">
 
-            {var $projects = $pages->get('/projects')->children()}
+            {var $projects = $pages->get('projects')->children()}
             
             {foreach $projects as $project}
             
                 {* set the uk-active class to the appropriate subnav item depending on the page's parent (including grandchildren of the page) *}
-                {if $project->id == $page->parent->id or $project->id == $page->parent->parent->id}
+                {if $project->id == $page->parent->id}
                     <li class="uk-active"><a href="#">{$project->title}</a></li>
+                    
+                {elseif $project->id == $page->parent->parent->id}
+                    <li class="uk-active"><a href="#">{$project->title}</a></li>
+
                 {else}
                     <li><a href="#">{$project->title}</a></li>
                 {/if}

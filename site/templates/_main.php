@@ -16,7 +16,7 @@
 $home = $pages->get('/'); // homepage
 $rockfrontend
 	->styles()->setOptions(['autoload'=>true])
-	// ->add("/site/templates/uikit-3.15.10/src/less/uikit.theme.less")
+	->add("/site/templates/uikit-3.15.10/src/less/uikit.theme.less")
 	->add("/site/templates/styles/custom.less")
 	;
 $rockfrontend
@@ -29,9 +29,16 @@ $rockfrontend
 <!DOCTYPE html>
 <html lang="en">
 	<head id="html-head">
+		<!-- hide our site content -->
+		<style>html{visibility: hidden;opacity:0;}</style>
 
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title><?php echo $page->title; ?></title>
+
+		<!-- fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?&family=Major+Mono+Display&family=Oswald:wght@200;300;400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet"> 
 
 		<!-- favicons -->
 		<link rel="apple-touch-icon" sizes="180x180" href="<?php echo $config->urls->assets?>favicon/apple-touch-icon.png">
@@ -56,8 +63,7 @@ $rockfrontend
 		<?= $rockfrontend->renderLayout($page) ?>
 		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
 
-		<!-- <script>
-			
-		</script> -->
+		<!-- show our site content -->
+		<style>html{visibility: visible;opacity:1;}</style>
 	</body>
 </html>
