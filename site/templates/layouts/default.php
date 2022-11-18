@@ -4,5 +4,6 @@
 <?= $rockfrontend->renderIf("sections/index.latte", "template=default-page") ?>
 <?= $rockfrontend->renderIf("sections/music-videos.latte", "template=music-videos") ?>
 <?= $rockfrontend->renderIf("sections/concert-visuals.latte", "template=concert-visuals") ?>
+<?= $rockfrontend->renderIf("sections/broadcast.latte", "template=broadcast") ?>
 <?= $rockfrontend->renderIf("sections/includes/related-items.latte", "template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema") ?>
 <?= $rockfrontend->renderIf("sections/about.latte", "name=about") ?>
