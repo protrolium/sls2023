@@ -1,0 +1,98 @@
+<main class="page-content">
+    <div class="uk-padding-small">
+        
+        <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
+            
+            {* page title *}
+            <div class="uk-clearfix uk-blend-luminosity" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
+                <div class="uk-inline">
+                    <p class="uk-heading-small uk-text-lighter">
+                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('virtual-reality')->url}" alt="">
+                        VR</a> 
+                        → {if $page->parent->parent->parent == $pages->get('projects')}
+                            <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
+                        {else}
+                            <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
+                        {/if}
+                    </p>
+                </div>
+
+                <div class="uk-float-right uk-visible@l">
+                    <p class="uk-heading-small uk-text-uppercase uk-text-lighter">
+                        <span class="uk-text-muted">{$page->title|upper|noescape}</span>
+                    </p>
+                </div>
+            </div>
+
+            {* page content *}
+            <div class="">
+
+                <div 
+                    class="page-item uk-width-1-1 uk-cover uk-cover-container video-container" 
+                    uk-flex uk-img="loading: lazy"
+                    uk-scrollspy="cls:uk-animation-fade">
+                        {$page->get('video_embed_1')|noescape}
+                </div>
+                
+                <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
+                    <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories">Project:</span>
+                                <span class="uk-text-lighter">{$page->title|noescape}</span>
+                        </p>
+                        
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories">Artist:</span>
+                            {foreach $page->artist as $artist}
+                                <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
+                            {/foreach}
+                        </p>
+                        {if $page??->collaborator != ''}
+                            <p class="uk-margin-remove">
+                                <span class="project-item-categories">Collaborators:</span>
+                                {foreach $page->collaborator as $collaborator}
+                                    <span class="uk-text-lighter uk-text-nowrap">
+                                        <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
+                                    </span>
+                                {/foreach}
+                            </p>
+                        {/if}
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories">Date:</span>
+                            {if $page??->date_range != ''}
+                                <span class="uk-text-lighter">{$page->date_range}</span>
+                            {else}
+                                <span class="uk-text-lighter">{$page->date}</span>
+                            {/if}
+                        </p>
+                    </div>
+
+                    {* body text area *}
+                    {$rockfrontend->render("/sections/includes/project-body-text.latte")}
+                </div>
+
+                {* video embed 2, if it exits *}
+                {if $page??->video_embed_2}
+                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
+                        {$page->get('video_embed_2')|noescape}
+                    </div>
+                {/if}
+
+                {* gallery *}
+                <div uk-scrollspy="cls: uk-animation-fade; delay: 250; repeat: false">
+                    {$rockfrontend->render("/sections/includes/gallery.latte")}
+                </div>
+
+                {* video embed 3, if it exits *}
+                {if $page??->video_embed_3}
+                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
+                        {$page->get('video_embed_3')|noescape}
+                    </div>
+                {/if}
+                
+            </div>
+        
+        </div>
+    </div>
+
+</main>
