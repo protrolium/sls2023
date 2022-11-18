@@ -160,7 +160,7 @@
                                     
                                     {if $item??->collaborator}
                                         <span uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
-                                        
+                                
                                         {* get the first three collaborators  *}
                                         {foreach $item->collaborator->slice(0, 3) as $collaborator}
                                             <a href="{$collaborator->url}" alt="">
@@ -169,6 +169,14 @@
                                                 </span>
                                             </a>
                                         {/foreach}
+                                    {/if}
+
+                                    {if $item??->organization}
+                                        <span class="uk-text-default uk-text-middle">
+                                            <a href="{$item->url}" alt="">
+                                                {$item->organization|noescape}                                            
+                                            </a>
+                                        </span>
                                     {/if}
 
                                     {* display child info if $item is a parent *}
@@ -186,7 +194,17 @@
                                                     </a>
                                                 {/foreach}
                                             {/if}
+
+                                            {if $child??->organization}
+                                                <span class="uk-text-default uk-text-middle">
+                                                    <a href="{$child->url}" alt="">
+                                                        {$child->organization|noescape}
+                                                    </a>
+                                                </span>
+                                            {/if}
+
                                         {/foreach}
+
                                     {/if}
 
                                 </p>
