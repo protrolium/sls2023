@@ -67,8 +67,10 @@
                                                             {$item->title|upper|noescape}
                                                         {/if}
 
-                                                        {* if the page has the organization field, display it *}
-                                                        {$item??->organization|upper|noescape}                                
+                                                        {* if the page has the organization field, display it and do a special check for Game Awards 2020 page to remove redundancy*}
+                                                        {if $item??->organization != '' && $item->id != $pages->get('1107')->id}
+                                                            {$item->organization|upper|noescape}    
+                                                        {/if}                            
 
                                                     </a>&nbsp;
                                                 </p>

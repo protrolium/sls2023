@@ -7,73 +7,57 @@
             <div class="uk-clearfix uk-blend-luminosity" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
-                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('broadcast')->url}" alt="">
-                        Broadcast</a> 
+                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('brands')->url}" alt="">
+                        BRANDS</a> 
                         → {if $page->parent->parent->parent == $pages->get('projects')}
                             <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
-                        {elseif $page??->artist != ''}
+                        {else}
                             <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
-                        {elseif $page->parent == $pages->get('broadcast')}
-                            <span class="uk-text-nowrap">{$page->title|upper|noescape}</span>
                         {/if}
                     </p>
                 </div>
 
                 <div class="uk-float-right uk-visible@l">
                     <p class="uk-heading-small uk-text-uppercase uk-text-lighter">
-                        
-                        {* make sure we get the $page->title if we're on a grandchild of the broadcast page, otherwise get the subtitle *}
-                        {if $page->parent->parent == $pages->get('broadcast')}
-                            <span class="uk-text-muted">{$page->title|upper|noescape}</span>
-                        {else}
-                            <span class="uk-text-muted">{$page->subtitle|upper|noescape}</span>
-                        {/if}
+                        <span class="uk-text-muted">{$page->title|upper|noescape}</span>
                     </p>
                 </div>
             </div>
 
             {* page content *}
             <div class="">
-
-                <div 
-                    class="page-item uk-width-1-1 uk-cover uk-cover-container" 
-                    uk-flex uk-img="loading: lazy"
-                    uk-scrollspy="cls:uk-animation-fade">
-                        <img 
-                            src="{$page->get('featured_image')->url}" 
-                            alt="{$page->get('featured_image')->description}" 
-                            class="uk-width-1-1" />
-                </div>
+                
+                {* get video embed 1, otherwise if it doesn't exist get the featured image *}
+                {if $page??->video_embed_1}
+                    <div 
+                        class="page-item uk-width-1-1 uk-cover uk-cover-container video-container" 
+                        uk-flex uk-img="loading: lazy"
+                        uk-scrollspy="cls:uk-animation-fade">
+                            {$page->get('video_embed_1')|noescape}
+                    </div>
+                {else}
+                    <div 
+                        class="page-item uk-width-1-1 uk-cover uk-cover-container" 
+                        uk-flex uk-img="loading: lazy"
+                        uk-scrollspy="cls:uk-animation-fade">
+                            <img 
+                                src="{$page->get('featured_image')->url}" 
+                                alt="{$page->get('featured_image')->description}" 
+                                class="uk-width-1-1" />
+                    </div>
+                {/if}
                 
                 <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
                         <p class="uk-margin-remove">
                             <span class="project-item-categories">Project:</span>
-                            
-                            {* if we are on an artist's child page, display the title, else display the project subtitle *}
-                            {if $page->parent->parent->parent == $pages->get('projects')}
-                                <span class="uk-text-lighter uk-text-nowrap">{$page->title}</span>
-                            {else}
-                                <span class="uk-text-lighter uk-text-nowrap">{$page->subtitle}</span>
-                            {/if}
-                        
-                        {* display artist if it exists *}
-                        <p class="uk-margin-remove">
-                            {if $page??->artist != ''}
-                                <span class="project-item-categories">Artist:</span>
-                                {foreach $page->artist as $artist}
-                                    <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
-                                {/foreach}
-                            {/if}
+                                <span class="uk-text-lighter">{$page->title|noescape}</span>
                         </p>
-
-                        {* display organization *}
+                        
                         <p class="uk-margin-remove">
                             <span class="project-item-categories">Organization:</span>
-                            <span class="uk-text-lighter"><a href="">{$page->organization}</a></span>
+                            <span class="uk-text-lighter"><a href="">{$page->organization|noescape}</a></span>
                         </p>
-                            
-                        {* display collaborators *}
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
                                 <span class="project-item-categories">Collaborators:</span>
@@ -84,22 +68,12 @@
                                 {/foreach}
                             </p>
                         {/if}
-
-                        {* display date *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories">Date:</span>
                             {if $page??->date_range != ''}
                                 <span class="uk-text-lighter">{$page->date_range}</span>
                             {else}
                                 <span class="uk-text-lighter">{$page->date}</span>
-                            {/if}
-                        </p>
-
-                        {* display location *}
-                        <p class="uk-margin-remove">
-                            <span class="project-item-categories">Location:</span>
-                            {if $page??->location != ''}
-                                <span class="uk-text-lighter">{$page->location|breakLines}</span>
                             {/if}
                         </p>
                     </div>

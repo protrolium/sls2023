@@ -26,13 +26,26 @@
 
             {* page content *}
             <div class="">
-
-                <div 
-                    class="page-item uk-width-1-1 uk-cover uk-cover-container video-container" 
-                    uk-flex uk-img="loading: lazy"
-                    uk-scrollspy="cls:uk-animation-fade">
-                        {$page->get('video_embed_1')|noescape}
-                </div>
+                
+                {* get video embed 1, otherwise if it doesn't exist get the featured image *}
+                {if $page??->video_embed_1}
+                    <div 
+                        class="page-item uk-width-1-1 uk-cover uk-cover-container video-container" 
+                        uk-flex uk-img="loading: lazy"
+                        uk-scrollspy="cls:uk-animation-fade">
+                            {$page->get('video_embed_1')|noescape}
+                    </div>
+                {else}
+                    <div 
+                        class="page-item uk-width-1-1 uk-cover uk-cover-container" 
+                        uk-flex uk-img="loading: lazy"
+                        uk-scrollspy="cls:uk-animation-fade">
+                            <img 
+                                src="{$page->get('featured_image')->url}" 
+                                alt="{$page->get('featured_image')->description}" 
+                                class="uk-width-1-1" />
+                    </div>
+                {/if}
                 
                 <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
@@ -44,7 +57,7 @@
                         <p class="uk-margin-remove">
                             <span class="project-item-categories">Artist:</span>
                             {foreach $page->artist as $artist}
-                                <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
+                                <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title|noescape}</a></span>
                             {/foreach}
                         </p>
                         {if $page??->collaborator != ''}

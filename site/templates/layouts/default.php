@@ -6,5 +6,6 @@
 <?= $rockfrontend->renderIf("sections/concert-visuals.latte", "template=concert-visuals") ?>
 <?= $rockfrontend->renderIf("sections/broadcast.latte", "template=broadcast") ?>
 <?= $rockfrontend->renderIf("sections/virtual-reality.latte", "template=virtual-reality") ?>
+<?= $rockfrontend->renderIf("sections/brands.latte", "template=brands") ?>
 <?= $rockfrontend->renderIf("sections/includes/related-items.latte", "template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema") ?>
 <?= $rockfrontend->renderIf("sections/about.latte", "name=about") ?>

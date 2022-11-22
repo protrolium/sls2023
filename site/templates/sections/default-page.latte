@@ -48,11 +48,15 @@
 
                                     {* if page has children, display some info relevant to the item *}
                                     {if $item->template == 'default-page'}
-                                        {$item->title|upper}                 
+                                        {if $item->template == 'brands'}
+                                            {$item->organization|upper}
+                                        {else}
+                                            {$item->title|upper}
+                                        {/if}
                                     {/if}
 
                                     {* if no aritst present use organization *}
-                                    {if $item->template != 'broadcast'}
+                                    {if $item->template != 'broadcast' && $item->template != 'brands'}
                                         {if $item->artist??->first}
                                             {$item->title|upper|noescape}                             
                                         {else}
@@ -64,8 +68,7 @@
                                     {if $item->template == 'broadcast'}
                                         {$item->title|upper|noescape}
                                     {else}
-                                        {$item->organization|upper}                                        
-                                        
+                                        {$item->organization|upper}                                                                                
                                     {/if}
 
                                 </h1>                                
@@ -185,7 +188,8 @@
                                         
                                         {* get the first three collaborators if there are any *}
                                         {foreach $item->children() as $child}
-                                            {if $child??->collaborator}
+                                            {* show collaborators on any page with children except brand pages *}
+                                            {if $child??->collaborator && $child->template != 'brands'}
                                                 {foreach $child->collaborator as $collaborator}
                                                     <a href="{$collaborator->url}" alt="">
                                                         <span class="uk-text-default uk-text-middle">
