@@ -6,16 +6,12 @@
 
             {var $projects = $pages->get('projects')->children()}
             
+            {* $project is a project category i.e. 'concert-visuals', 'music-video', etc.  *}
             {foreach $projects as $project}
             
-                {* set the uk-active class to the appropriate subnav item depending on the page's parent *}
-                {if $project->id == $page->parent->id}
+                {* set the uk-active class to the appropriate subnav item depending on the page's parent OR the page's parent's parent *}
+                {if $page->parent->id == $project->id || $page->parent->parent->id == $project->id}
                     <li class="uk-active"><a href="#">{$project->title}</a></li>
-                
-                {* if a grandchiled item, check the parent's parent  *}
-                {elseif $project->hasChildren() && $project->id == $page->parent->parent->id}
-                    <li class="uk-active"><a href="#">{$project->title}</a></li>
-
                 {else}
                     <li><a href="#">{$project->title}</a></li>
                 {/if}
