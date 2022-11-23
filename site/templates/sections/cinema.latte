@@ -7,26 +7,32 @@
             <div class="uk-clearfix uk-blend-luminosity" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
-                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('brands')->url}" alt="">
-                        Brands</a> 
+                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('cinema')->url}" alt="">
+                        Cinema</a> 
                         → {if $page->parent->parent->parent == $pages->get('projects')}
                             <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
                         {else}
-                            <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
+                            <span class="uk-text-nowrap">{$page->title|upper|noescape}</span>
                         {/if}
                     </p>
                 </div>
 
                 <div class="uk-float-right uk-visible@l">
                     <p class="uk-heading-small uk-text-uppercase uk-text-lighter">
-                        <span class="uk-text-muted">{$page->title|upper|noescape}</span>
+                        
+                        {* make sure we get the $page->title if we're on a grandchild of the visuals page, otherwise get the subtitle *}
+                        {if $page->parent->parent == $pages->get('cinema')}
+                            <span class="uk-text-muted">{$page->title|upper|noescape}</span>
+                        {else}
+                            <span class="uk-text-muted">{$page->artist->first->title|upper|noescape}</span>
+                        {/if}
                     </p>
                 </div>
             </div>
 
             {* page content *}
             <div class="">
-                
+
                 {* get video embed 1, otherwise if it doesn't exist get the featured image *}
                 {if $page??->video_embed_1}
                     <div 
@@ -51,12 +57,14 @@
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
                         <p class="uk-margin-remove">
                             <span class="project-item-categories">Project:</span>
-                                <span class="uk-text-lighter">{$page->title|noescape}</span>
+                                <span class="uk-text-lighter uk-text-nowrap">{$page->title|noescape}</span>
                         </p>
                         
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories">Organization:</span>
-                            <span class="uk-text-lighter"><a href="">{$page->organization|noescape}</a></span>
+                            <span class="project-item-categories">Artist:</span>
+                            {foreach $page->artist as $artist}
+                                <span class="uk-text-lighter uk-text-nowrap"><a href="{$artist->url}">{$artist->title}</a></span>
+                            {/foreach}
                         </p>
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
@@ -98,6 +106,15 @@
                 {if $page??->video_embed_3}
                     <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
                         {$page->get('video_embed_3')|noescape}
+                    </div>
+                {/if}
+
+                {* if there are credits, display them *}
+                {if $page??->credits != ''}
+                    <div class="creditsGrid uk-width-1-1 uk-padding-large uk-flex-center" uk-scrollspy="cls:uk-animation-fade">
+                        <p class="">
+                            {$page->credits|breakLines|stripHtml|noescape}
+                        </p>
                     </div>
                 {/if}
                 

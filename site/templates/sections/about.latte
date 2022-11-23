@@ -1,1 +1,43 @@
-<main>TEST</main>
+{* page content *}
+{* <div class="uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light" data-src="{$page->featured_image->url}" uk-img> *}
+
+    <div class="uk-width-1-1">
+
+        <div class="uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
+            {* project body heading area *}
+            <div class="uk-text-large uk-text-light uk-padding-large">
+                <div class="">
+                    <h1 class="uk-margin-remove">{$page->title}</h1>
+                    <br>
+                    <span class="uk-heading-small">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                </div>
+            </div>
+
+            <div class="uk-width-1-2@m uk-padding-large uk-margin-top-remove">
+                
+                {* body col 1 CONNECT *}
+
+                <div class="uk-margin-remove-top uk-margin-xlarge-bottom">
+                    <h1>Connect</h1>
+                    <h2>{$page->body_2|noescape}</h2>
+                </div>
+
+                {* card image *}
+                <div class="uk-margin-top uk-width-1-2 uk-cover-container uk-border-circle uk-background-cover">
+                    <canvas width="500" height="500"></canvas>
+                    <img class="" src="{$page->featured_image->url}" alt="" uk-cover>
+                </div>
+
+            </div>
+
+            <div class="uk-width-1-2@m uk-padding-large">
+                
+                {* body col 2 PERSONNEL *}
+
+                <div class="uk-margin-remove-top">
+                    <h1>Our Team</h1>
+                    <span class="uk-text-large">{$page->project_body_paragraph|breakLines|stripHtml|noescape}</span>
+                </div>
+
+            </div>
+    </div>

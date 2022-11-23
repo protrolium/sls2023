@@ -8,11 +8,12 @@
             
             {foreach $projects as $project}
             
-                {* set the uk-active class to the appropriate subnav item depending on the page's parent (including grandchildren of the page) *}
+                {* set the uk-active class to the appropriate subnav item depending on the page's parent *}
                 {if $project->id == $page->parent->id}
                     <li class="uk-active"><a href="#">{$project->title}</a></li>
-                    
-                {elseif $project->id == $page->parent->parent->id}
+                
+                {* if a grandchiled item, check the parent's parent  *}
+                {elseif $project->hasChildren() && $project->id == $page->parent->parent->id}
                     <li class="uk-active"><a href="#">{$project->title}</a></li>
 
                 {else}
