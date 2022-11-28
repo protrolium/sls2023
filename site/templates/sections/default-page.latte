@@ -58,7 +58,7 @@
                                     {/if}
 
                                     {* if no aritst present use organization *}
-                                    {if $item->template != 'broadcast' && $item->template != 'brands' && $item->template != 'cinema'}
+                                    {if $item->template != 'broadcast' && $item->template != 'brands' && $item->template != 'cinema' && $item->template != 'concert-visuals'}
                                         {if $item->artist??->first}
                                             {$item->artist->first->title|upper|noescape}                             
                                         {else}
@@ -75,6 +75,11 @@
 
                                     {* if item has cinema template, display the title *}
                                     {if $item->template == 'cinema'}
+                                        {$item->title|upper|noescape}                                                                            
+                                    {/if}
+
+                                    {* if concert-visuals item has children, display the title  *}
+                                    {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
                                         {$item->title|upper|noescape}                                                                            
                                     {/if}
 
