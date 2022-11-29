@@ -1,5 +1,7 @@
 <?= $rockfrontend->renderIf("sections/main.latte", "template=default-page") ?>
+<?= $rockfrontend->renderIf("sections/index-imgHover.latte", "name=artists") ?>
 <?= $rockfrontend->renderIf("sections/default-page.latte", "template=default-page") ?>
+<?= $rockfrontend->renderIf("sections/studio.latte", "name=studio") ?>
 <?= $rockfrontend->renderIf("sections/about.latte", "name=about") ?>
 <?= $rockfrontend->renderIf("sections/recent.latte", "template=recent") ?>
 <?= $rockfrontend->renderIf("sections/projects.latte", "name=projects") ?>

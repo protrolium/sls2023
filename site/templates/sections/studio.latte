@@ -1,0 +1,62 @@
+{* page content *}
+{* <div class="uk-flex uk-flex-center uk-flex-middle uk-light" data-src="{$page->featured_image->url}" uk-img> *}
+
+    <div class="uk-padding-small uk-animation-fade uk-width-1-1">
+
+        {* page title *}
+        <div class="uk-clearfix" uk-height-match>
+            <div class="uk-inline">
+                <p class="uk-heading-small uk-text-lighter">
+                    <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
+                            <span class="uk-text-nowrap">{$page->title|upper}</span>
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <div class="uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
+        
+            {* project body heading area *}
+            <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m">
+
+                <div>
+                    <span class="uk-text-large">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                </div>
+
+            </div>
+
+            {* card image *}
+            <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-3@m">
+                <canvas width="700" height="700"></canvas>
+                <img class="" src="{$page->featured_image->url}" alt="" uk-cover>
+            </div>
+
+            <div class="uk-width-1-2@m uk-padding-large uk-margin-top-remove">
+                
+                {* body col 1 Artists *}
+
+                {* <div class="uk-margin-remove-top uk-margin-xlarge-bottom">
+                    <h1>Artists</h1>
+                    {foreach $pages->get('artists')->children() as $artist}
+                        <h2 class="offcanvas-nav-h1">
+                            <a href="{$artist->url}">
+                                <span class="uk-text-emphasis uk-text-lighter">{$artist->title|noescape}</span>
+                            </a>
+                        </h2>
+                    {/foreach}
+
+                </div> *}
+
+            </div>
+
+            <div class="uk-width-1-2@m uk-padding-large">
+                
+                {* body col 2 *}
+
+                <div class="uk-margin-remove-top">
+                    <h1></h1>
+                    <span class="uk-text-large">{$page->project_body_paragraph|breakLines|stripHtml|noescape}</span>
+                </div>
+
+            </div>
+    </div>

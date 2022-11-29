@@ -1,14 +1,23 @@
 {* page content *}
 {* <div class="uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light" data-src="{$page->featured_image->url}" uk-img> *}
 
-    <div class="uk-width-1-1">
+    <div class="uk-padding-small uk-animation-fade uk-width-1-1">
+
+        {* page title *}
+        <div class="uk-clearfix" uk-height-match>
+            <div class="uk-inline">
+                <p class="uk-heading-small uk-text-lighter">
+                    <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
+                            <span class="uk-text-nowrap">{$page->title|upper}</span>
+                    </a>
+                </p>
+            </div>
+        </div>
 
         <div class="uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
             {* project body heading area *}
             <div class="uk-text-large uk-text-light uk-padding-large">
                 <div class="">
-                    <h1 class="uk-margin-remove">{$page->title}</h1>
-                    <br>
                     <span class="uk-heading-small">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
                 </div>
             </div>

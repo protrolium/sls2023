@@ -13,8 +13,10 @@
                         {if $page->parent->title == 'Concert Visuals'}
                             <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('concert-visuals')->url}" alt="">
                                 Visuals</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
+                        
                         {elseif $page->template == 'about'}
                             <span>{$page->title|upper}</span>
+                        
                         {else}
                             {$page->parent->title|upper}</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
                         {/if}
@@ -36,8 +38,15 @@
                 {* get children as well as nested-children pages *}
                 {* {var $items = $page->find("children.count=0, sort=-date")} *}
 
-                {* get all first-level children *}
-                {var $items = $page->children()}
+                {* get children pages *}
+                
+                {* if we are looking at an artist page, define $items differently *}
+                {if $page->parent == $pages->get("artists")}
+                    {var $items = $pages->find("artist.title={$page->title}")}
+                {else}
+                    {* otherwise, get $items as we normally would *}
+                    {var $items = $page->children()}
+                {/if}
 
                 {* loop through items *}
                 {foreach $items as $item}
@@ -49,9 +58,9 @@
                                  <h1 class="uk-text-lighter">
 
                                     {* if page has children, display some info relevant to the item *}
-                                    {if $item->template == 'default-page'}
+                                    {if $item->template == 'default-page' && $item->hasChildren()}
                                         {if $item->template == 'brands'}
-                                            {$item->organization|upper}
+                                            {$item->organization|upper|noescape}
                                         {else}
                                             {$item->title|upper}
                                         {/if}
@@ -68,9 +77,7 @@
                                     
                                     {* if no aritst present use organization *}
                                     {if $item->template == 'broadcast'}
-                                        {$item->title|upper|noescape}
-                                    {else}
-                                        {$item->organization|upper}                                                                                
+                                        {$item->title|upper|noescape}                                                                              
                                     {/if}
 
                                     {* if item has cinema template, display the title *}
@@ -80,6 +87,10 @@
 
                                     {* if concert-visuals item has children, display the title  *}
                                     {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
+                                        {$item->title|upper|noescape}                                                                            
+                                    {/if}
+
+                                    {if $item->template == 'brands' && $page->template == 'default-page'}
                                         {$item->title|upper|noescape}                                                                            
                                     {/if}
 
@@ -104,9 +115,6 @@
                                         {elseif $item->parent == $pages->get('concert-visuals')}
                                             {$item->parent->title|upper|noescape}
 
-                                        {* display the title on artist child pages  *}
-                                        {else}
-                                            {* {$item->title|upper|noescape} *}
                                         {/if}
                             
                                     {* if item has the virtual reality template, display the title *}
@@ -114,8 +122,8 @@
                                         {$item->title|upper|noescape}
 
                                     {* if item has the brands template, display the title *}
-                                    {elseif $item->template == 'brands'}
-                                        {$item->title|upper|noescape}
+                                    {* {elseif $item->template == 'brands'}
+                                        {$item->title|upper|noescape} *}
 
                                     {* if item has the brands template, display the title *}
                                     {elseif $item->template == 'cinema'}
@@ -123,6 +131,10 @@
                             
                                     {* display title on other templates (i.e. music-videos) *}
                                     {elseif $item->template == 'music-videos'}
+                                        {$item->title|upper|noescape}
+
+                                    {* display the news-item title if template calls for it *}
+                                    {elseif $item->template == 'news-item'}
                                         {$item->title|upper|noescape}
                                    
                                     {/if}
