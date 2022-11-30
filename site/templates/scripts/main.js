@@ -9,9 +9,9 @@ function switchTheme(theme) {
 
 function switchAssets(theme) {
 
-    const logosList = document.querySelectorAll("#logo-header, #logo-footer");
+    const logosList = document.querySelectorAll("#logo-header, #logo-footer, #logo-studio, #hv-logo-studio");
     const logosArray = [...logosList];
-    const logosLightList = document.querySelectorAll("#logo-light-header, #logo-light-footer");
+    const logosLightList = document.querySelectorAll("#logo-light-header, #logo-light-footer, #logo-light-studio, #hv-logo-light-studio");
     const logosLightArray = [...logosLightList];
 
     if (theme === "dark") {

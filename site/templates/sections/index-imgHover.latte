@@ -7,8 +7,7 @@
             <div class="uk-clearfix" uk-height-match>
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
-                    <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
-                            <span class="uk-text-nowrap">{$page->title|upper}</span>
+                        <span class="uk-text-nowrap">{$page->title|upper}</span>
                     </p>
                 </div>
             </div>
@@ -29,13 +28,20 @@
                         {* image hover div *}
 
                         {* get an image from one of these templates *}
-                        {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item, artist=$item, limit=1")}
+                        {if $page->name == 'artists'}
+                            {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item, artist=$item, limit=1")}
+                        
+                        {elseif $page->name == 'collaborators'}
+                            {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item, collaborator=$item, limit=1")}
+                        
+                        {/if}
+
                         <div 
                             class="previewImg uk-cover-container uk-background-cover"
                             style="background-image: url('{$image->first->featured_image->url}');">
                                 <a href="{$item->url}" alt="">
                                     <canvas width="854" height="480"></canvas>
-                            </a>
+                                </a>
                         </div>
 
                     </div>

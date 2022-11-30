@@ -32,7 +32,7 @@
     <div>
         <div class="uk-card uk-card-body uk-flex uk-flex-column">
             
-            {foreach $pages->get('projects')->children() as $item}
+            {foreach $pages->get('projects')->children()->not('name=virtual-artists|visual-content-packs') as $item}
                 
                 <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
                     <a 

@@ -7,35 +7,80 @@
         <div class="uk-clearfix" uk-height-match>
             <div class="uk-inline">
                 <p class="uk-heading-small uk-text-lighter">
-                    <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
-                            <span class="uk-text-nowrap">{$page->title|upper}</span>
-                    </a>
+                    <span class="uk-text-nowrap">{$page->title|upper}</span>
                 </p>
             </div>
         </div>
 
-        <div class="uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
+        <div class="uk-flex uk-grid-collapse uk-flex-top uk-flex-center" uk-height-match uk-grid uk-scrollspy="cls:uk-animation-fade">
         
             {* project body heading area *}
-            <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m">
+            <div class="uk-flex uk-flex-column uk-flex-around uk-text-large uk-text-light uk-padding-large uk-width-1-2@m">
+                <div>
+                    <img alt="" class="hidpi" id="logo-studio" src="{$pages->get('sls-logo')->image->url}" width="150" />
+                    <img alt="" class="hidpi uk-hidden" id="logo-light-studio" src="{$pages->get('sls-logo-alpha-light')->image->url}" width="150" /></p>
+
+                    <p>
+                        <a href="/sls2023/about/">Our Team</a> • 
+                        <a href="/sls2023/artists/">Artists</a> • 
+                        <a href="/sls2023/collaborators/">Collaborators</a><br />
+                        Based in Los Angeles, California. Seen All Over The World.
+                    </p>
+                    
+                    <p>&nbsp;</p>
+
+                </div>
+                
+                <div>
+                    <a href="https://spiritbomb.ai" rel="noreferrer noopener" target="_blank">
+                        <img alt="" class="hidpi" src="{$pages->get('spirit-bomb-logo')->image->url}" width="150" />
+                    </a>
+
+                    <p><a href="https://spiritbomb.ai" rel="noreferrer noopener" target="_blank">Spirit Bomb</a><br />
+                    Virtual Artist Media Label</p>
+
+                    <p>&nbsp;</p>
+
+                </div>
 
                 <div>
-                    <span class="uk-text-large">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                    <a href="https://hypervoid.tv" rel="noreferrer noopener" target="_blank">
+                        <img alt="" class="hidpi" id="hv-logo-studio" src="{$pages->get('hypervoid-glyph-dark')->image->url}" width="150" />
+                        <img alt="" class="hidpi uk-hidden" id="hv-logo-light-studio" src="{$pages->get('hypervoid-glyph-light')->image->url}" width="150" />
+                    </a>
+
+                    <p><a href="https://hypervoid.tv" rel="noreferrer noopener" target="_blank">Hypervoid</a><br />
+                    Visual Content Packs</p>
                 </div>
 
             </div>
 
-            {* card image *}
-            <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-3@m">
-                <canvas width="700" height="700"></canvas>
-                <img class="" src="{$page->featured_image->url}" alt="" uk-cover>
+
+            <div class="uk-width-1-3@m uk-visible@m">
+                {* card image *}
+                <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-1@m">
+                    <canvas width="900" height="900"></canvas>
+                    <img class="" src="{$pages->get('concert-visuals')->children()->not('id=1212|1080')->shuffle()->first->featured_image->url}" alt="" uk-cover>
+                </div>
+
+                {* card image *}
+                <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-2@m">
+                    <canvas width="900" height="900"></canvas>
+                    <img class="" src="{$pages->get('lv4-profile')->image->url}" alt="" uk-cover>
+                </div>
+
+                {* card image *}
+                <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-3@m">
+                    <canvas width="900" height="900"></canvas>
+                    <img class="" src="{$page->featured_image->url}" alt="" uk-cover>
+                </div>
             </div>
 
-            <div class="uk-width-1-2@m uk-padding-large uk-margin-top-remove">
+            {* <div class="uk-width-1-2@m uk-padding-large uk-margin-top-remove">
                 
-                {* body col 1 Artists *}
+                {* body col 1 Artists
 
-                {* <div class="uk-margin-remove-top uk-margin-xlarge-bottom">
+                <div class="uk-margin-remove-top uk-margin-xlarge-bottom">
                     <h1>Artists</h1>
                     {foreach $pages->get('artists')->children() as $artist}
                         <h2 class="offcanvas-nav-h1">
@@ -45,19 +90,19 @@
                         </h2>
                     {/foreach}
 
-                </div> *}
+                </div> 
 
-            </div>
+            </div> *}
 
-            <div class="uk-width-1-2@m uk-padding-large">
+            {* <div class="uk-width-1-2@m uk-padding-large">
                 
-                {* body col 2 *}
+                {* body col 2
 
                 <div class="uk-margin-remove-top">
                     <h1></h1>
                     <span class="uk-text-large">{$page->project_body_paragraph|breakLines|stripHtml|noescape}</span>
                 </div>
 
-            </div>
+            </div> *}
         </div>
     </div>

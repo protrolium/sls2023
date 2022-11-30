@@ -4,7 +4,7 @@
         <ul class="uk-subnav uk-subnav-pill uk-margin-auto related-items-nav uk-text-light" 
             uk-switcher="animation: uk-animation-fade;">
 
-            {var $projects = $pages->get('projects')->children()}
+            {var $projects = $pages->get('projects')->children()->not('name=virtual-artists|visual-content-packs')}
             
             {* $project is a project category i.e. 'concert-visuals', 'music-video', etc.  *}
             {foreach $projects as $project}

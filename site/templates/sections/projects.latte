@@ -71,38 +71,65 @@
                 
                 {* check to see if featured_video field is != null *}
                 {if $randomChild??->featured_video}
+
                     <div class="uk-cover-container">
                         <canvas width="1200" height="1200"></canvas>
                         <a href="{$item->url}" alt="">
                             <video src="{$randomChild->featured_video->url}" autoplay loop muted playsinline uk-cover></video>
                         </a>
                     </div>
+
                 {/if}
                 
                 {* check to see if featured_image field is null *}
                 {if !$randomChild->featured_video}
+
                     <div 
                         class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary"
                         style="background-image: url('{$randomChild->featured_image->url}');">
-                            <a href="{$item->url}" alt="">
-                                <canvas width="1200" height="1200"></canvas>
-                            </a>
+                            
+                            {* check to see if the item has the template virtual-artist or visual-content-packs, and if they do, change the nature of the link *}
+                            {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
+                                
+                                <a href="{$randomChild->hyperlink}" alt="" target="_blank">
+                                    <canvas width="1200" height="1200"></canvas>
+                                </a>
+
+                            {else}
+
+                                <a href="{$item->url}" alt="">
+                                    <canvas width="1200" height="1200"></canvas>
+                                </a>
+
+                            {/if}
                     </div>
                 {/if}
 
                 {* card text headings *}
                 <div class="uk-card-body uk-padding-small">
-                    <a href="{$item->url}" alt="">
-                        
-                        <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
-                            {$item->title|noescape|upper}
-                        </h1>
+                    {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
 
-                        <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
-                            {* {$item->subtitle|noescape} *}
-                        </h3>
-                    </a>
+                        <a href="{$randomChild->hyperlink}" alt="" target="_blank">
+                        
+                    {else}
+
+                        <a href="{$item->url}" alt="">
+
+                    {/if}
+                            
+                            <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
+                                {$item->title|noescape|upper}
+                            </h1>
+
+                            <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
+                                {* {$item->subtitle|noescape} *}
+                            </h3>
+                        </a>
+
+
+
                     {* <p>{$item->body|noescape}</p> *}
+
                 </div>
             </div>
 
