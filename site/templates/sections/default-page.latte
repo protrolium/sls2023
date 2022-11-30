@@ -45,7 +45,13 @@
                     {var $items = $pages->find("artist.title={$page->title}")}
 
                 {elseif $page->parent == $pages->get("collaborators")}
-                    {var $items = $pages->find("collaborator.title={$page->title}")}
+
+                    {* if a collaborator is also an artist, list all projects *}
+                    {if $pages->find('artist.title={$page->title}') == true}
+                        {var $items = $pages->find("artist.title|collaborator.title={$page->title}")}
+                    {else}
+                        {var $items = $pages->find("collaborator.title={$page->title}")}
+                    {/if}
 
                 {else}
                     {* otherwise, get $items as we normally would *}
@@ -95,11 +101,12 @@
                                         {$item->title|upper|noescape}                                                                            
                                     {/if}
 
+                                    {* if item has brands template and is a parent, display the title *}
                                     {if $item->template == 'brands' && $page->template == 'default-page'}
                                         {$item->title|upper|noescape}                                                                            
                                     {/if}
 
-                                </h1>                                
+                                </h1>                            
                             </div>
 
                             <div class="uk-inline uk-float-right uk-visible@m">
@@ -122,15 +129,11 @@
 
                                         {/if}
                             
-                                    {* if item has the virtual reality template, display the title *}
-                                    {elseif $item->template == 'virtual-reality'}
+                                    {* if $item has the virtual-reality or nft template, display the title *}
+                                    {elseif $item->template == 'virtual-reality' || $item->template == 'nft'}
                                         {$item->title|upper|noescape}
 
-                                    {* if item has the brands template, display the title *}
-                                    {* {elseif $item->template == 'brands'}
-                                        {$item->title|upper|noescape} *}
-
-                                    {* if item has the brands template, display the title *}
+                                    {* if $item has the brands template, display the title *}
                                     {elseif $item->template == 'cinema'}
                                         {$item->artist->first->title|upper|noescape}
                             
@@ -140,7 +143,7 @@
 
                                     {* display the news-item title if template calls for it *}
                                     {elseif $item->template == 'news-item'}
-                                        {$item->title|upper|noescape}
+                                        {$item->title|upper|noescape}                                    
                                    
                                     {/if}
 

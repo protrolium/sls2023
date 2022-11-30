@@ -4,7 +4,7 @@
         <ul class="uk-subnav uk-subnav-pill uk-margin-auto related-items-nav uk-text-light" 
             uk-switcher="animation: uk-animation-fade;">
 
-            {var $projects = $pages->get('projects')->children()->not('name=virtual-artists|visual-content-packs')}
+            {var $projects = $pages->get('projects')->children()->not('name=virtual-artists|visual-content-packs|nft')}
             
             {* $project is a project category i.e. 'concert-visuals', 'music-video', etc.  *}
             {foreach $projects as $project}
@@ -51,25 +51,44 @@
                                                 <p class="uk-inline uk-text-light uk-margin-remove-bottom">
                                                     <a href="{$item->url|stripHtml}">
                                                         
-                                                        {* if the page has the artist field, display it *}
-                                                        {if $item->artist??->first}
+                                                        {if $item->template == 'music-videos' || $item->template == 'cinema' || $item->template == 'virtual-reality'}
                                                             
-                                                            {$item->artist->first->title|upper|noescape}
-                                                            
-                                                            {* check to see if the organization field is present, and add the separator if it is *}
-                                                            {if $item??->organization}
-                                                                <span>•</span>
+                                                            {* if the page has the artist field, display it *}
+                                                            {if $item->artist??->first}                                                            
+                                                                {$item->artist->first->title|upper|noescape}
+                                                                
+                                                                {* check to see if the organization field is present, and add the separator if it is *}
+                                                                {if $item??->organization}
+                                                                    <span>•</span>
+                                                                {/if}                                                        
+
+                                                            {else}
+                                                                {$item->title|upper|noescape}
+
                                                             {/if}
-                                                        {else}
-                                                            {$item->title|upper|noescape}
+
                                                         {/if}
 
                                                         {* if the page has the organization field, display it and do a special check for Game Awards 2020 page to remove redundancy*}
                                                         {if $item??->organization != '' && $item->id != $pages->get('1107')->id}
                                                             {$item->organization|upper|noescape}    
-                                                        {/if}                            
+                                                        {/if}
 
+
+                                                        {if $item->template == 'concert-visuals'}
+                                                            {if $item??->subtitle}
+                                                                {$item->subtitle|upper|noescape}
+                                                            {else}
+                                                                <span class="uk-text-uppercase">Concert Visuals</span>
+                                                            {/if}
+                                                        {/if}
                                                     </a>&nbsp;
+                                                        {* if $item has children, grab the first child's title *}
+                                                        {if $item->template == 'default-page'}
+                                                            <a href="{$item->children()->first->url|stripHtml}">
+                                                                {$item->children()->first->title|upper|noescape}
+                                                            </a>
+                                                        {/if}
                                                 </p>
                                             </div>
                                         </div>
