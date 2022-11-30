@@ -43,9 +43,14 @@
                 {* if we are looking at an artist page, define $items differently *}
                 {if $page->parent == $pages->get("artists")}
                     {var $items = $pages->find("artist.title={$page->title}")}
+
+                {elseif $page->parent == $pages->get("collaborators")}
+                    {var $items = $pages->find("collaborator.title={$page->title}")}
+
                 {else}
                     {* otherwise, get $items as we normally would *}
                     {var $items = $page->children()}
+
                 {/if}
 
                 {* loop through items *}
@@ -69,10 +74,10 @@
                                     {* if no aritst present use organization *}
                                     {if $item->template != 'broadcast' && $item->template != 'brands' && $item->template != 'cinema' && $item->template != 'concert-visuals'}
                                         {if $item->artist??->first}
-                                            {$item->artist->first->title|upper|noescape}                             
+                                            {$item->artist->first->title|upper|noescape}    
                                         {else}
                                             {$item->organization|upper}
-                                        {/if}    
+                                        {/if}
                                     {/if}                                 
                                     
                                     {* if no aritst present use organization *}

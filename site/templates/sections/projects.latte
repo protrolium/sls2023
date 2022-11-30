@@ -35,7 +35,11 @@
                         
                         <div class="uk-inline uk-float-right">
                             <p class="uk-inline uk-text-light uk-margin-remove-bottom">
-                                <a href="{$randomChild->url|stripHtml}">
+                                {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
+                                    <a href="{$randomChild->hyperlink}" alt="" target="_blank">
+                                {else}
+                                    <a href="{$randomChild->url|stripHtml}">
+                                {/if}
                                     
                                     {* if the page has the artist field, display it *}
                                     {if $randomChild->artist??->first}
