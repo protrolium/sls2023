@@ -21,9 +21,9 @@
                     <img alt="" class="hidpi uk-hidden" id="logo-light-studio" src="{$pages->get('sls-logo-alpha-light')->image->url}" width="150" /></p>
 
                     <p>
-                        <a href="/sls2023/about/">Our Team</a> • 
-                        <a href="/sls2023/artists/">Artists</a> • 
-                        <a href="/sls2023/collaborators/">Collaborators</a><br />
+                        <a href="{$pages->get('about')->url}">Our Team</a> • 
+                        <a href="{$pages->get('artists')->url}">Artists</a> • 
+                        <a href="{$pages->get('collaborators')->url}">Collaborators</a><br />
                         Based in Los Angeles, California. Seen All Over The World.
                     </p>
                     
@@ -56,7 +56,7 @@
             </div>
 
 
-            <div class="uk-width-1-3@m uk-visible@m">
+            <div class="uk-width-1-3@m uk-visible@m" uk-img="loading: lazy">
                 {* card image *}
                 <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-1@m">
                     <canvas width="900" height="900"></canvas>

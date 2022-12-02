@@ -15,8 +15,12 @@
         <div class="uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
             {* project body heading area *}
             <div class="uk-text-large uk-text-light uk-padding-large">
-                <div class="">
+                <div class="uk-visible@m">
                     <span class="uk-heading-small">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                </div>
+
+                <div class="uk-hidden@m">
+                    <span style="font-size: 1.5rem;">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
                 </div>
             </div>
 

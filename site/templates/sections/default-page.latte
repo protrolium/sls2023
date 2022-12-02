@@ -68,43 +68,45 @@
                             <div class="uk-inline">
                                  <h1 class="uk-text-lighter">
 
-                                    {* if page has children, display some info relevant to the item *}
-                                    {if $item->template == 'default-page' && $item->hasChildren()}
-                                        {if $item->template == 'brands'}
-                                            {$item->organization|upper|noescape}
-                                        {else}
-                                            {$item->title|upper}
+                                    <a class="uk-text-emphasis" href="{$item->url}" alt="">
+                                        {* if page has children, display some info relevant to the item *}
+                                        {if $item->template == 'default-page' && $item->hasChildren()}
+                                            {if $item->template == 'brands'}
+                                                {$item->organization|upper|noescape}
+                                            {else}
+                                                {$item->title|upper}
+                                            {/if}
                                         {/if}
-                                    {/if}
 
-                                    {* if no aritst present use organization *}
-                                    {if $item->template != 'broadcast' && $item->template != 'brands' && $item->template != 'cinema' && $item->template != 'concert-visuals'}
-                                        {if $item->artist??->first}
-                                            {$item->artist->first->title|upper|noescape}    
-                                        {else}
-                                            {$item->organization|upper}
+                                        {* if no aritst present use organization *}
+                                        {if $item->template != 'broadcast' && $item->template != 'brands' && $item->template != 'cinema' && $item->template != 'concert-visuals'}
+                                            {if $item->artist??->first}
+                                                {$item->artist->first->title|upper|noescape}    
+                                            {else}
+                                                {$item->organization|upper}
+                                            {/if}
+                                        {/if}                                 
+                                        
+                                        {* if no aritst present use organization *}
+                                        {if $item->template == 'broadcast'}
+                                            {$item->title|upper|noescape}                                                                              
                                         {/if}
-                                    {/if}                                 
-                                    
-                                    {* if no aritst present use organization *}
-                                    {if $item->template == 'broadcast'}
-                                        {$item->title|upper|noescape}                                                                              
-                                    {/if}
 
-                                    {* if item has cinema template, display the title *}
-                                    {if $item->template == 'cinema'}
-                                        {$item->title|upper|noescape}                                                                            
-                                    {/if}
+                                        {* if item has cinema template, display the title *}
+                                        {if $item->template == 'cinema'}
+                                            {$item->title|upper|noescape}                                                                            
+                                        {/if}
 
-                                    {* if concert-visuals item has children, display the title  *}
-                                    {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
-                                        {$item->title|upper|noescape}                                                                            
-                                    {/if}
+                                        {* if concert-visuals item has children, display the title  *}
+                                        {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
+                                            {$item->title|upper|noescape}                                                                            
+                                        {/if}
 
-                                    {* if item has brands template and is a parent, display the title *}
-                                    {if $item->template == 'brands' && $page->template == 'default-page'}
-                                        {$item->title|upper|noescape}                                                                            
-                                    {/if}
+                                        {* if item has brands template and is a parent, display the title *}
+                                        {if $item->template == 'brands' && $page->template == 'default-page'}
+                                            {$item->title|upper|noescape}                                                                            
+                                        {/if}
+                                    </a>
 
                                 </h1>                            
                             </div>
@@ -154,11 +156,10 @@
                         {* featured image div *}
                         <div 
                             class="uk-cover-container uk-background-cover"
-                            style="background-image: url('{$item->featured_image->url}');"
-                            uk-img="loading: lazy">
+                            style="background-image: url('{$item->featured_image->url}');">
                                 <a href="{$item->url}" alt="">
                                     <canvas width="1280" height="480"></canvas>
-                            </a>
+                                </a>
                         </div>
 
                     </div>
@@ -211,11 +212,23 @@
                                         {* get the first three collaborators  *}
                                         {foreach $item->collaborator->slice(0, 3) as $collaborator}
                                             <a href="{$collaborator->url}" alt="">
-                                                <span class="uk-text-default uk-text-middle">
+                                                <span class="uk-text-default uk-text-middle uk-visible@m">
                                                     {$collaborator->title|noescape}
                                                 </span>
                                             </a>
                                         {/foreach}
+                                        
+                                        {* get the first collaborator for mobile  *}
+                                        {if $item??->collaborator && $item->template != 'brands' || $item->template != 'broadcast'}
+                                        <span class="uk-text-default uk-text-middle uk-hidden@m">
+                                            {if $item??->collaborator != ''}
+                                                <a href="{$item->collaborator->first->url}" alt="">
+                                                    {$item->collaborator->first->title|noescape}
+                                                </a>
+                                            {/if}
+                                        </span>
+                                        {/if}
+
                                     {/if}
 
                                     {if $item??->organization}
@@ -232,11 +245,12 @@
                                         
                                         {* get the first three collaborators if there are any *}
                                         {foreach $item->children() as $child}
+
                                             {* show collaborators on any page with children except brand pages *}
                                             {if $child??->collaborator && $child->template != 'brands'}
                                                 {foreach $child->collaborator as $collaborator}
                                                     <a href="{$collaborator->url}" alt="">
-                                                        <span class="uk-text-default uk-text-middle">
+                                                        <span class="uk-text-default uk-text-middle uk-visible@m">
                                                             {$collaborator->title|noescape}
                                                         </span>
                                                     </a>

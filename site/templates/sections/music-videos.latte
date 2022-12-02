@@ -31,43 +31,57 @@
                 
                 <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
-                        <p class="uk-margin-remove">Title: 
-                            <span class="uk-text-lighter">{$page->title|noescape}</span>
-                        </p>
-                        <p class="uk-margin-remove">Artist: 
-                            {foreach $page->artist as $artist}
-                                <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
-                            {/foreach}
-                        </p>
+                        
+                        {* Title *}
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories uk-text-small">Title:</span><br>
+                            <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <span class="uk-text-lighter">{$page->title|noescape}</span>
+                            </div>
+                        
+                        {* Artist *}
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories uk-text-small">Artist:</span><br>
+                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                    {foreach $page->artist as $artist}
+                                        <span class="uk-text-lighter">
+                                            <a href="{$artist->url}">{$artist->title}</a>                                
+                                        </span>
+                                    {/foreach}
+                                </div>
+                        
+                        {* Collaborator *}
                         {if $page??->collaborator != ''}
-                            <p class="uk-margin-remove">Collaborators: 
-                                {foreach $page->collaborator as $collaborator}
-                                    <span class="uk-text-lighter"><a href="{$collaborator->url}">{$collaborator->title}</a></span>
-                                {/foreach}
-                            </p>
+                            <p class="uk-margin-remove">
+                                <span class="project-item-categories uk-text-small">Collaborators:</span><br>
+                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                    {foreach $page->collaborator as $collaborator}
+                                        <span class="uk-text-lighter">
+                                            <a href="{$collaborator->url}">{$collaborator->title}</a>
+                                        </span>
+                                    {/foreach}
+                                </div>
                         {/if}
-                        <p class="uk-margin-remove">Release Date: 
-                            <span class="uk-text-lighter">{$page->date}<span>
-                        </p>
-                        <p class="uk-margin-remove">Label: 
+
+                        {* Release Date *}
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories uk-text-small">Release Date:</span><br>
+                            <span class="uk-text-lighter uk-padding">{$page->date}</span>
+
+                        {* Label *}
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories uk-text-small">Label:</span><br>
                             {foreach $page->record_label as $label}
-                                <span class="uk-text-lighter"><a href="{$label->hyperlink}" target="_blank">{$label->title}</a></span>
+                                <span class="uk-text-lighter uk-padding">                            
+                                    <a href="{$label->hyperlink}" target="_blank">{$label->title}</a>
+                                </span>
                             {/foreach}
                             
                         </p>
                     </div>
 
-                    {* body text area 1 *}
-                    <div class="page-item uk-text-large uk-text-light uk-padding-large uk-width-expand@m">
-                        {$page->body|breakLines|stripHtml|noescape}
-                    </div>
-
-                    {* body text area 2 *}
-                    {if $page??->body_2 != ''}
-                        <div class="page-item uk-text-large uk-text-light uk-padding-large uk-width-1-1@m">
-                            {$page->body_2|breakLines|stripHtml|noescape}
-                        </div>
-                    {/if}
+                    {* body text area *}
+                    {$rockfrontend->render("/sections/includes/project-body-text.latte")}
                 </div>
 
                 {* video embed 2, if it exits *}

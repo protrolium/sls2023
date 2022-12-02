@@ -45,38 +45,46 @@
                 
                 <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
-                        <p class="uk-margin-remove">
-                            <span class="project-item-categories">Project:</span>
-                            
-                            {* if we are on an artist's child page, display the title, else display the project subtitle *}
-                            {if $page->parent->parent->parent == $pages->get('projects')}
-                                <span class="uk-text-lighter uk-text-nowrap">{$page->title}</span>
-                            {else}
-                                <span class="uk-text-lighter uk-text-nowrap">{$page->subtitle}</span>
-                            {/if}
                         
+                        {* Project Title *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories">Artist:</span>
+                            <span class="project-item-categories uk-text-small">Project:</span><br>
+                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                    {* if we are on an artist's child page, display the title, else display the project subtitle *}
+                                    {if $page->parent->parent->parent == $pages->get('projects')}
+                                        <span class="uk-text-lighter">{$page->title}</span>
+                                    {else}
+                                        <span class="uk-text-lighter">{$page->subtitle}</span>
+                                    {/if}
+                                </div>
+                        
+                        {* Artist Name(s) *}
+                        <p class="uk-margin-remove">
+                            <span class="project-item-categories uk-text-small">Artist:</span><br>
                             {foreach $page->artist as $artist}
-                                <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
+                                <span class="uk-text-lighter uk-padding"><a href="{$artist->url}">{$artist->title}</a></span>
                             {/foreach}
-                        </p>
+
+                        {* Project Collaborators if they exist *}
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
-                                <span class="project-item-categories">Collaborators:</span>
-                                {foreach $page->collaborator as $collaborator}
-                                    <span class="uk-text-lighter uk-text-nowrap">
-                                        <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
-                                    </span>
-                                {/foreach}
-                            </p>
+                                <span class="project-item-categories uk-text-small">Collaborators:</span><br>                            
+                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                    {foreach $page->collaborator as $collaborator}
+                                        <span class="uk-text-lighter uk-text-nowrap">
+                                            <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
+                                        </span>
+                                    {/foreach}
+                                </div>
                         {/if}
+
+                        {* Project Date *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories">Date:</span>
+                            <span class="project-item-categories uk-text-small">Date:</span><br>
                             {if $page??->date_range != ''}
-                                <span class="uk-text-lighter">{$page->date_range}</span>
+                                <span class="uk-text-lighter uk-padding">{$page->date_range}</span>
                             {else}
-                                <span class="uk-text-lighter">{$page->date}</span>
+                                <span class="uk-text-lighter uk-padding">{$page->date}</span>
                             {/if}
                         </p>
                     </div>
