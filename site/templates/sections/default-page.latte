@@ -47,10 +47,10 @@
                 {elseif $page->parent == $pages->get("collaborators")}
 
                     {* if a collaborator is also an artist, list all projects *}
-                    {if $pages->find('artist.title={$page->title}') == true}
-                        {var $items = $pages->find("artist.title|collaborator.title={$page->title}")}
+                    {if $pages->find('artist.name={$page->name}') == true}
+                        {var $items = $pages->find("artist.name|collaborator.name={$page->name}")}
                     {else}
-                        {var $items = $pages->find("collaborator.title={$page->title}")}
+                        {var $items = $pages->find("collaborator.name={$page->name}")}
                     {/if}
 
                 {else}
