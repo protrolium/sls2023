@@ -11,6 +11,7 @@ button.hamburger-nav, .theme-toggle {
     text-decoration: none;
     display: inline-block;
     font-size: 20px;
+    padding: 2px;
 }
 
 button.hamburger-nav:hover, .theme-toggle:hover {
@@ -22,14 +23,19 @@ button.hamburger-nav:hover, .theme-toggle:hover {
 }
 
 .uk-offcanvas-close {
-    top: 2px;
-    right: 5px;
-    padding: 20px;
+    top: 1px;
+    right: 0;
+    margin: 15px;
 }
 
 .offcanvas-nav-h1 {
     margin-top: 0.5rem;
 }
+
+// fix mobile x menu nav button not always working
+svg {
+    pointer-events: none;
+  }
 
 .sls-nav-logo {
     padding-left: 1rem;
@@ -38,4 +44,14 @@ button.hamburger-nav:hover, .theme-toggle:hover {
 .sls-nav-title {
     border-right: var(--sls-nav-title-border-right); 
     text-transform: uppercase;
+}
+
+// #dark-mode-btn {
+//     margin-top: 3.5px;
+// }
+
+@media screen and (max-width: 767px) {
+    #dark-mode-btn {
+        margin-top: 1px;
+    }
 }

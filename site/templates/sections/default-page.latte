@@ -158,7 +158,8 @@
                             class="uk-cover-container uk-background-cover"
                             style="background-image: url('{$item->featured_image->url}');">
                                 <a href="{$item->url}" alt="">
-                                    <canvas width="1280" height="480"></canvas>
+                                    <canvas class="uk-visible@m" width="1280" height="480"></canvas>
+                                    <canvas class="uk-hidden@m" width="1280" height="1280"></canvas>                        
                                 </a>
                         </div>
 
