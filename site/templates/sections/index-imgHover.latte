@@ -29,10 +29,10 @@
 
                         {* get an image from one of these templates *}
                         {if $page->name == 'artists'}
-                            {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item, artist=$item, limit=1")}
+                            {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item|nft, artist=$item, limit=1")}
                         
                         {elseif $page->name == 'collaborators'}
-                            {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item, collaborator=$item, limit=1")}
+                            {var $image = $pages->find("template=music-videos|concert-visuals|broadcast|virtual-reality|brands|cinema|news-item|nft, collaborator=$item, limit=1")}
                         
                         {/if}
 

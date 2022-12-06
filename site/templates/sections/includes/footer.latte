@@ -3,13 +3,14 @@
 
         <div class="uk-width-1-2@m uk-margin-bottom uk-margin-large-top">
 
-            <img id="logo-footer" src="{$pages->get('sls-logo')->image->url}" alt="">
-            <img id="logo-light-footer" class="uk-hidden" src="{$pages->get('sls-logo-alpha-light')->image->url}" alt="">
-            
-            <span class="uk-text-large uk-text-lighter uk-text-middle uk-padding-small uk-text-uppercase">
-                Strangeloop Studios
-            </span>
-
+            <div>
+                <img id="logo-footer" src="{$pages->get('sls-logo')->image->maxSize(300,285)->url}" alt="">
+                <img id="logo-light-footer" class="uk-hidden" src="{$pages->get('sls-logo-alpha-light')->image->maxSize(300,285)->url}" alt="" uk-img="loading: lazy;">
+                <span class="uk-text-large uk-text-lighter uk-text-middle uk-padding-small uk-text-uppercase">
+                    Strangeloop Studios
+                </span>
+            </div>
+        
         </div>
 
         <div class="uk-width-1-2@l uk-margin-bottom">

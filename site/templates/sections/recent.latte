@@ -43,14 +43,23 @@
                 </div>
 
                 {* card image *}
-                <div class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" style="background-image: url('{$item->featured_image->url}');">
-                    <a href="{$item->url}" alt="">
-                        <canvas width="600" height="600"></canvas>
-                        {* <img class="" src="{$item->featured_image->url}" alt="" uk-cover> *}
-                    </a>
+                <div class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" style="background-image: url('{$item->featured_image->maxSize(1240,1200)->url}');">
+                    {if $item??->page_reference != ''}
+                        <a href="{$item->page_reference->url}" alt="">
+                            <canvas width="600" height="600"></canvas>
+                        </a>
+                    {elseif $item??->hyperlink != ''}
+                        <a href="{$item->hyperlink}" alt="" target="_blank">
+                            <canvas width="600" height="600"></canvas>
+                        </a>
+                    {else}
+                        <a href="{$item->url}" alt="">
+                            <canvas width="600" height="600"></canvas>
+                        </a>
+                    {/if}
                 </div>
 
-                {* card text headings *}
+
                 <div class="uk-card-body uk-padding-small">
                     <a href="{$item->url}" alt="">
                         

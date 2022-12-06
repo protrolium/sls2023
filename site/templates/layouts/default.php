@@ -1,4 +1,3 @@
-<?= $rockfrontend->renderIf("sections/main.latte", "template=default-page") ?>
 <?= $rockfrontend->renderIf("sections/index-imgHover.latte", "name=artists|collaborators") ?>
 <?= $rockfrontend->renderIf("sections/default-page.latte", "template=default-page") ?>
 <?= $rockfrontend->renderIf("sections/studio.latte", "name=studio") ?>

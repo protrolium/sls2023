@@ -12,13 +12,13 @@
                         {* shorten the name of the parent page *}
                         {if $page->parent->title == 'Concert Visuals'}
                             <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('concert-visuals')->url}" alt="">
-                                Visuals</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
+                                Visuals</a> → <span class="uk-text-nowrap">{$page->title|upper|noescape}</span>
                         
                         {elseif $page->template == 'about'}
-                            <span>{$page->title|upper}</span>
+                            <span>{$page->title|upper|noescape}</span>
                         
                         {else}
-                            {$page->parent->title|upper}</a> → <span class="uk-text-nowrap">{$page->title|upper}</span>
+                            {$page->parent->title|upper}</a> → <span class="uk-text-nowrap">{$page->title|upper|noescape}</span>
                         {/if}
                         
                     </p>
@@ -42,7 +42,7 @@
                 
                 {* if we are looking at an artist page, define $items differently *}
                 {if $page->parent == $pages->get("artists")}
-                    {var $items = $pages->find("artist.title={$page->title}")}
+                    {var $items = $pages->find("artist.name={$page->name}")}
 
                 {elseif $page->parent == $pages->get("collaborators")}
 
