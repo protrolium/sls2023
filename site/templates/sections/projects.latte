@@ -90,7 +90,7 @@
 
                     <div 
                         class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary"
-                        style="background-image: url('{$randomChild->featured_image->url}');">
+                        style="background-image: url('{$randomChild->featured_image->maxSize(950,950)->url}');">
                             
                             {* check to see if the item has the template virtual-artist or visual-content-packs, and if they do, change the nature of the link *}
                             {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
