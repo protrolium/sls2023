@@ -55,7 +55,7 @@
 
                 {else}
                     {* otherwise, get $items as we normally would *}
-                    {var $items = $page->children()}
+                    {var $items = $page->children()->not("id=1029")}
 
                 {/if}
 
@@ -71,24 +71,66 @@
                                     <a class="uk-text-emphasis" href="{$item->url}" alt="">
                                         {* if page has children, display some info relevant to the item *}
                                         {if $item->template == 'default-page' && $item->hasChildren()}
+
                                             {if $item->template == 'brands'}
                                                 {$item->organization|upper|noescape}
                                             {else}
                                                 {$item->title|upper}
                                             {/if}
+                                                
                                         {/if}
 
                                         {* if no aritst present use organization *}
-                                        {if $item->template != 'broadcast' && $item->template != 'brands' && $item->template != 'cinema' && $item->template != 'concert-visuals'}
-                                            {if $item->artist??->first}
-                                                {$item->artist->first->title|upper|noescape}    
-                                            {else}
-                                                {$item->organization|upper}
+                                        {if $item->template != 'broadcast' 
+                                            && $item->template != 'brands' 
+                                            && $item->template != 'cinema' 
+                                            && $item->template != 'concert-visuals'
+                                            }
+
+                                            {if $page->parent != $pages->get('name=artists|collaborators')}
+                                                
+                                                {* display artist name except on artist and collaborator pages *}
+                                                {if $item->artist??->first}
+                                                    {$item->artist->first->title|upper|noescape}
+                                                {else}
+                                                    {$item->organization|upper}
+                                                {/if}
+
                                             {/if}
-                                        {/if}                                 
+                                        {/if}   
+
+                                        {* first check to make sure if we are on an artist or collaborator index page *}
+                                        {if $page->parent == $pages->get('name=artists|collaborators') && $page->template == 'default-page'}
+                                            
+                                            {* if $item has the virtual-reality or nft template, display the title *}
+                                            {if $item->template == 'virtual-reality' || $item->template == 'nft'}
+                                                {$item->title|upper|noescape}
+
+                                            {* if $item has the brands template, display the title *}
+                                            {elseif $item->template == 'cinema'}
+                                                {$item->artist->first->title|upper|noescape}
+                                    
+                                            {* display title on other templates (i.e. music-videos) *}
+                                            {elseif $item->template == 'music-videos'}
+                                                {$item->title|upper|noescape}
+
+                                            {* display the subtitle for broadcast template *}
+                                            {elseif $item->template == 'broadcast'}
+                                                {$item->subtitle|upper|noescape}
+
+                                            {* display the news-item title if template calls for it *}
+                                            {elseif $item->template == 'news-item'}
+                                                {$item->title|upper|noescape}
+                                            
+                                            {else}
+                                            {$item->subtitle|upper|noescape}      
+                                            
+                                            {/if}
+                                                                                                                     
+                                        {/if}                              
                                         
                                         {* if no aritst present use organization *}
-                                        {if $item->template == 'broadcast'}
+                                        {if $item->template == 'broadcast' && $page->parent != $pages->get('name=artists|collaborators')}
                                             {$item->title|upper|noescape}                                                                              
                                         {/if}
 
@@ -98,7 +140,11 @@
                                         {/if}
 
                                         {* if concert-visuals item has children, display the title  *}
-                                        {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
+                                        {if $item->template == 'concert-visuals' 
+                                            && $page->template == 'default-page' 
+                                            && $page->parent != $pages->get('name=artists|collaborators')
+                                            }
+
                                             {$item->title|upper|noescape}                                                                            
                                         {/if}
 
@@ -106,6 +152,7 @@
                                         {if $item->template == 'brands' && $page->template == 'default-page'}
                                             {$item->title|upper|noescape}                                                                            
                                         {/if}
+
                                     </a>
 
                                 </h1>                            
@@ -114,39 +161,49 @@
                             <div class="uk-inline uk-float-right uk-visible@m">
                                 <h1 class="uk-text-lighter uk-text-muted" href="{$item->url}">
                                     
-                                    {* if no subtitle present use the title *}
-                                    {if $item->template == 'broadcast' || $item->template == 'concert-visuals' || $item->template == 'default-page'}
+                                    {if $page->parent != $pages->get('name=artists|collaborators')}
                                         
-                                        {* if $item has the subtitle field, display it *}
-                                        {if $item??->subtitle}
-                                            {$item->subtitle|upper|noescape}
+                                        {* if no subtitle present use the title *}
+                                        {if $item->template == 'broadcast' 
+                                            || $item->template == 'concert-visuals' 
+                                            || $item->template == 'default-page'}
+                                            
+                                            {* if $item has the subtitle field, display it *}
+                                            {if $item??->subtitle}
+                                                {$item->subtitle|upper|noescape}
 
-                                        {* if $item has children display the parent's title, unless there are no remaining children *}
-                                        {elseif $item->template == 'default-page'}
-                                            {$item->parent->title|upper|noescape}
-                                        
-                                        {* if subtitle is empty and we are on the concert-visuals index, display the parent name (i.e. concert visuals) *}
-                                        {elseif $item->parent == $pages->get('concert-visuals')}
-                                            {$item->parent->title|upper|noescape}
+                                            {* if $item has children display the parent's title, unless there are no remaining children *}
+                                            {elseif $item->template == 'default-page'}
+                                                {$item->parent->title|upper|noescape}
+                                            
+                                            {* if subtitle is empty and we are on the concert-visuals index, display the parent name (i.e. concert visuals) *}
+                                            {elseif $item->parent == $pages->get('concert-visuals')}
+                                                {$item->parent->title|upper|noescape}
 
+                                            {/if}
+                                
+                                        {* if $item has the virtual-reality or nft template, display the title *}
+                                        {elseif $item->template == 'virtual-reality' || $item->template == 'nft'}
+                                            {$item->title|upper|noescape}
+
+                                        {* if $item has the cinema template, display the title *}
+                                        {elseif $item->template == 'cinema'}
+                                            {$item->artist->first->title|upper|noescape}
+                                
+                                        {* display title on other templates (i.e. music-videos) *}
+                                        {elseif $item->template == 'music-videos'}
+                                            {$item->title|upper|noescape}
+
+                                        {* display the news-item title if template calls for it *}
+                                        {elseif $item->template == 'news-item'}
+                                            {$item->title|upper|noescape}       
+
+                                        {* if item has the brands template display the organization *}
+                                        {elseif $item->template == 'brands'}
+                                            {$item->organization|upper|noescape}
+                                    
                                         {/if}
-                            
-                                    {* if $item has the virtual-reality or nft template, display the title *}
-                                    {elseif $item->template == 'virtual-reality' || $item->template == 'nft'}
-                                        {$item->title|upper|noescape}
 
-                                    {* if $item has the brands template, display the title *}
-                                    {elseif $item->template == 'cinema'}
-                                        {$item->artist->first->title|upper|noescape}
-                            
-                                    {* display title on other templates (i.e. music-videos) *}
-                                    {elseif $item->template == 'music-videos'}
-                                        {$item->title|upper|noescape}
-
-                                    {* display the news-item title if template calls for it *}
-                                    {elseif $item->template == 'news-item'}
-                                        {$item->title|upper|noescape}                                    
-                                   
                                     {/if}
 
                                 </h1>

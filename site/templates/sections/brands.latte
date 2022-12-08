@@ -11,8 +11,10 @@
                         Brands</a> 
                         → {if $page->parent->parent->parent == $pages->get('projects')}
                             <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
-                        {else}
+                        {elseif $page??->artist != ''}
                             <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
+                        {else}
+                            <span class="uk-text-nowrap">{$page->organization|upper|noescape}</span>
                         {/if}
                     </p>
                 </div>

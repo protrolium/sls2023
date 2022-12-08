@@ -10,7 +10,7 @@
                     <a 
                         href="{$item->url}" 
                         n:class="$rockfrontend->isActive($item) ? 'uk-active'">
-                            <span class="uk-text-emphasis uk-text-light" style="font-family: 'Major Mono Display', monospace;">
+                            <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
                                 {$item->title}
                             </span>
                     </a>
@@ -33,13 +33,13 @@
     <div>
         <div class="uk-card uk-card-body uk-flex uk-flex-column">
             
-            {foreach $pages->get('projects')->children()->not('name=virtual-artists|visual-content-packs') as $item}
+            {foreach $pages->get('projects')->children()->not('name=virtual-artists|vj-tools') as $item}
                 
                 <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
                     <a 
                         href="{$item->url}" 
                         n:class="$rockfrontend->isActive($item) ? 'uk-active'">
-                            <span class="uk-text-emphasis uk-text-lighter" style="font-family: 'Major Mono Display', monospace;">
+                            <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
                                 {$item->title}
                             </span>
                     </a>

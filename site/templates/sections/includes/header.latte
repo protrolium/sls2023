@@ -25,7 +25,7 @@
             
             <div style="margin-top: 3px;">
                 <button id="dark-mode-btn" class="theme-toggle uk-text-large" onclick="toggleTheme()">
-                    <span>🌑</span>
+                    <span>🌙</span>
                 </button>
             </div>
 
@@ -47,7 +47,7 @@
             <nav class="uk-flex-column uk-margin-auto-vertical" uk-navbar>
                 
                 <h1 class="offcanvas-nav-h1">
-                    <a class="uk-text-emphasis" href="{$home->url}">
+                    <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$home->url}">
                         Home
                     </a>
                 </h1>
@@ -57,7 +57,7 @@
                         <a 
                             href="{$item->url}" 
                             n:class="$rockfrontend->isActive($item) ? 'uk-active'">
-                                <span class="uk-text-emphasis">{$item->title}</span>
+                                <span class="uk-text-lighter uk-text-uppercase uk-text-emphasis">{$item->title}</span>
                         </a>
                     </h1>
                 {/foreach}

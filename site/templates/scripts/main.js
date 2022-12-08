@@ -15,7 +15,7 @@ function switchAssets(theme) {
     const logosLightArray = [...logosLightList];
 
     if (theme === "dark") {
-        document.getElementById("dark-mode-btn").innerHTML = '🌕';
+        document.getElementById("dark-mode-btn").innerHTML = '🌞';
         document.getElementById("header-nav").style.color = "#fff";
         logosArray.forEach(element => {
             element.classList.add("uk-hidden");
@@ -25,7 +25,7 @@ function switchAssets(theme) {
             element.classList.remove("uk-hidden");
         });
     } else {
-        document.getElementById("dark-mode-btn").innerHTML = '🌑';
+        document.getElementById("dark-mode-btn").innerHTML = '🌙';
         document.getElementById("header-nav").style.color = "#000";
         logosArray.forEach(element => {
             element.classList.remove("uk-hidden");

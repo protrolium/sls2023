@@ -43,7 +43,10 @@
                 </div>
 
                 {* card image *}
-                <div class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" style="background-image: url('{$item->featured_image->maxSize(1240,1200)->url}');">
+                <div 
+                    class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" 
+                    style="background-image: url('{$item->featured_image->maxSize(1240,1200)->url}');">
+
                     {if $item??->page_reference != ''}
                         <a href="{$item->page_reference->url}" alt="">
                             <canvas width="600" height="600"></canvas>
@@ -61,17 +64,22 @@
 
 
                 <div class="uk-card-body uk-padding-small">
-                    <a href="{$item->url}" alt="">
-                        
-                        <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
-                            {$item->title|noescape|upper}
-                        </h1>
+                    
+                    {if $item??->page_reference != ''}
+                        <a href="{$item->page_reference->url}" alt="">
+                    {elseif $item??->hyperlink != ''}
+                        <a href="{$item->hyperlink}" alt="" target="_blank">
+                    {else}
+                        <a href="{$item->url}" alt="">
+                    {/if}
+                            <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
+                                {$item->title|noescape|upper}
+                            </h1>
 
-                        <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
-                            {$item->subtitle|noescape}
-                        </h3>
-                    </a>
-                    {* <p>{$item->body|noescape}</p> *}
+                            <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
+                                {$item->subtitle|noescape}
+                            </h3>
+                        </a>
                 </div>
             </div>
 

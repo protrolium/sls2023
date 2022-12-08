@@ -40,7 +40,7 @@ $rockfrontend
 		<!-- fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?&family=Major+Mono+Display&family=Oswald:wght@200;300;400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css2?&family=Oswald:wght@200;300;400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet"> 
 
 		<!-- favicons -->
 		<link rel="apple-touch-icon" sizes="180x180" href="<?php echo $config->urls->assets?>favicon/apple-touch-icon.png">

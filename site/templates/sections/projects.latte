@@ -18,7 +18,7 @@
 
         {foreach $page->children() as $item}
             
-            {var $randomChild = $item->children()->shuffle()->first()}
+            {var $randomChild = $item->children()->not("id=1029")->shuffle()->first()}
 
             <div class="uk-card uk-margin-small-bottom">
 
@@ -35,7 +35,7 @@
                         
                         <div class="uk-inline uk-float-right">
                             <p class="uk-inline uk-text-light uk-margin-remove-bottom">
-                                {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
+                                {if $item->name == 'virtual-artists' || $item->name == 'vj-tools'}
                                     <a href="{$randomChild->hyperlink}" alt="" target="_blank">
                                 {else}
                                     <a href="{$randomChild->url|stripHtml}">
@@ -110,8 +110,10 @@
                 {/if}
 
                 {* card text headings *}
-                <div class="uk-card-body uk-padding-small">
-                    {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
+                <div class="uk-card-body uk-padding-small">    
+                
+                <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
+                    {if $item->name == 'virtual-artists' || $item->name == 'vj-tools'}
 
                         <a href="{$randomChild->hyperlink}" alt="" target="_blank">
                         
@@ -120,19 +122,11 @@
                         <a href="{$item->url}" alt="">
 
                     {/if}
-                            
-                            <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
-                                {$item->title|noescape|upper}
-                            </h1>
 
-                            <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
-                                {* {$item->subtitle|noescape} *}
-                            </h3>
-                        </a>
+                        <span class="uk-text-emphasis">{$item->title|noescape|upper}</span>
+                    </a>
+                </h1>
 
-
-
-                    {* <p>{$item->body|noescape}</p> *}
 
                 </div>
             </div>
