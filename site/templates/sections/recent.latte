@@ -52,11 +52,11 @@
                             <canvas width="600" height="600"></canvas>
                         </a>
                     {elseif $item??->hyperlink != ''}
-                        <a href="{$item->hyperlink}" alt="" target="_blank">
+                        <a class="noExternalSVG" href="{$item->hyperlink}" alt="" target="_blank">
                             <canvas width="600" height="600"></canvas>
                         </a>
                     {else}
-                        <a href="{$item->url}" alt="">
+                        <a class="noExternalSVG" href="{$item->url}" alt="">
                             <canvas width="600" height="600"></canvas>
                         </a>
                     {/if}
@@ -65,6 +65,8 @@
 
                 <div class="uk-card-body uk-padding-small">
                     
+                    <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
+
                     {if $item??->page_reference != ''}
                         <a href="{$item->page_reference->url}" alt="">
                     {elseif $item??->hyperlink != ''}
@@ -72,14 +74,14 @@
                     {else}
                         <a href="{$item->url}" alt="">
                     {/if}
-                            <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
-                                {$item->title|noescape|upper}
-                            </h1>
-
-                            <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
-                                {$item->subtitle|noescape}
-                            </h3>
+                            <span class="uk-text-emphasis">{$item->title|noescape|upper}</span>
                         </a>
+                    </h1>
+                    
+                    <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
+                                {$item->subtitle|noescape}
+                    </h3>
+
                 </div>
             </div>
 

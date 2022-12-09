@@ -74,19 +74,20 @@
                 {* card featured area which grabs a random featured video/image from each of Projects' children pages *}
                 
                 {* check to see if featured_video field is != null *}
-                {if $randomChild??->featured_video}
+                {if isMobileDevice() != true} 
+                    {if $randomChild??->featured_video}
 
-                    <div class="uk-cover-container">
-                        <canvas width="1200" height="1200"></canvas>
-                        <a href="{$item->url}" alt="">
-                            <video src="{$randomChild->featured_video->url}" autoplay loop muted playsinline uk-cover></video>
-                        </a>
-                    </div>
-
+                        <div class="uk-cover-container">
+                            <canvas width="1200" height="1200"></canvas>
+                            <a href="{$item->url}" alt="">
+                                <video src="{$randomChild->featured_video->url}" autoplay loop muted playsinline uk-cover></video>
+                            </a>
+                        </div>
+                    {/if}
                 {/if}
                 
                 {* check to see if featured_image field is null *}
-                {if !$randomChild->featured_video}
+                {if !$randomChild->featured_video || isMobileDevice() == true}
 
                     <div 
                         class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary"
