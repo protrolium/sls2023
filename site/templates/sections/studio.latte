@@ -12,6 +12,54 @@
             </div>
         </div>
 
+        <div class="uk-flex uk-grid-collapse" uk-grid>
+            {* project body heading area *}
+            <div class="uk-text-large uk-text-lightest uk-padding-large uk-width-1-2@m">
+                <div class="uk-visible@m">
+                    <h1><span class="">{$page->project_body_heading|breakLines|stripHtml|noescape}</span></h1>
+                </div>
+
+                <div class="uk-hidden@m">
+                    <span style="font-size: 1.5rem;">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                </div>
+
+                <div class="uk-text-large uk-text-light uk-width-1-@m">
+                    <span class="">{$page->project_body_paragraph|breakLines|stripHtml|noescape}</span>
+                </div>
+
+            </div>
+
+            <div class="uk-heading-small uk-text-lighter uk-text-uppercase uk-padding-large uk-width-1-2@m">
+                <h1>Based in Los Angeles, California</h1>
+                    <a href="{$pages->get('about')->url}"><span class="uk-text-emphasis">Our Team</span></a> <br />
+                <h1>Indexes</h1>
+                    <a href="{$pages->get('artists')->url}"><span class="uk-text-emphasis">Artist</span></a> <br /> 
+                    <a href="{$pages->get('collaborators')->url}"><span class="uk-text-emphasis">Collaborator</span></a> <br />
+                    <ul class="uk-margin-remove removeAccordionIcon" uk-accordion>
+                        <li>
+                            <a class="uk-accordion-title" href="#"><span class="uk-heading-small uk-text-lighter uk-text-uppercase">
+                                Family
+                            </a>
+                            <div class="uk-accordion-content">
+                                <a href="https://brainfeederx.com/" target="_blank">Brainfeeder Records</a><br>
+                                <a href="https://wavexr.com/" target="_blank">TheWaveXR</a><br>
+                                <a href="https://instituteforcinemastudies.weebly.com/" target="_blank">The Institute for Cinema Studies</a><br>
+                                <a href="http://3dlive.tech/" target="_blank">3D Live</a><br>
+                                <a href="https://alphapuprecords.com/" target="_blank">AlphaPup Records</a><br>
+                                <a href="http://www.youngart.us/" target="_blank">YoungArt</a><br>
+                                <a href="https://www.deadbeatsofficial.com/" target="_blank">DeadBeats</a><br>
+                                <a href="https://warp.net/" target="_blank">Warp Records</a><br>
+                                <a href="http://teachingmachine.tv/" target="_blank">The Teaching Machine</a><br>
+                                <a href="http://www.tde.us/" target="_blank">Top Dawg Ent.</a><br>
+                                <a href="https://hxouse.com/" target="_blank">HXOUSE</a><br>
+                                <a href="http://wearetar.com/" target="_blank">TAR</a><br>
+                                <a href="https://shop.theweeknd.com/" target="_blank">XO</a>
+                            </div>
+                        </li>
+                    </ul> 
+            </div>
+        </div>
+
         <div class="uk-flex uk-grid-collapse uk-flex-top uk-flex-center" uk-height-match uk-grid uk-scrollspy="cls:uk-animation-fade">
         
             {* project body heading area *}
@@ -21,10 +69,8 @@
                     <img alt="" class="hidpi uk-hidden" id="logo-light-studio" src="{$pages->get('sls-logo-alpha-light')->image->maxSize(300,285)->url}" width="150" height="141" /></p>
 
                     <p>
-                        <a href="{$pages->get('about')->url}">Our Team</a> • 
-                        <a href="{$pages->get('artists')->url}">Artists</a> • 
-                        <a href="{$pages->get('collaborators')->url}">Collaborators</a><br />
-                        Based in Los Angeles, California. Seen All Over The World.
+                        <a href="{$pages->get('projects')->url}">Strangeloop Studios</a> <br>
+                        Visual Studio
                     </p>
                     
                     <p>&nbsp;</p>
@@ -38,8 +84,6 @@
 
                     <p>
                         <a href="https://spiritbomb.ai" rel="noreferrer noopener" target="_blank">Spirit Bomb </span> 
-                            {* <img id="external-dark" src="{$pages->get('external-link-dark')->image->url}">
-                            <img id="external-light" class="uk-hidden" src="{$pages->get('external-link-dark')->image->url}"> *}
                         </a><br />
                             Virtual Artist Media Label
                     </p>

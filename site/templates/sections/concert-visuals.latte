@@ -10,7 +10,7 @@
                     <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('concert-visuals')->url}" alt="">
                         Visuals</a> 
                         → {if $page->parent->parent->parent == $pages->get('projects')}
-                            <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
+                            <a href="{$page->parent->url}" alt=""><span class="uk-text-secondary">{$page->parent->title|upper|noescape}</span></a>
                         {else}
                             <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
                         {/if}

@@ -96,7 +96,7 @@
                             {* check to see if the item has the template virtual-artist or visual-content-packs, and if they do, change the nature of the link *}
                             {if $item->name == 'virtual-artists' || $item->name == 'visual-content-packs'}
                                 
-                                <a href="{$randomChild->hyperlink}" alt="" target="_blank">
+                                <a class="noExternalSVG" href="{$randomChild->hyperlink}" alt="" target="_blank">
                                     <canvas width="1200" height="1200"></canvas>
                                 </a>
 
