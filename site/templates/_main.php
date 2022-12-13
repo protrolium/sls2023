@@ -68,5 +68,7 @@ $rockfrontend
 
 		<!-- show our site content -->
 		<style>html{visibility: visible;opacity:1;}</style>
+		<!-- scripts for once DOM is loaded -->
+		<script type="text/javascript" src="<?php echo $config->urls->templates?>scripts/onload.js" defer></script>
 	</body>
 </html>

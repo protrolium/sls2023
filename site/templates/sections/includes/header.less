@@ -14,13 +14,14 @@ button.hamburger-nav, .theme-toggle {
     padding: 2px;
     position: relative;
     z-index: 1;
+    cursor: pointer;
 }
 
 .clickable {
     cursor: pointer;
 }
 
-button.hamburger-nav:hover, .theme-toggle:hover {
+button.theme-toggle:hover {
     cursor: pointer;
 }
 
@@ -30,6 +31,7 @@ button.hamburger-nav:hover, .theme-toggle:hover {
 
 .uk-offcanvas-close {
     cursor: pointer;
+    z-index: 2000;
 }
 
 .offcanvas-nav-h1 {
@@ -41,6 +43,10 @@ svg {
     pointer-events: none;
   }
 
+#menu {
+    z-index: 1000;
+}
+
 .sls-nav-logo {
     padding-left: 1rem;
 }
@@ -50,12 +56,15 @@ svg {
     text-transform: uppercase;
 }
 
-// #dark-mode-btn {
-//     margin-top: 3.5px;
-// }
 
 @media screen and (max-width: 767px) {
     #dark-mode-btn {
         margin-top: 1px;
+    }
+}
+
+@media (hover: hover) {
+    button.hamburger-nav:hover {
+        cursor: pointer;
     }
 }

@@ -16,7 +16,9 @@
             {* project body heading area *}
             <div class="uk-text-large uk-text-lightest uk-padding-large uk-width-1-2@m">
                 <div class="uk-visible@m">
-                    <h1><span class="">{$page->project_body_heading|breakLines|stripHtml|noescape}</span></h1>
+                    <h1>Seen All Over The World</h1>
+                    <span class="uk-heading-small">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                    <h1>We create stunning visual experiences using the latest tools across a diverse range of media and venues.</h1><br>
                 </div>
 
                 <div class="uk-hidden@m">
@@ -120,7 +122,7 @@
                 </div>
 
                 {* card image *}
-                <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-3@m">
+                <div class="uk-margin-top uk-margin-bottom uk-cover-container uk-border-circle uk-background-cover uk-width-1-3@m">
                     <canvas width="900" height="900"></canvas>
                     <img class="" src="{$page->featured_image->maxSize(754,460)->url}" alt="" uk-cover>
                 </div>
