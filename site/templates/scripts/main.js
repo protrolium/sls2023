@@ -56,7 +56,6 @@ if (darkMode === "enabled") { // set state of darkMode on page load
     });
 }
 
-
 /*
 // listen to os preference
 const isOsDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

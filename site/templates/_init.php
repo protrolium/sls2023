@@ -4,6 +4,8 @@
 // This is defined by $config->appendTemplateFile in /site/config.php.
 // Use this to define shared variables, functions, classes, includes, etc. 
 
+// include_once('/assets/inc/mailchimp.php');
+
 function isMobileDevice() {
     // Get the user agent string
     $userAgent = $_SERVER['HTTP_USER_AGENT'];

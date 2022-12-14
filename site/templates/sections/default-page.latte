@@ -293,7 +293,8 @@
                                         {/if}
 
                                     {/if}
-
+                                    
+                                    {* display the organization string *}
                                     {if $item??->organization}
                                         <span class="uk-text-default uk-text-middle">
                                             <a href="{$item->url}" alt="">
@@ -305,30 +306,42 @@
                                     {* display child info if $item is a parent *}
                                     {if $item->template == 'default-page'}
                                         <span uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
-                                        
-                                        {* get the first three collaborators if there are any *}
-                                        {foreach $item->children() as $child}
+                                    
+                                        {* get unique collaborators *}
+                                        {var $unique_collaborator = []}
+                                        {foreach $item->children() as $child}                                        
 
                                             {* show collaborators on any page with children except brand pages *}
-                                            {if $child??->collaborator && $child->template != 'brands'}
+                                            {if $child??->collaborator}
                                                 {foreach $child->collaborator as $collaborator}
-                                                    <a href="{$collaborator->url}" alt="">
-                                                        <span class="uk-text-default uk-text-middle uk-visible@m">
-                                                            {$collaborator->title|noescape}
-                                                        </span>
-                                                    </a>
+                                                    {* add ids to the $unique_collaborator array *}
+                                                    {if !in_array($collaborator->id, $unique_collaborator)}
+                                                        {var $unique_collaborator[] = $collaborator->id}
+                                                    {/if}
                                                 {/foreach}
                                             {/if}
 
-                                            {if $child??->organization}
-                                                <span class="uk-text-default uk-text-middle">
-                                                    <a href="{$child->url}" alt="">
-                                                        {$child->organization|noescape}
-                                                    </a>
-                                                </span>
-                                            {/if}
-
                                         {/foreach}
+
+                                        {* show organizations on any page with children except brand pages *}
+                                        {if $child??->organization}
+                                            <span class="uk-text-default uk-text-middle">
+                                                <a href="{$child->url}" alt="">
+                                                    {$child->organization|noescape}
+                                                </a>
+                                            </span>
+                                        {/if}
+
+                                        {* display the unique collaborators for the children of parent pages *}
+                                        {foreach $unique_collaborator as $uc}
+                                            <a href="{$pages->get($uc)->url|stripHtml}" alt="">
+                                                <span class="uk-text-default uk-text-middle uk-visible@m">
+                                                    {$pages->get($uc)->title|stripHtml|noescape}
+                                                </span>
+                                            </a>
+                                        {/foreach}
+
+                                        {* {implode(', ', $unique_collaborator)} *}
 
                                     {/if}
 

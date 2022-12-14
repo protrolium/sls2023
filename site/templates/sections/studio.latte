@@ -1,5 +1,5 @@
 {* page content *}
-{* <div class="uk-flex uk-flex-center uk-flex-middle uk-light" data-src="{$page->featured_image->url}" uk-img> *}
+{* <div class="uk-flex uk-flex-center uk-flex-middle uk-light" data-src="{$page->featured_image->url}" uk-img>  *}
 
     <div class="uk-padding-small uk-animation-fade uk-width-1-1">
 
@@ -10,12 +10,18 @@
                     <span class="uk-text-nowrap">{$page->title|upper}</span>
                 </p>
             </div>
+
+            <div class="uk-inline uk-float-right">
+                <p class="uk-heading-small uk-text-lighter">
+                    <span id="studio-time"></span><span> PST</span>
+                </p>
+            </div>
         </div>
 
         <div class="uk-flex uk-grid-collapse" uk-grid>
             {* project body heading area *}
             <div class="uk-text-large uk-text-lightest uk-padding-large uk-width-1-2@m">
-                <div class="uk-visible@m">
+                <div class="">
                     <h1>Seen All Over The World</h1>
                     <span class="uk-heading-small">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
                     <h1>We create stunning visual experiences using the latest tools across a diverse range of media and venues.</h1><br>
@@ -34,12 +40,12 @@
             <div class="uk-heading-small uk-text-lighter uk-text-uppercase uk-padding-large uk-width-1-2@m">
                 <h1>Based in Los Angeles, California</h1>
                     <a href="{$pages->get('about')->url}"><span class="uk-text-emphasis">Our Team</span></a> <br />
-                <h1>Indexes</h1>
+                <h1>Index</h1>
                     <a href="{$pages->get('artists')->url}"><span class="uk-text-emphasis">Artist</span></a> <br /> 
                     <a href="{$pages->get('collaborators')->url}"><span class="uk-text-emphasis">Collaborator</span></a> <br />
                     <ul class="uk-margin-remove removeAccordionIcon" uk-accordion>
                         <li>
-                            <a class="uk-accordion-title" href="#"><span class="uk-heading-small uk-text-lighter uk-text-uppercase">
+                            <a class="uk-accordion-title" href="#"><span class="uk-heading-small uk-text-lighter uk-text-uppercase uk-link">
                                 Family
                             </a>
                             <div class="uk-accordion-content">
