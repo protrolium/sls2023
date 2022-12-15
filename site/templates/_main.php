@@ -52,6 +52,10 @@ $rockfrontend
 		<meta name="msapplication-TileColor" content="#da532c">
 		<meta name="theme-color" content="#ffffff">
 
+		<!-- metatags -->
+		<?php $metadata = $modules->get('MarkupMetadata');?>
+		<?php echo $metadata->render();?>
+
 	</head>
 	<body id="html-body">
 		<!-- make sure we are in dark mode -->

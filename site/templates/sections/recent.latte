@@ -52,15 +52,15 @@
 
                     {if $item??->page_reference != ''}
                         <a href="{$item->page_reference->url}" alt="">
-                            <canvas width="600" height="600"></canvas>
+                            <canvas width="1200" height="1200"></canvas>
                         </a>
                     {elseif $item??->hyperlink != ''}
                         <a class="noExternalSVG" href="{$item->hyperlink}" alt="" target="_blank">
-                            <canvas width="600" height="600"></canvas>
+                            <canvas width="1200" height="1200"></canvas>
                         </a>
                     {else}
                         <a class="noExternalSVG" href="{$item->url}" alt="">
-                            <canvas width="600" height="600"></canvas>
+                            <canvas width="1200" height="1200"></canvas>
                         </a>
                     {/if}
                 </div>
