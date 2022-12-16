@@ -134,3 +134,17 @@ a:has(> img, svg)::after,
 a.noExternalSVG::after {
     display: none !important;
 }
+
+// search engine
+
+:focus-visible {
+    border-radius: 3rem;
+}
+
+#se-results {
+    background-color: var(--component-bg-color);
+    position: absolute;
+    padding: 1em 3em 0 3em;
+    border-radius: 3rem;
+    z-index: 1000;
+}

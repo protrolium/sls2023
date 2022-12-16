@@ -25,6 +25,7 @@ $rockfrontend
 	->add("/site/templates/uikit-3.15.10/dist/js/uikit-icons.min.js", "defer")
 	->add("/site/templates/scripts/main.js")
 	;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

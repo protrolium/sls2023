@@ -22,6 +22,11 @@
         </div>
 
         <div class="uk-navbar-right uk-padding-small">
+
+            <div>
+                {var $searchengine = $modules->get('SearchEngine')}
+                {$searchengine->render()|noescape}
+            </div>
             
             <div style="margin-top: 3px;">
                 <button id="dark-mode-btn" class="theme-toggle uk-text-large" onclick="toggleTheme()">
