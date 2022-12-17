@@ -60,15 +60,18 @@ let searchInputField = document.getElementById('se-form-input');
 document.addEventListener('click', function(event) {
   
     // Check if the target of the click event is the div or a descendant of the div
-  if (!searchResults.contains(event.target)) {
-    
-    // The target of the click event is not the div or a descendant of the div, so remove the div from the DOM tree
-    searchResults.parentNode.removeChild(searchResults);
-    
-    // Change the URL of the current page to the new URL
-    // history.pushState({}, '', cleanedUrl);
-    
-    // Clear the value of the input element
-    searchInputField.value = '';
-  }
+    if (searchResults) {
+        if (!searchResults.contains(event.target)) {
+
+        // The target of the click event is not the div or a descendant of the div, so remove the div from the DOM tree
+        searchResults.parentNode.removeChild(searchResults);
+
+        // Change the URL of the current page to the new URL
+        // history.pushState({}, '', cleanedUrl);
+
+        // Clear the value of the input element
+        searchInputField.value = '';
+        }
+    }
+
 });

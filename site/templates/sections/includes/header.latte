@@ -1,7 +1,44 @@
 <header class="uk-width-1-1"> <!-- uk-sticky="sel-target: .uk-navbar-container;"-->
 
-    <!-- This is a button toggling the off-canvas -->
-    <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+    <!-- the mobile nav -->
+    <nav class="uk-navbar-container uk-hidden@m" uk-sticky="start: 200; animation: uk-animation-fade; show-on-up: true;" uk-navbar>
+        
+        <div id="logo-header" class="uk-navbar-left sls-nav-logo">
+            <a class="uk-text-lighter uk-text-large uk-text-emphasis" href="{$pages->get('/')->url}">
+                <img src="{$pages->get('sls-logo')->image->maxSize(184,184)->url}" width="46" alt="">
+            </a>
+        </div>
+
+        <div id="logo-light-header" class="uk-navbar-left sls-nav-logo uk-hidden uk-animation-fade" uk-img="loading: lazy;">
+            <a class="uk-text-lighter uk-text-large uk-text-emphasis" href="{$pages->get('/')->url}">
+                <img src="{$pages->get('sls-logo-alpha-light')->image->maxSize(184,184)->url}" width="46" alt="">
+            </a>
+        </div>
+
+        <div class="uk-navbar-left sls-nav-title uk-padding-small uk-visible@m">
+            <a class="uk-text-lighter uk-text-large uk-text-emphasis" href="{$pages->get('/')->url}">
+                Strangeloop Studios
+            </a>
+        </div>
+
+        <div class="uk-navbar-right uk-padding-small">
+            
+            <div style="margin-top: 3px;">
+                <button id="dark-mode-btn" class="theme-toggle uk-text-large" onclick="toggleTheme()">
+                    <span>🌙</span>
+                </button>
+            </div>
+
+            <div id="menuContainer">
+                <button id="header-nav" class="hamburger-nav" uk-toggle="target: #menu" type="button">
+                    <span uk-icon="icon: menu; ratio: 1.5;"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- the desktop nav -->
+    <nav class="uk-navbar-container uk-visible@m" uk-navbar>
         
         <div id="logo-header" class="uk-navbar-left sls-nav-logo">
             <a class="uk-text-lighter uk-text-large uk-text-emphasis" href="{$pages->get('/')->url}">
@@ -23,19 +60,19 @@
 
         <div class="uk-navbar-right uk-padding-small">
 
-            <div>
+            <div class="uk-visible@m">
                 {var $searchengine = $modules->get('SearchEngine')}
                 {$searchengine->render()|noescape}
             </div>
             
             <div style="margin-top: 3px;">
-                <button id="dark-mode-btn" class="theme-toggle uk-text-large" onclick="toggleTheme()">
+                <button id="dark-mode-btn-desktop" class="theme-toggle uk-text-large" onclick="toggleTheme()">
                     <span>🌙</span>
                 </button>
             </div>
 
-            <div id="menuContainer" onclick="void(0)">
-                <button id="header-nav" class="hamburger-nav" uk-toggle="target: #menu" type="button">
+            <div id="menuContainer">
+                <button id="header-nav-desktop" class="hamburger-nav" uk-toggle="target: #menu" type="button">
                     <span uk-icon="icon: menu; ratio: 1.5;"></span>
                 </button>
             </div>
@@ -46,7 +83,7 @@
     <!-- This is the off-canvas menu -->
     <div 
         class="uk-width-1-1" 
-        id="menu" uk-offcanvas="mode: none; selPanel:.uk-offcanvas-bar-light;">
+        id="menu" uk-offcanvas="mode: none;">
         
         <button id="closeBtn" class="uk-close-large uk-offcanvas-close clickable" type="button" aria-label="Close" uk-close></button>
         

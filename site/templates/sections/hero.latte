@@ -1,9 +1,24 @@
 <section>
-    <div class="k-flex uk-width-1-1 uk-align-center uk-margin-remove-bottom uk-flex-around">
+    {* <div class="uk-flex uk-flex-center uk-flex-middle uk-light uk-hidden@m" data-src="{$pages->get('studio')->featured_image->url}" uk-img>  *}
+
+    {* <div class="uk-flex uk-width-1-1 uk-align-center uk-margin-remove-bottom uk-flex-around uk-visible@m">
         <iframe src="https://www.youtube-nocookie.com/embed/Lb44iH-qKC4?autoplay=0&amp;showinfo=0&amp;rel=0&amp;modestbranding=1&amp;playsinline=1" width="1920" height="1080" allowfullscreen uk-responsive uk-video="automute: true"></iframe>
-    </div>
+    </div> *}
 
     {* <div class="uk-flex uk-width-1-1 uk-align-center uk-margin-remove-bottom uk-flex-around">
         <iframe width="1920" height="1080" src="https://www.youtube.com/embed/Lb44iH-qKC4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen uk-responsive></iframe>
     </div> *}
+
+    {* <div class="uk-flex uk-flex-center uk-flex-wrap-around uk-flex-middle uk-width-1-1 uk-height-viewport uk-hidden@m">
+        <span class="uk-heading-small uk-text-lighter uk-text-uppercase">Strangeloop Studios</span>
+    </div> *}
+
+    <div class="uk-height-viewport uk-cover-container">
+        
+        <video src="{$config->urls->assets}video/reel-no-text-1920.mp4" autoplay loop muted playsinline uk-cover></video>
+        <div class="uk-overlay uk-position-cover uk-flex uk-flex-center uk-flex-middle uk-padding-remove">
+            {* <span class="uk-heading-small uk-text-lighter uk-text-uppercase">Strangeloop Studios</span> *}
+        </div>
+    </div>
+
 </section>

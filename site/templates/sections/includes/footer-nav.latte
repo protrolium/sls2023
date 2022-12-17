@@ -2,7 +2,7 @@
     
     {* main nav column 2 *}
     <div>
-        <div class="uk-card uk-card-body uk-flex uk-flex-column">
+        <div class="uk-card uk-flex uk-flex-column">
 
             {foreach $home->children() as $item}
                 
@@ -31,7 +31,7 @@
 
     {* projects column 3 *}
     <div>
-        <div class="uk-card uk-card-body uk-flex uk-flex-column">
+        <div class="uk-card uk-flex uk-flex-column">
             
             {foreach $pages->get('projects')->children()->not('name=virtual-artists|vj-tools') as $item}
                 

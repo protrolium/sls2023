@@ -3,8 +3,29 @@
         
         <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
             
-            {* page title *}
-            <div class="uk-clearfix uk-blend-luminosity" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
+            {* page title mobile *}
+            <div class="uk-clearfix uk-blend-luminosity uk-hidden@m" uk-height-match>
+                <div class="uk-inline">
+                    <p class="uk-heading-small uk-text-lighter">
+                    <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('virtual-reality')->url}" alt="">
+                        VR</a> 
+                        → {if $page->parent->parent->parent == $pages->get('projects')}
+                            <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
+                        {else}
+                            <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
+                        {/if}
+                    </p>
+                </div>
+
+                <div class="uk-float-right uk-visible@l">
+                    <p class="uk-heading-small uk-text-uppercase uk-text-lighter">
+                        <span class="uk-text-muted">{$page->title|upper|noescape}</span>
+                    </p>
+                </div>
+            </div>
+
+            {* page title desktop *}
+            <div class="uk-clearfix uk-blend-luminosity uk-visible@m" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('virtual-reality')->url}" alt="">

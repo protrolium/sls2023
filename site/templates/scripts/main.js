@@ -16,7 +16,9 @@ function switchAssets(theme) {
 
     if (theme === "dark") {
         document.getElementById("dark-mode-btn").innerHTML = '🌞';
+        document.getElementById("dark-mode-btn-desktop").innerHTML = '🌞';
         document.getElementById("header-nav").style.color = "#fff";
+        document.getElementById("header-nav-desktop").style.color = "#fff";
         logosArray.forEach(element => {
             element.classList.add("uk-hidden");
         });
@@ -26,7 +28,10 @@ function switchAssets(theme) {
         });
     } else {
         document.getElementById("dark-mode-btn").innerHTML = '🌙';
+        document.getElementById("dark-mode-btn-desktop").innerHTML = '🌙';
         document.getElementById("header-nav").style.color = "#000";
+        document.getElementById("header-nav-desktop").style.removeProperty("color");
+        document.getElementById("header-nav-desktop").style.color = "000";
         logosArray.forEach(element => {
             element.classList.remove("uk-hidden");
         });
