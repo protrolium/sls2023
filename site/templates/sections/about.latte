@@ -10,17 +10,27 @@
                     <span class="uk-text-nowrap">{$page->title|upper}</span>
                 </p>
             </div>
+
+            <div class="uk-inline uk-float-right">
+                <p class="uk-heading-small uk-text-lighter">
+                    <span id="studio-time"></span><span> PST</span>
+                </p>
+            </div>
         </div>
 
         <div class="uk-flex uk-grid-collapse" uk-grid>
             {* project body heading area *}
             <div class="uk-text-large uk-text-light uk-padding-large">
                 <div class="uk-visible@m">
-                    <span class="uk-heading-small">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                    <span class="uk-heading-small">
+                        {$page->project_body_heading|breakLines|stripHtml|noescape}
+                    </span>
                 </div>
 
                 <div class="uk-hidden@m">
-                    <span style="font-size: 1.5rem;">{$page->project_body_heading|breakLines|stripHtml|noescape}</span>
+                    <span style="font-size: 1.5rem;">
+                        {$page->project_body_heading|breakLines|stripHtml|noescape}
+                    </span>
                 </div>
             </div>
 
@@ -74,7 +84,9 @@
 
                 <div class="uk-margin-remove-top">
                     <h1>Our Team</h1>
-                    <span class="uk-text-large">{$page->project_body_paragraph|breakLines|stripHtml|noescape}</span>
+                    <span class="uk-text-large">
+                        {$page->project_body_paragraph|breakLines|stripHtml|noescape}
+                    </span>
                 </div>
 
             </div>

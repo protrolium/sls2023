@@ -60,10 +60,10 @@
 
         <div class="uk-navbar-right uk-padding-small">
 
-            <div class="uk-visible@m">
+            {* <div class="uk-visible@m">
                 {var $searchengine = $modules->get('SearchEngine')}
                 {$searchengine->render()|noescape}
-            </div>
+            </div> *}
             
             <div style="margin-top: 3px;">
                 <button id="dark-mode-btn-desktop" class="theme-toggle uk-text-large" onclick="toggleTheme()">
@@ -87,7 +87,7 @@
         
         <button id="closeBtn" class="uk-close-large uk-offcanvas-close clickable" type="button" aria-label="Close" uk-close></button>
         
-        <div class="uk-offcanvas-bar-light uk-flex uk-width-1-1 uk-height-viewport uk-flex-center">
+        <div class="uk-offcanvas-bar-light uk-flex uk-width-1-1 uk-height-viewport uk-flex-center uk-visible@m">
             <nav class="uk-flex-column uk-margin-auto-vertical" uk-navbar>
                 
                 <h1 class="offcanvas-nav-h1">
@@ -106,6 +106,53 @@
                     </h1>
                 {/foreach}
                 
+            </nav>
+        </div>
+
+        <div class="uk-offcanvas-bar-light uk-flex uk-width-1-1 uk-height-viewport uk-flex-center uk-hidden@m">
+            <nav class="uk-flex-column uk-margin-auto-vertical" uk-navbar>
+                
+                <h1 class="offcanvas-nav-h1">
+                    <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$home->url}">
+                        Home
+                    </a>
+                </h1>
+                <h1 class="offcanvas-nav-h1">
+                    <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=studio')->url}">
+                        Studio
+                    </a>
+                </h1>
+                <h1 class="offcanvas-nav-h1">
+                    <ul class="uk-margin-remove removeAccordionIcon" uk-accordion>
+                        <li>
+                            <a class="uk-accordion-title" style="font-size:inherit;" href="#">
+                                <span class="uk-text-lighter uk-text-uppercase uk-text-emphasis uk-link">
+                                    Projects
+                                </span>
+                            </a>
+                            <div class="uk-accordion-content">
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=music-videos')->url}">Music Videos</a><br>
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=concert-visuals')->url}">Concert Visuals</a><br>
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=broadcast')->url}">Broadcast</a><br>
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=virtual-reality')->url}">Virtual Reality</a><br>
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=brands')->url}">Brands</a><br>
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=cinema')->url}">Cinema</a><br>
+                                <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=nft')->url}">NFT</a><br>
+                                &nbsp;
+                            </div>
+                        </li>
+                    </ul>
+                </h1>
+                <h1 class="offcanvas-nav-h1">
+                    <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=recent')->url}">
+                        Recent
+                    </a>
+                </h1>
+                <h1 class="offcanvas-nav-h1">
+                    <a class="uk-text-lighter uk-text-uppercase uk-text-emphasis" href="{$pages->get('name=about')->url}">
+                        About
+                    </a>
+                </h1>
             </nav>
         </div>
     
