@@ -52,14 +52,14 @@
                         {* Title *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Title:</span><br>
-                            <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 <span class="uk-text-lighter">{$page->title|noescape}</span>
                             </div>
                         
                         {* Artist *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Artist:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->artist as $artist}
                                         <span class="uk-text-lighter">
                                             <a href="{$artist->url}">{$artist->title}</a>                                
@@ -71,7 +71,7 @@
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
                                 <span class="project-item-categories uk-text-small">Collaborators:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter">
                                             <a href="{$collaborator->url}">{$collaborator->title}</a>
@@ -83,13 +83,13 @@
                         {* Release Date *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Release Date:</span><br>
-                            <span class="uk-text-lighter uk-padding">{$page->date}</span>
+                            <span class="uk-text-lighter uk-padding-small">{$page->date}</span>
 
                         {* Label *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Label:</span><br>
                             {foreach $page->record_label as $label}
-                                <span class="uk-text-lighter uk-padding">                            
+                                <span class="uk-text-lighter uk-padding-small">                            
                                     <a href="{$label->hyperlink}" target="_blank">{$label->title}</a>
                                 </span>
                             {/foreach}

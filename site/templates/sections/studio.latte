@@ -64,6 +64,15 @@
             </div>
         </div>
 
+        {* video embed 1, if it exits *}
+        {if $page??->video_embed_1}
+            <div class="uk-padding-large uk-width-1-1 uk-flex-center">
+                <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex>
+                    {$page->get('video_embed_1')|noescape}
+                </div>
+            </div>
+        {/if}
+
         <div class="uk-flex uk-grid-collapse uk-flex-top uk-flex-center" uk-height-match uk-grid uk-scrollspy="cls:uk-animation-fade">
         
             {* project body heading area *}

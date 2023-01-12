@@ -78,14 +78,14 @@
                         {* Project *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Project:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     <span class="uk-text-lighter">{$page->title|noescape}</span>
                                 </div>
                         
                         {* Artist *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Artist:</span><br>
-                            <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 {foreach $page->artist as $artist}
                                     <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title|noescape}</a></span>
                                 {/foreach}
@@ -95,7 +95,7 @@
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
                                 <span class="project-item-categories uk-text-small">Collaborators:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter uk-text-nowrap">
                                             <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
@@ -108,9 +108,9 @@
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Date:</span><br>
                             {if $page??->date_range != ''}
-                                <span class="uk-text-lighter uk-padding">{$page->date_range}</span>
+                                <span class="uk-text-lighter uk-padding-small">{$page->date_range}</span>
                             {else}
-                                <span class="uk-text-lighter uk-padding">{$page->date}</span>
+                                <span class="uk-text-lighter uk-padding-small">{$page->date}</span>
                             {/if}
                         </p>
                     </div>

@@ -12547,7 +12547,7 @@ a.noExternalSVG::after {
   border-top: var(--index-item-border-top);
   padding: 10px 0;
 }
-footer {
+.gradient-sweep {
   border-top: var(--footer-border-top);
   background: var(--footer-gradient);
   background-size: 800% 800%;

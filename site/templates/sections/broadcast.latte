@@ -64,15 +64,29 @@
             {* page content *}
             <div class="">
 
-                <div 
-                    class="page-item uk-width-1-1 uk-cover uk-cover-container" 
-                    uk-flex uk-img="loading: lazy"
-                    uk-scrollspy="cls:uk-animation-fade">
-                        <img 
-                            src="{$page->get('featured_image')->url}" 
-                            alt="{$page->get('featured_image')->description}" 
-                            class="uk-width-1-1" />
-                </div>
+                {* get video embed 1, otherwise if it doesn't exist get the featured image *}
+                {if $page??->video_embed_1}
+                    <div 
+                        class="page-item uk-width-1-1 uk-cover uk-cover-container video-container" 
+                        uk-flex uk-img="loading: lazy"
+                        uk-scrollspy="cls:uk-animation-fade">
+                            {$page->get('video_embed_1')|noescape}
+                    </div>
+
+                {else}
+
+                    <div 
+                        class="page-item uk-width-1-1 uk-cover uk-cover-container" 
+                        uk-flex uk-img="loading: lazy"
+                        uk-scrollspy="cls:uk-animation-fade">
+                            <img 
+                                src="{$page->get('featured_image')->url}" 
+                                alt="{$page->get('featured_image')->description}" 
+                                class="uk-width-1-1" 
+                            />
+                    </div>
+
+                {/if}
                 
                 <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
@@ -80,7 +94,7 @@
                         {* Project Title *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Project:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {* if we are on an artist's child page, display the title, else display the project subtitle *}
                                     {if $page->parent->parent->parent == $pages->get('projects')}
                                         <span class="uk-text-lighter uk-text-nowrap">{$page->title}</span>
@@ -93,7 +107,7 @@
                         <p class="uk-margin-remove">                            
                             {if $page??->artist != ''}
                                 <span class="project-item-categories uk-text-small">Artist:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->artist as $artist}
                                         <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
                                     {/foreach}
@@ -104,7 +118,7 @@
                         {* Organization *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Organization:</span><br>
-                            <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">                                
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">                                
                                 <span class="uk-text-lighter"><a href="">{$page->organization}</a></span>
                             </div>
                             
@@ -112,7 +126,7 @@
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
                                 <span class="project-item-categories uk-text-small">Collaborators:</span><br>
-                                <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter uk-text-nowrap">
                                             <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
@@ -125,15 +139,15 @@
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Date:</span><br>
                             {if $page??->date_range != ''}
-                                <span class="uk-text-lighter uk-padding">{$page->date_range}</span>
+                                <span class="uk-text-lighter uk-padding-small">{$page->date_range}</span>
                             {else}
-                                <span class="uk-text-lighter uk-padding">{$page->date}</span>
+                                <span class="uk-text-lighter uk-padding-small">{$page->date}</span>
                             {/if}
 
                         {* display location *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Location:</span><br>
-                            <div class="uk-padding uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 {if $page??->location != ''}
                                     <span class="uk-text-lighter">{$page->location|breakLines}</span>
                                 {/if}
