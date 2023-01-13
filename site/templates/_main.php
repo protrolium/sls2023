@@ -13,7 +13,7 @@
 /** @var Config $config */
 /** @var RockFrontend $rockfrontend */
 
-$home = $pages->get('/'); // homepage
+$home = $pages->get('/'); // homepage directory
 $rockfrontend
 	->styles()->setOptions(['autoload'=>true])
 	->add("/site/templates/uikit-3.15.10/src/less/uikit.theme.less")
