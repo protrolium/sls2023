@@ -88,7 +88,7 @@
                                             && $item->template != 'virtual-reality'
                                             }
 
-                                            {if $page->parent != $pages->find('name=artists|collaborators')}
+                                            {if $page->parent != $pages->get('name=artists|collaborators')}
                                                 
                                                 {* display artist name except on artist and collaborator pages *}
                                                 {if $item->artist??->first}
@@ -101,28 +101,47 @@
                                         {/if}   
 
                                         {* first check to make sure if we are on an artist or collaborator index page *}
-                                        {if $page->parent == $pages->find('name=artists|collaborators') && $page->template == 'default-page'}
+                                        {if $page->parent == $pages->get('name=artists|collaborators') && $page->template == 'default-page'}
                                             
                                             {* if $item has the concert-visuals template, display the title *}
-                                            {* {if $item->template == 'concert-visuals'}
-                                                {$item->title|upper|noescape}
-                                            {/if} *}
+                                            {if $item->template == 'concert-visuals'}
+                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                <span class="uk-hidden@m">
+                                                    {* display the title if we are on a concert-visuals item with children (i.e. Bonobo) *}
+                                                    {if $item??->subtitle}
+                                                        {$item->subtitle|upper|noescape}
+                                                    {else}
+                                                        {$item->title|upper|noescape}
+                                                    {/if}
+                                                </span>
+                                            {/if}
 
                                             {* if $item has the virtual-reality or nft template, display the title *}
                                             {if $item->template == 'virtual-reality' || $item->template == 'nft'}
-                                                {$item->title|upper|noescape}
+                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
 
                                             {* if $item has the brands template, display the title *}
-                                            {* {elseif $item->template == 'cinema'}
-                                                {$item->artist->first->title|upper|noescape} *}
+                                            {elseif $item->template == 'cinema'}
+                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
                                     
                                             {* display title on other templates (i.e. music-videos) *}
                                             {elseif $item->template == 'music-videos'}
-                                                {$item->title|upper|noescape}
+                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
 
                                             {* display the subtitle for broadcast template *}
                                             {elseif $item->template == 'broadcast'}
-                                                {$item->title|upper|noescape}
+                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                <span class="uk-hidden@m">
+                                                    {* display the title if we are on a broadcast item with children (i.e. lil-nas-x) *}
+                                                    {if $item??->subtitle}
+                                                        {$item->subtitle|upper|noescape}
+                                                    {else}
+                                                        {$item->title|upper|noescape}
+                                                    {/if}
+                                                </span>
 
                                             {* display the news-item title if template calls for it *}
                                             {elseif $item->template == 'news-item'}
@@ -130,54 +149,54 @@
                                             
                                             {* display the title if item is a project that has children *}
                                             {elseif $item->parent->parent->parent == $pages->get('name=projects')}
-                                                {$item->title|upper|noescape}
+                                                {* {$item->artist->first->title|upper|noescape} *}
                                             
                                             {* display the subtitle except on cinema items on artist/collaborator index pages *}
-                                            {elseif $item->template != 'cinema'}
-                                                {$item->subtitle|upper|noescape}      
-                                            
+                                            {* {elseif $item->template != 'cinema' || $item->template != 'concert-visuals'}
+                                                {$item->subtitle|upper|noescape} *}
                                             {/if}
                                                                                                                      
-                                        {/if}                              
+                                        {/if}
+
+                                        {if $page->parent != $pages->get('name=artists|collaborators')}                           
                                         
-                                        {* if no aritst present use organization *}
-                                        {if $item->template == 'broadcast' 
-                                            && $page->parent != $pages->find('name=artists|collaborators')}
-                                                {if $item->artist??->first}
+                                            {* if no aritst present use organization *}
+                                            {if $item->template == 'broadcast' 
+                                                && $page->parent != $pages->find('name=artists|collaborators')}
+                                                    {if $item->artist??->first}
+                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                    {else}
+                                                        <span class="uk-visible@m">{$item->title|upper|noescape}</span>
+                                                    {/if}                                                
+                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+                                            {/if}
+
+                                            {* if item has virtual-reality template, display the artist *}
+                                            {if $item->template == 'virtual-reality' 
+                                                && $page->parent != $pages->find('name=artists|collaborators')}
                                                     <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                {else}
-                                                    <span class="uk-visible@m">{$item->title|upper|noescape}</span>
-                                                {/if}                                                
-                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-                                        {/if}
+                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                
+                                            {/if}
 
-                                        {* if item has virtual-reality template, display the artist *}
-                                        {if $item->template == 'virtual-reality' 
-                                            && $page->parent != $pages->find('name=artists|collaborators')}
-                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                
-                                        {/if}
+                                            {* if item has cinema template, display the title *}
+                                            {if $item->template == 'cinema' 
+                                                && $item->parent == $pages->get('name=cinema')}
+                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                    
+                                            {/if}
 
-                                        {* if item has cinema template, display the title *}
-                                        {if $item->template == 'cinema' 
-                                            && $item->parent == $pages->get('name=cinema')}
-                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                    
-                                        {/if}
+                                            {* if concert-visuals item has children, display the title  *}
+                                            {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
+                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+                                                    {* {$item->title|upper|noescape} *}
+                                            {/if}
 
-                                        {* if concert-visuals item has children, display the title  *}
-                                        {if $item->template == 'concert-visuals' 
-                                            && $page->template == 'default-page' 
-                                            && $page->parent != $pages->get('name=artists|collaborators')}
-                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-                                                {* {$item->title|upper|noescape} *}
-                                        {/if}
-
-                                        {* if item has brands template and is a parent, display the title *}
-                                        {if $item->template == 'brands' 
-                                            && $page->template == 'default-page'}
-                                                {$item->title|upper|noescape}                                                                            
+                                            {* if item has brands template and is a parent, display the title *}
+                                            {if $item->template == 'brands' 
+                                                && $page->template == 'default-page'}
+                                                    {$item->title|upper|noescape}                                                                            
+                                            {/if}
                                         {/if}
 
                                     </a>
