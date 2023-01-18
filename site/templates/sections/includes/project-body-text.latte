@@ -12,7 +12,7 @@
 
 {* project body full width paragraph area if it exists *}
 {if $page??->project_body_full_width_paragraph != ''}
-    <div class="page-item uk-text-large uk-text-light uk-padding-large uk-width-1-1@m">
+    <div class="page-item uk-text-large uk-text-light uk-padding-large uk-padding-remove-top uk-width-1-1@m">
         {$page->project_body_full_width_paragraph|breakLines|stripHtml|noescape}
     </div>
 {/if}
