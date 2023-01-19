@@ -31,6 +31,16 @@ $rockfrontend
 <!DOCTYPE html>
 <html lang="en">
 	<head id="html-head">
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-2N6CFM6P3B"></script>
+		<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-2N6CFM6P3B');
+		</script>
+		
 		<!-- hide our site content -->
 		<style>html{visibility: hidden;opacity:0;}</style>
 

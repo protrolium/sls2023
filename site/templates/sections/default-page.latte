@@ -327,7 +327,7 @@
                                         {/foreach}
                                         
                                         {* get the first collaborator for mobile  *}
-                                        {if $item??->collaborator && $item->template != 'brands' || $item->template != 'broadcast'}
+                                        {if $item??->collaborator && $item->template != 'brands' && $item->template != 'broadcast'}
                                         <span class="uk-text-default uk-text-middle uk-hidden@m">
                                             {if $item??->collaborator != ''}
                                                 <a href="{$item->collaborator->first->url}" alt="">

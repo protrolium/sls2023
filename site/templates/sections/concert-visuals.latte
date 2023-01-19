@@ -79,9 +79,11 @@
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {* if we are on an artist's child page, display the title, else display the project subtitle *}
                                     {if $page->parent->parent->parent == $pages->get('projects')}
-                                        <span class="uk-text-lighter">{$page->title}</span>
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->title}</span>
+                                        <span class="uk-text-lighter uk-hidden@m">{$page->title}</span>
                                     {else}
-                                        <span class="uk-text-lighter">{$page->subtitle}</span>
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->subtitle}</span>
+                                        <span class="uk-text-lighter uk-hidden@m">{$page->subtitle}</span>
                                     {/if}
                                 </div>
                         
@@ -98,7 +100,10 @@
                                 <span class="project-item-categories uk-text-small">Collaborators:</span><br>                            
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
-                                        <span class="uk-text-lighter uk-text-nowrap">
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">
+                                            <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
+                                        </span>
+                                        <span class="uk-text-lighter uk-hidden@m">
                                             <a href="{$collaborator->url}">{$collaborator->title|noescape}</a>
                                         </span>
                                     {/foreach}

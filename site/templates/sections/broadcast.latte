@@ -8,9 +8,9 @@
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('broadcast')->url}" alt="">
-                        Broadcast</a> 
-                        → {if $page->parent->parent->parent == $pages->get('projects')}
-                            <a href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
+                        Broadcast</a> → 
+                        {if $page->parent->parent->parent == $pages->get('projects')}
+                            <a class="uk-text-nowrap" href="{$page->parent->url}" alt="">{$page->parent->title|upper|noescape}</a>
                         {elseif $page??->artist != ''}
                             <span class="uk-text-nowrap">{$page->artist->first->title|upper|noescape}</span>
                         {elseif $page->parent == $pages->get('broadcast')}
@@ -97,9 +97,11 @@
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {* if we are on an artist's child page, display the title, else display the project subtitle *}
                                     {if $page->parent->parent->parent == $pages->get('projects')}
-                                        <span class="uk-text-lighter uk-text-nowrap">{$page->title}</span>
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->title}</span>
+                                        <span class="uk-text-lighter uk-hidden@m">{$page->title}</span>
                                     {else}
-                                        <span class="uk-text-lighter uk-text-nowrap">{$page->subtitle}</span>
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->subtitle}</span>
+                                        <span class="uk-text-lighter uk-hidden@m">{$page->subtitle}</span>
                                     {/if}
                                 </div>
                         
