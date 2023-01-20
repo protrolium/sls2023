@@ -262,11 +262,12 @@
 
                         {* featured image div *}
                         <div 
-                            class="uk-cover-container uk-background-cover"
+                            id="featured-image-bg"
+                            class="uk-cover-container uk-background-cover lazyLoad"
                             style="background-image: url('{$item->featured_image->url}');">
                                 <a href="{$item->url}" alt="">
                                     <canvas class="uk-visible@m" width="1280" height="480"></canvas>
-                                    <canvas class="uk-hidden@m" width="1280" height="1280"></canvas>                        
+                                    <canvas class="uk-hidden@m" width="720" height="720"></canvas>                        
                                 </a>
                         </div>
 
