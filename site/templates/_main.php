@@ -49,6 +49,8 @@ $rockfrontend
 		<!-- make sure we get styling on mobile by setting meta viewport -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title><?php echo $page->title; ?></title>
+		<meta name="description" content="Strangeloop Studios is a visual content production company, focused on working with creatives to explore new media and audience experiences. Our team is composed of animators, designers, producers, writers, musicians, and developers.">
+		<meta name="keywords" content="Visuals, Concert Visuals, Animation, 3D Animator, Notch, C4D, Motion Graphics, Design, Creative Studio, Music, Music Visuals, Musicians, Tour, Projection, Video Projection, Projection Mapping, 3D, Virtual Reality, VR, VJ, Visualist, Video Design, Programmer, Fractals, Hyper, Production Company, Los Angeles, Flying Lotus, The Weeknd, Kendrick Lamar, Zeds Dead, Erykah Badu, Lil Nas X">
 
 		<!-- fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
