@@ -1,4 +1,4 @@
-<section>
+<section class="uk-width-1-1 uk-height-viewport">
     {if isMobileDevice() == true} 
         <div 
             class="uk-background-cover" 
@@ -9,8 +9,8 @@
 
         <div class="uk-height-viewport uk-cover-container">
             {if isMobileDevice() != true} 
-                <video autoplay playsinline loop muted uk-cover>
-                    <source src="{$config->urls->assets}video/reel-no-text-1024k.webm" type="video/webm; codecs=vp9" width="1280" height="720">
+                <video width="1280" height="720" autoplay playsinline loop muted uk-cover>
+                    <source src="{$config->urls->assets}video/reel-no-text-1024k.webm" type="video/webm; codecs=vp9">
                     {* <source src="{$config->urls->assets}video/reel-no-text-1920.mp4" type="video/mp4" width="1280" height="720"> *}
                 </video>
                 {* <div class="uk-overlay uk-position-cover uk-flex uk-flex-center uk-flex-middle uk-padding-remove">
