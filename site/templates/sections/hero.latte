@@ -2,7 +2,7 @@
     {if isMobileDevice() == true} 
         <div 
             class="uk-background-cover" 
-            data-src="{$pages->find('id=1059|1060|1064|1192|1259|1075|1271|1267|1084|1074|1208')->shuffle()->first->featured_image->maxSize(1890,1260)->url}" 
+            data-src="{$pages->find('id=1059|1060|1064|1192|1259|1075|1271|1267|1084|1074|1208')->shuffle()->first->featured_image->first->maxSize(1890,1260)->url}" 
             uk-img
         >
     {/if}

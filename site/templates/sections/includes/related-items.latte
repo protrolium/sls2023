@@ -98,20 +98,28 @@
                                     {* card featured area which grabs a random featured video/image from each of Projects' children pages *}
                                     
                                     {* check to see if featured_video field is != null *}
-                                    {if $item??->featured_video}
+                                    {if $item??->featured_video_webm}
+                                        <div class="uk-cover-container">
+                                            <canvas width="1200" height="1200"></canvas>
+                                            <a href="{$item->url}" alt="">
+                                                <video src="{$item->featured_video_webm->url}" autoplay loop muted playsinline uk-cover></video>
+                                            </a>
+                                        </div>
+                                        
+                                    {elseif $item??->featured_video}
                                         <div class="uk-cover-container">
                                             <canvas width="1200" height="1200"></canvas>
                                             <a href="{$item->url}" alt="">
                                                 <video src="{$item->featured_video->url}" autoplay loop muted playsinline uk-cover></video>
                                             </a>
-                                        </div>
+                                        </div>                                    
                                     {/if}
                                     
                                     {* check to see if featured_image field is null *}
                                     {if !$item->featured_video}
                                         <div 
                                             class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary"
-                                            style="background-image: url('{$item->featured_image->url}');">
+                                            style="background-image: url('{$item->featured_image->first->url}');">
                                                 <a href="{$item->url}" alt="">
                                                     <canvas width="1200" height="1200"></canvas>
                                                 </a>

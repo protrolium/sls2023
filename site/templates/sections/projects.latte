@@ -75,8 +75,15 @@
                 
                 {* check to see if featured_video field is != null *}
                 {if isMobileDevice() != true} 
-                    {if $randomChild??->featured_video}
+                    {if $randomChild??->featured_video_webm}
+                        <div class="uk-cover-container">
+                            <canvas width="1200" height="1200"></canvas>
+                            <a href="{$item->url}" alt="">
+                                <video src="{$randomChild->featured_video_webm->url}" autoplay loop muted playsinline uk-cover></video>
+                            </a>
+                        </div>
 
+                    {elseif $randomChild??->featured_video}
                         <div class="uk-cover-container">
                             <canvas width="1200" height="1200"></canvas>
                             <a href="{$item->url}" alt="">
@@ -91,7 +98,7 @@
 
                     <div 
                         class="uk-card-media-top uk-cover-container project-image uk-background-cover uk-background-primary"
-                        style="background-image: url('{$randomChild->featured_image->maxSize(950,950)->url}');">
+                        style="background-image: url('{$randomChild->featured_image->first->url}');">
                             
                             {* check to see if the item has the template virtual-artist or visual-content-packs, and if they do, change the nature of the link *}
                             {if $item->name == 'virtual-artists' || $item->name == 'vj-tools'}

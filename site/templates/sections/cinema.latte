@@ -74,8 +74,8 @@
                         uk-flex uk-img="loading: lazy"
                         uk-scrollspy="cls:uk-animation-fade">
                             <img 
-                                src="{$page->get('featured_image')->url}" 
-                                alt="{$page->get('featured_image')->description}" 
+                                src="{$page->get('featured_image')->first->url}" 
+                                alt="{$page->get('featured_image')->first->description}" 
                                 class="uk-width-1-1" />
                     </div>
                 {/if}
