@@ -48,7 +48,7 @@
                 {* card image *}
                 <div 
                     class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" 
-                    style="background-image: url('{$item->featured_image->maxSize(1240,1200)->url}');">
+                    style="background-image: url('{$item->featured_image->first->maxSize(1240,1200)->url}');">
 
                     {if $item??->page_reference != ''}
                         <a href="{$item->page_reference->url}" alt="">
