@@ -78,8 +78,8 @@
             {* project body heading area *}
             <div class="uk-flex uk-flex-column uk-flex-around uk-text-large uk-text-light uk-padding-large uk-width-1-2@m">
                 <div>
-                    <img alt="" class="hidpi" id="logo-studio" src="{$pages->get('sls-logo')->image->maxSize(300,285)->url}" width="150" height="141" />
-                    <img alt="" class="hidpi uk-hidden" id="logo-light-studio" src="{$pages->get('sls-logo-alpha-light')->image->maxSize(300,285)->url}" width="150" height="141" /></p>
+                    <img alt="" class="hidpi" id="logo-studio" src="{$pages->get('sls-logo')->image->first->url}" width="150" height="141" />
+                    <img alt="" class="hidpi uk-hidden" id="logo-light-studio" src="{$pages->get('sls-logo-alpha-light')->image->first->url}" width="150" height="141" /></p>
 
                     <p>
                         <a href="{$pages->get('projects')->url}">Strangeloop Studios</a> <br>
@@ -92,7 +92,7 @@
                 
                 <div>
                     <a class="noExternalSVG" href="https://spiritbomb.ai" rel="noreferrer noopener" target="_blank">
-                        <img alt="" class="hidpi" src="{$pages->get('spirit-bomb-logo')->image->url}" width="150" />
+                        <img alt="" class="hidpi" src="{$pages->get('spirit-bomb-logo')->image->first->url}" width="150" />
                     </a>
 
                     <p>
@@ -107,8 +107,8 @@
 
                 <div>
                     <a class="noExternalSVG" href="https://hypervoid.tv" rel="noreferrer noopener" target="_blank">
-                        <img alt="" class="hidpi" id="hv-logo-studio" src="{$pages->get('hypervoid-glyph-dark')->image->url}" width="150" />
-                        <img alt="" class="hidpi uk-hidden" id="hv-logo-light-studio" src="{$pages->get('hypervoid-glyph-light')->image->url}" width="150" />
+                        <img alt="" class="hidpi" id="hv-logo-studio" src="{$pages->get('hypervoid-glyph-dark')->image->first->url}" width="150" />
+                        <img alt="" class="hidpi uk-hidden" id="hv-logo-light-studio" src="{$pages->get('hypervoid-glyph-light')->image->first->url}" width="150" />
                     </a>
 
                     <p><a href="https://hypervoid.tv" rel="noreferrer noopener" target="_blank">Hypervoid </a>
@@ -129,7 +129,7 @@
                 {* card image *}
                 <div class="uk-margin-top uk-cover-container uk-border-circle uk-background-cover uk-width-1-2@m">
                     <canvas width="900" height="900"></canvas>
-                    <img class="" src="{$pages->get('lv4-profile')->image->maxSize(632,632)->url}" alt="" uk-cover>
+                    <img class="" src="{$pages->get('lv4-profile')->image->first->url}" alt="" uk-cover>
                 </div>
 
                 {* card image *}
