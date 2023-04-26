@@ -14,10 +14,9 @@
 /** @var RockFrontend $rockfrontend */
 
 $home = $pages->get('/'); // homepage directory
-$rockfrontend
-	->styles()->setOptions(['autoload'=>true])
+$rockfrontend->styles()
 	->add("/site/templates/uikit-3.15.10/src/less/uikit.theme.less")
-	// ->addDefaultFolders() for rockfrontend upgrade
+	->addDefaultFolders()
 	->add("/site/templates/styles/custom.less")
 	;
 $rockfrontend
