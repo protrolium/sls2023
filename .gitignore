@@ -14,3 +14,7 @@ site/assets/sessions/
 
 # Ignore UIkit
 site/templates/uikit/
+
+# Ignore site assets + modules
+site/assets/*
+site/modules/*
