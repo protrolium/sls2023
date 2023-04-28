@@ -11,3 +11,6 @@ site/config.php
 site/assets/cache/
 site/assets/logs/
 site/assets/sessions/
+
+# Ignore UIkit
+site/templates/uikit/
