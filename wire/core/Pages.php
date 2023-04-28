@@ -52,6 +52,7 @@
  * @method string setupPageName(Page $page, array $options = array()) Determine and populate a name for the given page. #pw-internal
  * @method void insertBefore(Page $page, Page $beforePage) Insert one page as a sibling before another. #pw-advanced
  * @method void insertAfter(Page $page, Page $afterPage) Insert one page as a sibling after another. #pw-advanced
+ * @method bool touch($pages, $options = null, $type = 'modified') Update page modification time to now (or the given modification time). #pw-group-manipulation
  * 
  * METHODS PURELY FOR HOOKS
  * ========================
@@ -195,6 +196,7 @@ class Pages extends Wire {
 	 *
 	 */
 	public function __construct(ProcessWire $wire) {
+		parent::__construct();
 		$this->setWire($wire);
 		$this->debug = $wire->config->debug === Config::debugVerbose ? true : false;
 		$this->sortfields = $this->wire(new PagesSortfields());
@@ -687,7 +689,7 @@ class Pages extends Wire {
 	 * @param string|array|Selectors $selector Specify selector to find first matching page ID
 	 * @param bool|array $options Specify boolean true to return all pages columns rather than just IDs.
 	 *   Or specify array of options (see find method for details), `verbose` option can optionally be in array. 
-	 * @return int|string|array
+	 * @return int|array
 	 * @see Pages::get(), Pages::has(), Pages::findIDs()
 	 * @since 3.0.156
 	 *
@@ -762,14 +764,14 @@ class Pages extends Wire {
 				$parent_id = $parent->id;
 			} else if(is_int($parent) || ctype_digit("$parent")) {
 				$parent_id = (int) "$parent";
-			} else if(is_string($parent) && $parent) {
+			} else if(is_string($parent)) {
 				$parent_id = $this->has($parent);
 			}
 			if(!$parent_id) $parent_id = null;
 		}
 		
 		if(count($options)) {
-			$options['template'] = $template && $template instanceof Template ? $template : null;
+			$options['template'] = $template instanceof Template ? $template : null;
 			$options['parent_id'] = $parent_id;
 			return $this->loader->getById($ids, $options);
 		} else {
@@ -1398,7 +1400,7 @@ class Pages extends Wire {
 	 *
 	 */
 	public function ___setupNew(Page $page) {
-		return $this->editor()->setupNew($page);
+		$this->editor()->setupNew($page);
 	}
 
 	/**
@@ -1683,12 +1685,12 @@ class Pages extends Wire {
 	/**	
  	 * Return a fuel or other property set to the Pages instance
 	 * 
-	 * @param string $key
+	 * @param string $name
 	 * @return mixed
 	 *
 	 */
-	public function __get($key) {
-		switch($key) {
+	public function __get($name) {
+		switch($name) {
 			// A-Z
 			case 'autojoin': return $this->loader->getAutojoin();
 			case 'cacher': return $this->cacher();
@@ -1708,7 +1710,7 @@ class Pages extends Wire {
 			case 'trasher': return $this->trasher();
 			case 'types': return $this->types();
 		}
-		return parent::__get($key); 
+		return parent::__get($name); 
 	}
 
 	/**
@@ -2243,7 +2245,6 @@ class Pages extends Wire {
 	 * 
 	 */
 	public function ___trashReady(Page $page) {
-		if($page) {} // ignore
 	}
 	
 	/**
@@ -2344,7 +2345,6 @@ class Pages extends Wire {
 	 *
 	 */
 	public function ___deleteBranchReady(Page $page, array $options) {
-		if($page && $options) {}
 	}
 	
 	/**
@@ -2361,7 +2361,6 @@ class Pages extends Wire {
 	 *
 	 */
 	public function ___deletedBranch(Page $page, array $options, $numDeleted) {
-		if($page && $options) {}
 		$this->log("Deleted branch with $numDeleted page(s)", $page);
 	}
 
@@ -2425,7 +2424,6 @@ class Pages extends Wire {
 	 * 
 	 */
 	public function ___sorted(Page $page, $children = false, $total = 0) {
-		if($page && $children && $total) {}
 	}
 
 	/**

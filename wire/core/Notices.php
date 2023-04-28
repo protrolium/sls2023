@@ -10,10 +10,10 @@
  * Base class that holds a message, source class, and timestamp.
  * Contains notices/messages used by the application to the user. 
  * 
- * ProcessWire 3.x, Copyright 2020 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
  * https://processwire.com
  *
- * @property string $text Text of notice
+ * @property string|object|array $text Text or value of notice
  * @property string $class Class of notice
  * @property int $timestamp Unix timestamp of when the notice was generated
  * @property int $flags Bitmask using any of the Notice::constants
@@ -65,10 +65,18 @@ abstract class Notice extends WireData {
 	/**
 	 * Flag indicates the notice is allowed to contain markup and won’t be automatically entity encoded
 	 *
-	 * Note: entity encoding is done by the admin theme at output time, which should detect this flag. 
-	 *
+	 * Note: entity encoding is done by the admin theme at output time, which should detect this flag.
+	 * 
 	 */
 	const allowMarkup = 32;
+
+	/**
+	 * Alias of allowMarkup flag
+	 * 
+	 * @since 3.0.208
+	 * 
+	 */
+	const markup = 32;
 
 	/**
 	 * Make notice anonymous (not tied to a particular class)
@@ -85,6 +93,14 @@ abstract class Notice extends WireData {
 	 * 
 	 */
 	const noGroup = 131072;
+
+	/**
+	 * Alias of noGroup flag
+	 * 
+	 * @since 3.0.208
+	 * 
+	 */
+	const separate = 131072;
 
 	/**
 	 * Ignore notice unless it will be seen by a logged-in user
@@ -132,6 +148,32 @@ abstract class Notice extends WireData {
 	const allowMarkdown = 4194304;
 
 	/**
+	 * Alias of allowMarkdown flag
+	 * 
+	 * @since 3.0.208
+	 * 
+	 */
+	const markdown = 4194304;
+
+	/**
+	 * Present duplicate notices separately rather than collapsing them to one
+	 * 
+	 * String name can be referred to as 'allowDuplicate' or just 'duplicate'
+	 * 
+	 * @since 3.0.208
+	 * 
+	 */
+	const allowDuplicate = 8388608;
+
+	/**
+	 * Alias of allowDuplicate flag
+	 * 
+	 * @since 3.0.208
+	 * 
+	 */
+	const duplicate = 8388608; 
+
+	/**
 	 * Flag integers to flag names
 	 * 
 	 * @var array
@@ -145,12 +187,27 @@ abstract class Notice extends WireData {
 		self::logOnly => 'logOnly',
 		self::allowMarkup => 'allowMarkup',
 		self::allowMarkdown => 'allowMarkdown',
+		self::allowDuplicate => 'allowDuplicate',
 		self::anonymous => 'anonymous',
 		self::noGroup => 'noGroup',
 		self::login => 'login',
 		self::admin => 'admin',
 		self::superuser => 'superuser',
 		self::persist => 'persist',
+	);
+
+	/**
+	 * Alternate names to flags
+	 * 
+	 * @var int[] 
+	 * @since 3.0.208
+	 * 
+	 */
+	static protected $flagNamesAlt = array(
+		'duplicate' => self::allowDuplicate,
+		'markup' => self::allowMarkup,
+		'markdown' => self::allowMarkdown,
+		'separate' => self::noGroup,
 	);
 	
 	/**
@@ -186,7 +243,7 @@ abstract class Notice extends WireData {
 		if($key === 'text' && is_string($value) && strpos($value, 'icon-') === 0 && strpos($value, ' ')) {
 			list($icon, $value) = explode(' ', $value, 2);
 			list(,$icon) = explode('-', $icon, 2);
-			$icon = $this->wire('sanitizer')->name($icon);
+			$icon = $this->wire()->sanitizer->name($icon);
 			if(strlen($icon)) $this->set('icon', $icon);
 		} else if($key === 'flags') {
 			$this->flags($value);
@@ -258,7 +315,15 @@ abstract class Notice extends WireData {
 		if(is_int($name)) return $name;
 		$name = trim($name);
 		if(ctype_digit("$name")) return (int) $name;
-		$flag = array_search(strtolower($name), array_map('strtolower', self::$flagNames));
+		$name = strtolower($name);
+		if(isset(self::$flagNamesAlt[$name])) {
+			return self::$flagNamesAlt[$name];
+		} else if(strpos($name, 'icon-') === 0) {
+			$this->icon = substr($name, 5); 
+			$flag = 0;
+		} else {
+			$flag = array_search($name, array_map('strtolower', self::$flagNames));
+		}
 		return $flag ? $flag : 0;
 	}
 
@@ -348,7 +413,16 @@ abstract class Notice extends WireData {
 	}
 	
 	public function __toString() {
-		return (string) $this->text; 
+		$text = $this->text;
+		if(is_object($text)) {
+			$value = method_exists($text, '__toString') ? (string) $text : '';
+			$class = $text->className();
+			$text = "object:$class";
+			if($value !== '' && $value !== $class) $text .= "($value)";
+		} else if(is_array($text)) {
+			$text = 'array(' . count($text) . ')';
+		}
+		return $text;
 	}
 }
 
@@ -475,10 +549,10 @@ class Notices extends WireArray {
 	 */
 	protected function allowNotice(Notice $item) {
 		
-		$user = $this->wire('user'); /** @var User $user */
+		$user = $this->wire()->user;
 		
 		if($item->flags & Notice::debug) {
-			if(!$this->wire('config')->debug) return false;
+			if(!$this->wire()->config->debug) return false;
 		}
 
 		if($item->flags & Notice::superuser) {
@@ -490,11 +564,13 @@ class Notices extends WireArray {
 		}
 		
 		if($item->flags & Notice::admin) {
-			$page = $this->wire('page'); /** @var Page|null $page */
+			$page = $this->wire()->page;
 			if(!$page || !$page->template || $page->template->name != 'admin') return false;
 		}
-		
-		if($this->isDuplicate($item)) {
+	
+		if($item->flags & Notice::allowDuplicate) {
+			// allow it
+		} else if($this->isDuplicate($item)) {
 			$item->qty = $item->qty+1;
 			return false;
 		}
@@ -516,19 +592,45 @@ class Notices extends WireArray {
 	 */
 	protected function formatNotice(Notice $item) {
 		$text = $item->text;
+		$label = '';
+		
 		if(is_array($text)) {
-			$item->text = "<pre>" . trim(print_r($this->sanitizeArray($text), true)) . "</pre>";
+			// if text is associative array with 1 item, we consider the 
+			// key to be the notice label and value to be the notice text
+			if(count($text) === 1) {
+				$value = reset($text);
+				$key = key($text);
+				if(is_string($key)) {
+					$label = $key;
+					$text = $value;
+					$item->text = $text;
+					if($this->wire()->config->debug) {
+						$item->class = $label;
+						$label = '';
+					}
+				}
+			}	
+		}
+		
+		if(is_object($text) || is_array($text)) {
+			$text = Debug::toStr($text, array('html' => true));
 			$item->flags = $item->flags | Notice::allowMarkup;
-		} else if(is_object($text) && $text instanceof Wire) {
-			$item->text = "<pre>" . $this->wire()->sanitizer->entities(print_r($text, true)) . "</pre>";
-			$item->flags = $item->flags | Notice::allowMarkup;
-		} else if(is_object($text)) {
-			$item->text = (string) $text;
-		} 
+			$item->text = $text;
+		}
+		
 		if($item->hasFlag('allowMarkdown')) {
 			$item->text = $this->wire()->sanitizer->entitiesMarkdown($text, array('allowBrackets' => true)); 
 			$item->addFlag('allowMarkup');
 			$item->removeFlag('allowMarkdown'); 
+		}
+		
+		if($label) {
+			if($item->hasFlag('allowMarkup')) {
+				$label = $this->wire()->sanitizer->entities($label);
+				$item->text = "<strong>$label:</strong> $item->text";
+			} else {
+				$item->text = "$label: \n$item->text";
+			}
 		}
 	}
 
@@ -577,8 +679,7 @@ class Notices extends WireArray {
 	 *
 	 */
 	protected function storeNotice(Notice $item) {
-		/** @var Session $session */
-		$session = $this->wire('session');
+		$session = $this->wire()->session;
 		if(!$session) return false;
 		$items = $session->getFor($this, 'items');
 		if(!is_array($items)) $items = array();
@@ -598,7 +699,7 @@ class Notices extends WireArray {
 	 */
 	protected function loadStoredNotices() {
 		
-		$session = $this->wire('session');
+		$session = $this->wire()->session;
 		$items = $session->getFor($this, 'items');
 		$qty = 0;
 		
@@ -640,7 +741,7 @@ class Notices extends WireArray {
 			return $this;
 		}
 		if($item) parent::remove($item);
-		$session = $this->wire('session');
+		$session = $this->wire()->session;
 		$items = $session->getFor($this, 'items');
 		if(is_array($items) && isset($items[$idStr])) {
 			unset($items[$idStr]);
@@ -680,13 +781,12 @@ class Notices extends WireArray {
 	 * 
 	 */
 	protected function addLog(Notice $item) {
-		/** @var Notice $item */
 		$text = $item->text;
 		if(strpos($text, '&') !== false) {
-			$text = $this->wire('sanitizer')->unentities($text);
+			$text = $this->wire()->sanitizer->unentities($text);
 		}
-		if($this->wire('config')->debug && $item->class) $text .= " ($item->class)"; 
-		$this->wire('log')->save($item->getName(), $text); 
+		if($this->wire()->config->debug && $item->class) $text .= " ($item->class)"; 
+		$this->wire()->log->save($item->getName(), $text); 
 	}
 
 	/**
@@ -729,16 +829,24 @@ class Notices extends WireArray {
 	 * 
 	 */
 	public function sanitizeArray(array $a) {
-		$sanitizer = $this->wire('sanitizer'); 
+		$sanitizer = $this->wire()->sanitizer; 
 		$b = array();
 		foreach($a as $key => $value) {
 			if(is_array($value)) {
 				$value = $this->sanitizeArray($value);
 			} else {
-				if(is_object($value)) $value = (string) $value;
+				if(is_object($value)) {
+					if($value instanceof Wire) {
+						$value = (string) $value;
+						$class = wireClassName($value);
+						if($value !== $class) $value = "object:$class($value)";
+					} else {
+						$value = 'object:' . wireClassName($value);
+					}
+				}
 				$value = $sanitizer->entities($value); 
 			} 
-			$key = $this->wire('sanitizer')->entities($key);
+			$key = $sanitizer->entities($key);
 			$b[$key] = $value;
 		}
 		return $b; 

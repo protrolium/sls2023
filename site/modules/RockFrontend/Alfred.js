@@ -9,33 +9,72 @@
    */
   function Alfred() {}
 
-  Alfred.prototype.addIcons = function (el, icons) {
+  Alfred.prototype.addIcons = function (el, icons, type) {
     let html = "<div class=icons>";
+    if (type) {
+      html += "<span class='rpb-type'><span>" + type + "</span></span>";
+    }
     icons.forEach(function (icon) {
+      // console.log(icon);
       html +=
-        "<a href='" +
-        (icon.href ? icon.href : "#") +
-        "' " +
-        (icon.tooltip ? " title='" + icon.tooltip + "'" : "") +
-        "class='icon " +
+        "<a " +
+        Alfred.href(icon) +
+        " class='icon " +
         icon.class +
         "'" +
         (icon.confirm ? " data-confirm='" + icon.confirm + "'" : "") +
-        " uk-tooltip data-barba-prevent " +
+        " data-barba-prevent " +
         (icon.suffix || "") +
         ">" +
         "<img src='" +
         RockFrontend.rootUrl +
         "site/modules/RockFrontend/icons/" +
         icon.icon +
-        ".svg'></span>" +
+        ".svg' " +
+        ">" +
+        Alfred.vspace(icon) +
+        Alfred.tooltip(icon) +
         "</a>";
     });
     html += "</div>";
     $(el).append(html);
   };
 
+  Alfred.prototype.tooltip = function (icon) {
+    if (!icon.tooltip) return "";
+    return (
+      "<span class='alfred-cover' title='" +
+      icon.tooltip +
+      "' uk-tooltip></span>"
+    );
+  };
+
+  Alfred.prototype.icon = function (name) {
+    return (
+      "<img src='" +
+      RockFrontend.rootUrl +
+      "site/modules/RockFrontend/icons/" +
+      name +
+      ".svg'>"
+    );
+  };
+
+  Alfred.prototype.href = function (icon) {
+    if (icon.type == "vspacetop") return;
+    if (icon.type == "vspacebottom") return;
+    return "href='" + (icon.href ? icon.href : "#") + "'";
+  };
+
+  Alfred.prototype.vspace = function (icon) {
+    if (!RockFrontend.vspaceGUI) return "";
+    return RockFrontend.vspaceGUI(icon);
+  };
+
   Alfred.prototype.init = function () {
+    // early exit when in mobile preview iframe
+    if (document.querySelector("body").classList.contains("rpb-preview")) {
+      return;
+    }
     let items = document.querySelectorAll("[alfred]:not(.alfred)");
     if (!items.length) return;
     items.forEach(function (item) {
@@ -49,14 +88,15 @@
     let $elements = $(el).find(".alfredelements");
     try {
       let config = JSON.parse($(el).attr("alfred"));
-      this.addIcons($elements, config.icons);
-      if (config.widgetStyle) $(el).addClass("rmx-widget");
+      this.addIcons($elements, config.icons, config.type);
+      if (config.widgetStyle) $(el).addClass("rpb-widget");
       if (config.addTop) $elements.append(this.plus("top", config.addTop));
       if (config.addBottom)
         $elements.append(this.plus("bottom", config.addBottom));
       if (config.addLeft) $elements.append(this.plus("left", config.addLeft));
       if (config.addRight)
         $elements.append(this.plus("right", config.addRight));
+      $(el).removeAttr("alfred");
     } catch (error) {
       alert(
         "invalid json in alfred - dont forget |noescape filter when working with latte files"
@@ -143,10 +183,15 @@
   };
 
   var Alfred = new Alfred();
+  RockFrontend.Alfred = Alfred;
 
   // actions to do when alfred and jquery are ready
   Alfred.ready(function () {
     console.log("ALFRED is ready :)");
+
+    // trigger event
+    var event = new CustomEvent("AlfredReady", Alfred);
+    document.dispatchEvent(event);
 
     // reload page when modal is closed
     $(document).on(
@@ -231,7 +276,7 @@
     // edit block on double click
     $(document).on("dblclick", function (e) {
       let $alfred = $(e.target).closest(".alfred");
-      console.log($alfred);
+      // console.log($alfred);
       // if we are currently inline-editing somthing in this block
       // we do not click the button to open the modal!
       if ($alfred.find("> .pw-editing").length) return;
@@ -239,6 +284,25 @@
       if ($alfred.find("*:not(.alfred) .pw-editing").length) return;
       if ($alfred.find("*:not(.alfred) .pw-edited").length) return;
       $alfred.find("> .alfredelements > .icons > a.alfred-edit").click();
+    });
+
+    // toggle alfred overlays on shift keypress
+    let $hovered = false;
+    let pressed = false;
+    $(document).on("mouseover", function (e) {
+      $hovered = $(e.target);
+      if (pressed) $hovered.closest(".alfred").addClass("alfred-disabled");
+    });
+    $(document).on("keydown keyup", function (e) {
+      pressed = false;
+      $(".alfred").removeClass("alfred-disabled");
+      try {
+        if ($hovered.closest(".alfredelements").length) return;
+      } catch (error) {}
+      if (!e.shiftKey) return;
+      pressed = true;
+      let $alfred = $hovered.closest(".alfred");
+      $alfred.addClass("alfred-disabled");
     });
   });
 })();

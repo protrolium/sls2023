@@ -4,7 +4,9 @@
  * Class InputfieldImage
  *
  * Inputfield for FieldtypeImage fields
- * 
+ *
+ * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * https://processwire.com
  * 
  * Accessible Properties
  *
@@ -22,6 +24,7 @@
  * @property int $adminThumbScale for backwards compatibility only
  * @property int|bool $resizeServer Resize to max width/height at server? 1=Server-only, 0=Use client-side resize when possible (default=0). 
  * @property int $clientQuality Quality setting to use for client-side resize. 60=60%, 90=90%, etc. (default=90). 
+ * @property string $editFieldName Field name to use for linking to image editor (default=current Inputfield name)
  *
  * The following properties default values are pulled from $config->adminThumbOptions and can be overridden
  * by setting directly to an instance of this Inputfield:
@@ -44,6 +47,8 @@
  * @method array buildTooltipData(Pageimage $pagefile)
  * @method array getFileActions(Pagefile $pagefile)
  * @method bool|null processUnknownFileAction(Pageimage $pagefile, $action, $label)
+ * @method array getImageEditButtons($pagefile, $id, $n, $buttonClass) 3.0.212+
+ * @method array getImageThumbnailActions($pagefile, $id, $n, $class) 3.0.212+
  *
  *
  */
@@ -54,7 +59,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		return array(
 			'title' => __('Images', __FILE__), // Module Title
 			'summary' => __('One or more image uploads (sortable)', __FILE__), // Module Summary
-			'version' => 124,
+			'version' => 126,
 			'permanent' => true,
 		);
 	}
@@ -90,6 +95,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 
 	public function init() {
 		parent::init();
+		$config = $this->wire()->config;
 
 		$this->set('extensions', 'JPG JPEG GIF PNG');
 		$this->set('maxWidth', '');
@@ -102,12 +108,14 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		$this->set('clientQuality', 90);
 		$this->set('dimensionsByAspectRatio', 0);
 		$this->set('itemClass', 'gridImage ui-widget');
+		$this->set('editFieldName', ''); // field name to use for image editor (default=name of this inputfield)
 
-		$options = $this->wire('config')->adminThumbOptions;
+		$options = $config->adminThumbOptions;
 		if(!is_array($options)) $options = array();
 		$gridSize = empty($options['gridSize']) ? self::defaultGridSize : (int) $options['gridSize'];
 		if($gridSize < 100) $gridSize = self::defaultGridSize; // establish min of 100
 		if($gridSize >= (self::defaultGridSize * 2)) $gridSize = self::defaultGridSize; // establish max of 259
+		
 		$this->set('gridSize', $gridSize); 
 		$this->set('gridMode', 'grid'); // one of "grid", "left" or "list"
 		$this->set('focusMode', 'on');  // One of "on", "zoom" or "off" 
@@ -123,6 +131,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 				$options['imageSizerOptions'][$key] = $value;
 			}
 		}
+		
 		$this->set('imageSizerOptions', empty($options['imageSizerOptions']) ? array() : $options['imageSizerOptions']);
 		$this->set('useImageEditor', 1);
 		
@@ -144,11 +153,18 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			'buttonText' => "<span class='ui-button-text'>{out}</span>", 
 			'selectClass' => '', 
 		);
-		$themeSettings = $this->wire('config')->InputfieldImage;
+		$themeSettings = $config->InputfieldImage;
 		$themeSettings = is_array($themeSettings) ? array_merge($themeDefaults, $themeSettings) : $themeDefaults;
 		$this->themeSettings = array_merge($this->themeSettings, $themeSettings);
 	}
-	
+
+	/**
+	 * Get setting or attribute
+	 * 
+	 * @param string $key
+	 * @return array|bool|mixed|string|null
+	 * 
+	 */
 	public function get($key) {
 		if($key == 'themeSettings') return $this->themeSettings;
 		return parent::get($key);
@@ -171,13 +187,15 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			$this->addClass('InputfieldRenderValueMode', 'wrapClass');
 		}
 	
-		$config = $this->wire('config');
-		$modules = $this->wire('modules');
+		$config = $this->wire()->config;
+		$modules = $this->wire()->modules;
+		
+		/** @var JqueryCore $jqueryCore */
 		$jqueryCore = $modules->get('JqueryCore');
 		$jqueryCore->use('simulate');
 		$jqueryCore->use('cookie');
 		$modules->loadModuleFileAssets('InputfieldFile');
-		$modules->getInstall("JqueryMagnific");
+		$modules->getInstall('JqueryMagnific');
 		
 		if(!$renderValueMode && $this->focusMode == 'zoom') {
 			$this->addClass('InputfieldImageFocusZoom', 'wrapClass'); 
@@ -194,7 +212,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		// client side image resize 
 		if(!$this->resizeServer && ($this->maxWidth || $this->maxHeight || $this->maxSize)) {
 			$moduleInfo = self::getModuleInfo();
-			$thisURL = $config->urls->InputfieldImage;
+			$thisURL = $config->urls('InputfieldImage');
 			$jsExt = $config->debug ? "js" : "min.js";
 			$config->scripts->add($thisURL . "piexif.$jsExt");
 			$config->scripts->add($thisURL . "PWImageResizer.$jsExt?v=$moduleInfo[version]");
@@ -203,16 +221,20 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			$this->wrapAttr('data-resize', "$this->maxWidth;$this->maxHeight;$maxSize;$quality");
 		}
 		
-		if(!$renderValueMode && $this->value instanceof Pageimages) {
+		$value = $this->val();
+		if(!$value instanceof Pageimages) $value = null;
+		
+		if(!$renderValueMode && $value) {
 			$page = $this->getRootHasPage();
-			if($page->id && $this->wire('user')->hasPermission('page-edit-images', $page)) {
-				$modules->get('JqueryUI')->use('modal');
+			if($page->id && $this->wire()->user->hasPermission('page-edit-images', $page)) {
+				$jQueryUI = $modules->get('JqueryUI'); /** @var JqueryUI $jQueryUI */
+				$jQueryUI->use('modal');
 			} else {
 				$this->useImageEditor = 0;
 			}
 		}
 	
-		if($this->value instanceof Pageimages) $this->variations = $this->value->getAllVariations();
+		if($value) $this->variations = $value->getAllVariations();
 		
 		return parent::renderReady($parent, $renderValueMode);
 	}
@@ -239,7 +261,6 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 */
 	protected function ___renderList($value) {
 		
-		//if(!$value) return '';
 		$out = '';
 		$n = 0;
 	
@@ -247,7 +268,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		
 		if(!$this->uploadOnlyMode && WireArray::iterable($value)) {
 			
-			foreach($value as $k => $pagefile) {
+			foreach($value as $pagefile) {
 				$id = $this->pagefileId($pagefile);
 				$this->currentItem = $pagefile;
 
@@ -262,8 +283,9 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			}
 
 			if(!$this->renderValueMode) {
-				$dropNew = $this->wire('sanitizer')->entities1($this->_('drop in new image file to replace')); 
-				$focus = $this->wire('sanitizer')->entities1($this->_('drag circle to center of focus'));
+				$sanitizer = $this->wire()->sanitizer;
+				$dropNew = $sanitizer->entities1($this->_('drop in new image file to replace')); 
+				$focus = $sanitizer->entities1($this->_('drag circle to center of focus'));
 				$out .= "
 					<div class='InputfieldImageEdit'>
 						<div class='InputfieldImageEdit__inner'>
@@ -286,18 +308,33 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		$class = 'InputfieldImageList gridImages ui-helper-clearfix';
 		if($this->uploadOnlyMode) $class .= " InputfieldImageUploadOnly";
 		if($this->overwrite && !$this->renderValueMode) $class .= " InputfieldFileOverwrite";
+		
 		$out = "<ul class='$class' data-gridSize='$this->gridSize' data-gridMode='$this->gridMode'>$out</ul>";
 		$out = "<ul class='InputfieldImageErrors'></ul>$out";
 
 		return $out;
 	}
 
+	/**
+	 * Wrap rendered item
+	 * 
+	 * @param string $out
+	 * @return string
+	 * 
+	 */
 	protected function renderItemWrap($out) {
 		$item = $this->currentItem;
 		$id = $item && !$this->renderValueMode ? " id='file_$item->hash'" : "";
-		return "<li$id class='ImageOuter {$this->itemClass}'>$out</li>";
+		return "<li$id class='ImageOuter $this->itemClass'>$out</li>";
 	}
 
+	/**
+	 * Render upload
+	 * 
+	 * @param Pagefiles|Pageimages $value
+	 * @return string
+	 * 
+	 */
 	protected function ___renderUpload($value) {
 
 		if($this->noUpload || $this->renderValueMode) return '';
@@ -308,16 +345,17 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		$attrs = $this->getAttributes();
 		unset($attrs['value']);
 		if(substr($attrs['name'], -1) != ']') $attrs['name'] .= '[]';
+		
 		$attrStr = $this->getAttributesString($attrs);
-
 		$extensions = $this->getAllowedExtensions();
 		$formatExtensions = $this->formatExtensions($extensions);
 		$chooseLabel = $this->labels['choose-file'];
+		$chooseIcon = wireIconMarkup('folder-open-o', 'fw');
 		
 		$out = 
 			"<div " . 
-			"data-maxfilesize='{$this->maxFilesize}' " . 
-			"data-extensions='{$extensions}' " . 
+			"data-maxfilesize='$this->maxFilesize' " . 
+			"data-extensions='$extensions' " . 
 			"data-fieldname='$attrs[name]' " . 
 			"class='InputfieldImageUpload'" . 
 			">";
@@ -325,23 +363,21 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		$out .= "
 			<div class='InputMask ui-button ui-state-default'>
 				<span class='ui-button-text'>
-					<i class='fa fa-fw fa-folder-open-o'></i>$chooseLabel
+					$chooseIcon$chooseLabel
 				</span>
 				<input $attrStr>
 			</div>
 			<span class='InputfieldImageValidExtensions detail'>$formatExtensions</span>
-			<input type='hidden' class='InputfieldImageMaxFiles' value='{$this->maxFiles}' />
-			";
+			<input type='hidden' class='InputfieldImageMaxFiles' value='$this->maxFiles' />
+		";
 
 		if(!$this->noAjax) {
-
 			$dropLabel = $this->uploadOnlyMode ? $this->labels['drag-drop'] : $this->labels['drag-drop-in'];
-			// $refreshLabel = $this->('legacy thumbnails will be re-created on save');
-			
+			$dropIcon = wireIconMarkup('cloud-upload');
 			$out .= "
 				<span class='AjaxUploadDropHere description'>
 					<span>
-						<i class='fa fa-cloud-upload'></i>&nbsp;$dropLabel
+						$dropIcon&nbsp;$dropLabel
 					</span>
 				</span>";
 		}
@@ -355,14 +391,13 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 						$label
 					</label>
 				</p>
-				";
+			";
 		}
 
 		$out .= "</div>";
 
 		return $out;
 	}
-
 
 	/**
 	 * Resize images to max width/height if specified in field config and image is larger than max
@@ -386,7 +421,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 
 		if(!$pagefile->width) {
 			$pagefile->unlink();
-			throw new WireException($this->_('Invalid image'));
+			throw new WireException($this->_('Invalid image') . ' (width=0)');
 		}
 
 		$minWidth = $this->minWidth;
@@ -429,8 +464,8 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			}
 			$pagefile2 = $pagefile->size($maxWidth, $maxHeight, array('cropping' => false));
 			if($pagefile->filename != $pagefile2->filename) {
-				$this->wire('files')->unlink($pagefile->filename);
-				$this->wire('files')->rename($pagefile2->filename, $pagefile->filename);
+				$this->wire()->files->unlink($pagefile->filename);
+				$this->wire()->files->rename($pagefile2->filename, $pagefile->filename);
 			}
 			$pagefile->getImageInfo(true); // force it to reload its dimensions
 		}
@@ -442,6 +477,12 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		parent::___fileAdded($pagefile);
 	}
 
+	/**
+	 * @param Pagefile $pagefile
+	 * @param int $n
+	 * @return string
+	 * 
+	 */
 	protected function fileAddedGetMarkup(Pagefile $pagefile, $n) {
 		/** @var Pageimage $pagefile */
 		/*
@@ -467,7 +508,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 *    'amarkup' => same as above but wrapped in <a> tag
 	 *    'error' => error message if applicable
 	 *    'title' => potential title attribute for <a> tag with image info 
-	 *    );
+	 * );
 	 *
 	 */
 	public function getAdminThumb(Pageimage $img, $useSizeAttributes = true, $remove = false) {
@@ -489,7 +530,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			$imageSizerOptions = $this->imageSizerOptions;
 			$imageSizerOptions['upscaling'] = true;
 			$imageSizerOptions['focus'] = false; // disable focus since we show focus from JS/CSS in admin thumbs
-			$adminThumbOptions = $this->wire('config')->adminThumbOptions;
+			$adminThumbOptions = $this->wire()->config->adminThumbOptions;
 			$gridSize2x = $this->gridSize * 2;
 			// if($adminThumbOptions['scale'] === 1.0) $gridSize2x = $this->gridSize; // force non-HiDPI
 			
@@ -500,7 +541,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			$exists = is_file($f);
 			
 			if($exists && $remove) {
-				$this->wire('files')->unlink($f); 
+				$this->wire()->files->unlink($f); 
 				$exists = false;
 			}
 			
@@ -545,7 +586,6 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 				$attr['width'] = $thumbWidth;
 				$attr['height'] = $thumbHeight;
 			} else if($thumbHeight) {
-				if(!$thumbHeight) $thumbHeight = $this->gridSize;
 				$attr['height'] = $thumbHeight;
 			} else if($thumbWidth) {
 				$attr['width'] = $thumbWidth;
@@ -553,7 +593,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		}
 
 		$attr['src'] = $thumb->URL;
-		$attr['alt'] = $this->wire('sanitizer')->entities1($img->description);
+		$attr['alt'] = $this->wire()->sanitizer->entities1($img->description);
 		$attr['data-w'] = $_thumbWidth;
 		$attr['data-h'] = $_thumbHeight;
 		$attr["data-original"] = $img->URL;
@@ -593,8 +633,8 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		if(!$this->isAjax || !isset($_SERVER['HTTP_X_REPLACENAME'])) return $pagefile;
 		$metaFilename = $_SERVER['HTTP_X_REPLACENAME'];
 		if(strpos($metaFilename, '?')) list($metaFilename,) = explode('?', $metaFilename); 
-		$metaFilename = $this->wire('sanitizer')->name($metaFilename);
-		$metaPagefile = $this->attr('value')->get($metaFilename);
+		$metaFilename = $this->wire()->sanitizer->name($metaFilename);
+		$metaPagefile = $this->val()->get($metaFilename);
 		if(!$metaPagefile instanceof Pagefile) $metaPagefile = $pagefile;
 		return $metaPagefile;
 	}
@@ -611,7 +651,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 */
 	protected function ___renderItem($pagefile, $id, $n) {
 
-		$sanitizer = $this->wire('sanitizer');
+		$sanitizer = $this->wire()->sanitizer;
 		$thumb = $this->getAdminThumb($pagefile, false);
 		$fileStats = str_replace(' ', '&nbsp;', $pagefile->filesizeStr) . ", {$pagefile->width}&times;{$pagefile->height} ";
 		
@@ -619,14 +659,11 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			if($extra->exists()) $fileStats .= " &bull; $extra->filesizeStr $name ($extra->savingsPct)";
 		}
 		
-		// $gridSize = $this->gridSize;
-
-		// <div class='gridImage__overflow' style='width: {$gridSize}px; height: {$gridSize}px'>
 		$out = $this->getTooltip($pagefile) . "
 			<div class='gridImage__overflow'>
 				$thumb[markup]
 			</div>
-			";
+		";
 		
 		if(!$this->isEditableInRendering($pagefile)) return $out;
 
@@ -647,13 +684,18 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 				$error = str_replace('{out}', $sanitizer->entities($thumb['error']), $this->themeSettings['error']);
 			} 
 			$labels = $this->labels;
+			$thumbnailActions = array();
+			if($this->hasHook('getImageThumbnailActions()')) {
+				$thumbnailActions = $this->getImageThumbnailActions($pagefile, $id, $n, 'gridImage__btn');
+			}
+			$thumbnailActions = implode('', $thumbnailActions);
 			$out .= "
 				<div class='gridImage__hover'>
 					<div class='gridImage__inner'>
-						<label for='' class='gridImage__trash'>
+						<label for='' class='gridImage__btn gridImage__trash'>
 							<input class='gridImage__deletebox' type='checkbox' name='delete_$id' value='1' title='$labels[delete]' />
 							<span class='fa fa-trash-o'></span>
-						</label>
+						</label>$thumbnailActions
 						<a class='gridImage__edit'>
 							<span>$labels[edit]</span>
 						</a>
@@ -665,12 +707,27 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			$basename = $pagefile->basename(false);
 			$focus = $pagefile->focus();
 
+			if($pagefile !== $metaPagefile) {
+				// copy custom fields data from previous file
+				foreach($metaPagefile->filedata() as $key => $value) {
+					$pagefile->filedata($key, $value);
+				}
+			}
+
 			$inputfields = $this->getItemInputfields($pagefile);
 			if($inputfields) $additional .= $inputfields->render();
+			
+			$uploadName = $pagefile->uploadName();
+			if($uploadName != "$basename.$ext") {
+				$tooltip = $uploadName;
+			} else {
+				$tooltip = $this->_('Click to rename');
+			}
+			$tooltip = $sanitizer->entities($tooltip);
 				
 			$out .= "
 				<div class='ImageData'>
-					<h2 class='InputfieldImageEdit__name'><span contenteditable='true'>$basename</span>.$ext</h2>
+					<h2 class='InputfieldImageEdit__name pw-tooltip' title='$tooltip'><span contenteditable='true'>$basename</span>.$ext</h2>
 					<span class='InputfieldImageEdit__info'>$fileStats</span>
 					<div class='InputfieldImageEdit__errors'>$error</div>
 					<div class='InputfieldImageEdit__buttons'><small>$buttons</small> $actions</div>
@@ -688,6 +745,37 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	}
 
 	/**
+	 * Get the image thumbnail icon actions/links/buttons
+	 * 
+	 * These are icon-only actions/links displayed next to the trash icon when hovering over an image preview. 
+	 * They are also displayed as icons on the far right side of a image when in full list mode. 
+	 * 
+	 * Example:
+	 * ~~~~~
+	 * $wire->addHookAfter('InputfieldImage::getImageThumbnailActions', function(HookEvent $event) {
+	 *   $image = $event->arguments(0); // Pageimage
+	 *   $class = $event->arguments(3); // class to use on all returned actions
+	 *   $a = $event->return; // array
+	 *   $a['download'] = "<a class='$class' href='$pagefile->url' download><span class='fa fa-download'></span></a>";
+	 *   $event->return = $a;
+	 * }); 
+	 * ~~~~~
+	 * 
+	 * #pw-hooker
+	 * 
+	 * @param Pageimage $pagefile
+	 * @param string $id Image id string
+	 * @param int $n Image index number
+	 * @param string $class Class that should appear on all returned actions/links/buttons
+	 * @return array 
+	 * @since 3.0.212
+	 * 
+	 */
+	protected function ___getImageThumbnailActions($pagefile, $id, $n, $class) {
+		return array();
+	}
+
+	/**
 	 * Render a Pageimage item
 	 *
 	 * @deprecated No longer used by core. Left for a little while longer in case any extending module uses it. 
@@ -701,7 +789,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		
 		$editable = $this->isEditableInRendering($pagefile);
 		$fileStats = str_replace(' ', '&nbsp;', $pagefile->filesizeStr) . ", {$pagefile->width}&times;{$pagefile->height} ";
-		$description = $this->wire('sanitizer')->entities($pagefile->description);
+		$description = $this->wire()->sanitizer->entities($pagefile->description);
 		$deleteLabel = $this->labels['delete'];
 		
 		if($editable) {
@@ -748,7 +836,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 					</div>
 				</div>
 			</div>
-			";
+		";
 
 		return $out;
 	}
@@ -765,40 +853,70 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 * 
 	 */
 	protected function ___renderButtons($pagefile, $id, $n) {
-		
 		if(!$this->useImageEditor) return '';
-	
-		if($n) {} // ignore, $n is for hooks
+		$buttonClass = $this->themeSettings['buttonClass'];
+		$buttons = $this->getImageEditButtons($pagefile, $id, $n, $buttonClass);
+		return implode('', $buttons);
+	}
+
+	/**
+	 * Get array of buttons for image edit mode
+	 * 
+	 * Hook after this to add or remove image edit buttons/actions. 
+	 * 
+	 * ~~~~~
+	 * // Example of adding a download button
+	 * $wire->addHookAfter('InputfieldImage::getImageEditButtons', function(HookEvent $event) {
+	 *   $image = $event->arguments(0); // Pageimage
+	 *   $class = $event->arguments(3);
+	 *   $buttons = $event->return; // array
+	 *   $icon = wireIconMarkup('download');
+	 *   $buttons['download'] = "<button class='$class'><a download href='$image->url'>$icon Download</a></button>";
+	 *   $event->return = $buttons;
+	 * });
+	 * ~~~~~
+	 *
+	 * #pw-hooker
+	 *
+	 * @param Pagefile|Pageimage $pagefile Image that buttons are for
+	 * @param string $id Image/file id
+	 * @param int $n Index of image/file (i.e 0=first)
+	 * @param string $buttonClass Class attribute additions that should appear on all returned <button> elements
+	 * @return array Array of <button> elements indexed by button name
+	 * @since 3.0.212
+	 *
+	 */
+	protected function ___getImageEditButtons($pagefile, $id, $n, $buttonClass) {
+		
+		$buttons = array();
 		$pageID = $pagefile->pagefiles->page->id;
 		$variationCount = $pagefile->variations()->count();
-		// if($pagefile->webp()->exists()) $variationCount++;
-		$editUrl = $this->getEditUrl($pagefile, $pageID); 
+		$editUrl = $this->getEditUrl($pagefile, $pageID);
 		$variationUrl = $this->getVariationUrl($pagefile, $id);
-		$buttonClass = $this->themeSettings['buttonClass'];
 		$modalButtonClass = trim("$buttonClass $this->modalClass pw-modal");
 		$modalAttrs = "data-buttons='#non_rte_dialog_buttons button' data-autoclose='1' data-close='#non_rte_cancel'";
 		$labels = $this->labels;
-		$out = '';
-		
-	
+
 		// Crop
-		$buttonText = str_replace('{out}', "<i class='fa fa-crop'></i> $labels[crop]", $this->themeSettings['buttonText']);
-		$out .= "<button type='button' data-href='$editUrl' class='InputfieldImageButtonCrop $modalButtonClass' $modalAttrs>$buttonText</button>";
-	
+		$icon = wireIconMarkup('crop');
+		$buttonText = str_replace('{out}', "$icon $labels[crop]", $this->themeSettings['buttonText']);
+		$buttons['crop'] = "<button type='button' data-href='$editUrl' class='InputfieldImageButtonCrop $modalButtonClass' $modalAttrs>$buttonText</button>";
+
 		// Focus
 		if($this->focusMode && $this->focusMode != 'off') {
 			$iconA = $pagefile->hasFocus ? 'fa-check-circle-o' : 'fa-circle-o';
 			$iconB = $pagefile->hasFocus ? 'fa-check-circle' : 'fa-dot-circle-o';
 			$buttonText = str_replace('{out}', "<i class='fa $iconA' data-toggle='$iconA $iconB'></i> $labels[focus]", $this->themeSettings['buttonText']);
-			$out .= "<button type='button' class='InputfieldImageButtonFocus $buttonClass'>$buttonText</button>";
+			$buttons['focus'] = "<button type='button' class='InputfieldImageButtonFocus $buttonClass'>$buttonText</button>";
 		}
-	
+
 		// Variations
-		$buttonText = "<i class='fa fa-files-o'></i> $labels[variations] <span class='ui-priority-secondary'>($variationCount)</span>";
+		$icon = wireIconMarkup('files-o');
+		$buttonText = "$icon $labels[variations] <span class='ui-priority-secondary'>($variationCount)</span>";
 		$buttonText = str_replace('{out}', $buttonText, $this->themeSettings['buttonText']);
-		$out .= "<button type='button' data-href='$variationUrl' class='$modalButtonClass' data-buttons='button'>$buttonText</button>";
-		
-		return $out;
+		$buttons['variations'] = "<button type='button' data-href='$variationUrl' class='$modalButtonClass' data-buttons='button'>$buttonText</button>";
+
+		return $buttons;
 	}
 
 	/**
@@ -815,34 +933,63 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	
 		static $hooked = null; 
 		
+		$hooks = $this->wire()->hooks;
+		
 		if($hooked === null) $hooked = 
-			$this->wire('hooks')->isHooked('InputfieldImage::getFileActions()') ||
-			$this->wire('hooks')->isHooked('InputfieldFile::getFileActions()');
+			$hooks->isHooked('InputfieldImage::getFileActions()') ||
+			$hooks->isHooked('InputfieldFile::getFileActions()');
 		
 		$actions = $hooked ? $this->getFileActions($pagefile) : $this->___getFileActions($pagefile);
 		
 		if(empty($actions)) return '';
 		
 		$selectClass = trim($this->themeSettings['selectClass'] . ' InputfieldFileActionSelect');
-		/** @var Sanitizer $sanitizer */
-		$sanitizer = $this->wire('sanitizer');
-		
+		$sanitizer = $this->wire()->sanitizer;
+	
+		$label = $sanitizer->entities1($this->_('Actions'));
 		$out =
 			"<select class='$selectClass' name='act_$id'>" .
-			"<option value=''>" . $this->_('Actions') . "</option>";
+			"<option value=''>$label</option>";
 		
 		foreach($actions as $name => $label) {
-			$out .= "<option value='$name'>" . $sanitizer->entities1($label) . "</option>";
+			$label = $sanitizer->entities1($label);
+			$out .= "<option value='$name'>$label</option>";
 		}
 
 		$out .= "</select> ";
-		$out .= "<span class='InputfieldFileActionNote detail'>" . $this->_('Action applied at save.') . "</span>";
+		$label = $sanitizer->entities1($this->_('Action applied at save.'));
+		$out .= "<span class='InputfieldFileActionNote detail'>$label</span>";
 		
 		return $out;
 	}
 
 	/**
-	 * Get array of actions available for given Pagefile
+	 * Get array of actions (displayed in select dropdown) available for given Pagefile
+	 * 
+	 * #pw-hooker
+	 * 
+	 * ~~~~~
+	 * // Example of adding an “Get EXIF data” action
+	 * $wire->addHookAfter('InputfieldImage::getFileActions', function(HookEvent $event) {
+	 *   $image = $event->arguments(0); // Pageimage
+	 *   if($image->ext == 'jpg' || $image->ext == 'jpeg') {
+	 *     $actions = $event->return; // array
+	 *     $actions['exif'] = 'Get EXIF data';
+	 *     $event->return = $actions;
+	 *   }
+	 * });
+	 * 
+	 * // Example of handling an “Get EXIF data” action
+	 * $wire->addHookAfter('InputfieldImage::processUnknownFileAction', function(HookEvent $event) {
+	 *   $image = $event->arguments(0);
+	 *   $action = $event->arguments(1);
+	 *   if($action === 'exif') {
+	 *     $exif = exif_read_data($image->filename);
+	 *     $event->warning([ "EXIF data for $image->name" => $exif ], 'icon-photo nogroup');                       
+	 *     $event->return = true;
+	 *   }
+	 * });
+	 * ~~~~~
 	 * 
 	 * @param Pagefile|Pageimage $pagefile
 	 * @return array Associative array of ('action_name' => 'Action Label')
@@ -854,7 +1001,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		static $hasIMagick = null;
 		
 		if($hasIMagick === null) {
-			$hasIMagick = $this->wire('modules')->isInstalled('ImageSizerEngineIMagick');
+			$hasIMagick = $this->wire()->modules->isInstalled('ImageSizerEngineIMagick');
 		}
 		
 		if($labels === null) $labels = array(
@@ -911,24 +1058,6 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	}
 
 	/**
-	 * Render non-editable value
-	 * 
-	 * @return string
-	 * 
-	public function ___renderValue() {
-		$value = $this->value;
-		if(!$value instanceof Pageimages) return '';
-		$out = '';
-		foreach($value as $img) {
-			$info = $this->getAdminThumb($img);
-			$out .= $info['amarkup'];
-			
-		}
-		return $out; 
-	}
-	 */
-
-	/**
 	 * Render any additional fields (for hooks)
 	 * 
 	 * #pw-hooker
@@ -981,12 +1110,10 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 * Is the given image editable during rendering?
 	 * 
 	 * @param Pagefile|Pageimage $pagefile
-	 * @return bool|int
+	 * @return bool
 	 * 
 	 */
 	protected function isEditableInRendering($pagefile) {
-		//$editable = (int) $this->useImageEditor;
-		//if($editable) {
 		if($this->renderValueMode) {
 			$editable = false;
 		} else if($pagefile->ext == 'svg') {
@@ -994,9 +1121,6 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		} else {
 			$editable = true;
 		}
-		// if(strpos($this->name, '_repeater') && preg_match('/_repeater\d+$/', $this->name)) {
-		//   $editable = false;
-		// }
 		return $editable;
 	}
 
@@ -1009,7 +1133,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 * 
 	 */
 	protected function getVariationUrl($pagefile, $id) {
-		return $this->wire('config')->urls->admin . "page/image/variations/" . 
+		return $this->wire()->config->urls->admin . "page/image/variations/" . 
 			"?id={$pagefile->page->id}" . 
 			"&file=$pagefile->name" . 
 			"&modal=1" . 
@@ -1036,11 +1160,12 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 * 
 	 */
 	protected function getEditUrl(Pagefile $pagefile, $pageID) {
-		return $this->wire('config')->urls->admin . "page/image/edit/" . 
+		$name = $this->editFieldName ? $this->editFieldName : $this->name;
+		return $this->wire()->config->urls->admin . "page/image/edit/" . 
 			"?id=$pageID" . 
 			"&file=$pageID,$pagefile->name" . 
 			"&rte=0" . 
-			"&field=$this->name";
+			"&field=$name";
 	}
 
 	/**
@@ -1125,21 +1250,19 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		if(strlen($pagefile->description)) {
 			$data[] = array(
 				$this->labels['description'],
-				"<span class='fa fa-check'></span>"
+				wireIconMarkup('check')
 			);
 		}
 		
 		if($this->useTags && strlen($pagefile->tags)) {
 			$data[] = array(
 				$this->labels['tags'], 
-				"<span class='fa fa-check'></span>"
+				wireIconMarkup('check')
 			);
 		}
 
 		return $data;
 	}
-
-
 
 	/**
 	 * Return whether or not admin thumbs should be scaled
@@ -1161,8 +1284,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 */
 	public function ___processInput(WireInputData $input) {
 	
-		/** @var Sanitizer $sanitizer */
-		$sanitizer = $this->wire('sanitizer');
+		$sanitizer = $this->wire()->sanitizer;
 		$page = $this->getRootHasPage();
 	
 		if($page && $page->id) { 
@@ -1171,16 +1293,16 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 		
 		parent::___processInput($input);
 		
-		if((int) $this->wire('input')->post("_refresh_thumbnails_$this->name")) {
+		if((int) $this->wire()->input->post("_refresh_thumbnails_$this->name")) {
 			foreach($this->value as $img) {
 				$this->getAdminThumb($img, false, true);
 			}
 			$this->message($this->_('Recreated all legacy thumbnails') . " - $this->name"); 
 		}
 
-		if(!$this->isAjax && !$this->wire('config')->ajax) {
+		if(!$this->isAjax && !$this->wire()->config->ajax) {
 			// process actions, but only on non-ajax save requests
-			foreach($this->value as $k => $pagefile) {
+			foreach($this->value as $pagefile) {
 				$id = $this->pagefileId($pagefile);
 				$action = $input->{"act_$id"};
 				if(empty($action)) continue;
@@ -1258,7 +1380,7 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 			$_pagefile = $pagefile->pagefiles->clone($pagefile);
 			$success = $_pagefile ? true : false;
 			if($success) {
-				$this->wire('session')->message(
+				$this->wire()->session->message(
 					sprintf($this->_('Duplicated file %1$s => %2$s'), $pagefile->basename(), $_pagefile->basename())
 				);
 				$showSuccess = false;
@@ -1306,7 +1428,6 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 				$deg = (int) $matches[1];
 				$success = $sizer->rotate($deg);
 			}
-			
 		}
 		
 		if($success && $rebuildVariations) $pagefile->rebuildVariations();
@@ -1333,7 +1454,12 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	}
 
 	/**
-	 * Called when an action was received that InputfieldImage does not recognize (for hooking purposes)
+	 * Called when a select dropdown action was received that InputfieldImage does not recognize (for hooking purposes)
+	 * 
+	 * This is what should be hooked to provide the processing for a custom action added from a hook.
+	 * See the ___getFileActions() method documentation for full example including both hooks.
+	 * 
+	 * #pw-hooker
 	 *
 	 * @param Pageimage $pagefile Image file to process
 	 * @param string $action Action to execute
@@ -1342,7 +1468,6 @@ class InputfieldImage extends InputfieldFile implements InputfieldItemList, Inpu
 	 *
 	 */
 	protected function ___processUnknownFileAction(Pageimage $pagefile, $action, $label) {
-		if($pagefile && $action && $label) {}
 		return null;
 	}
 

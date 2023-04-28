@@ -6,7 +6,7 @@
  * WireInputData and the WireInput class together form a simple 
  * front end to PHP's $_GET, $_POST, and $_COOKIE superglobals.
  * 
- * ProcessWire 3.x, Copyright 2016 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
  * https://processwire.com
  *
  */
@@ -122,6 +122,7 @@ class WireInput extends Wire {
 	 * 
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->useFuel(false);
 		$this->unregisterGLOBALS();
 	}
@@ -367,6 +368,7 @@ class WireInput extends Wire {
 			$this->cookieVars = $this->wire(new WireInputDataCookie($_COOKIE, $this->lazy));
 			$this->cookieVars->init();
 		}
+		$key = (string) $key;
 		if(!strlen($key)) return $this->cookieVars;
 		if($valid === null && $fallback === null && !strpos($key, '[]')) return $this->cookieVars->get($key);
 		return $this->getValidInputValue($this->cookieVars, $key, $valid, $fallback);
@@ -713,6 +715,7 @@ class WireInput extends Wire {
 	 *
 	 */
 	public function setUrlSegments(array $urlSegments) {
+		$this->urlSegments = array();
 		$n = 1;
 		foreach($urlSegments as $urlSegment) {
 			$this->setUrlSegment($n, $urlSegment);
@@ -788,8 +791,8 @@ class WireInput extends Wire {
 		if(!$verbose) return $str;
 	
 		// verbose mode takes page number, slash settings, and other $options into account
-		$page = isset($options['page']) && $options['page'] instanceof Page ? $options['page'] : $this->wire('page');
-		$template = $page->template;
+		$page = isset($options['page']) && $options['page'] instanceof Page ? $options['page'] : $this->wire()->page;
+		$template = $page->template; 
 		
 		if(isset($options['pageNum'])) {
 			$pageNum = (int) $options['pageNum']; 
@@ -855,7 +858,7 @@ class WireInput extends Wire {
 		$pageNumStr = '';
 		$pageNum = (int) $pageNum;
 		if($pageNum < 1) $pageNum = $this->pageNum();
-		if($pageNum > 1) $pageNumStr = $this->wire('config')->pageNumUrlPrefix . $pageNum;
+		if($pageNum > 1) $pageNumStr = $this->wire()->config->pageNumUrlPrefix . $pageNum;
 		return $pageNumStr;
 	}
 
@@ -917,7 +920,7 @@ class WireInput extends Wire {
 		} else {
 			// Like PHP's $_REQUEST where accessing $input->var considers get/post/cookie/whitelist
 			// what it actually considers depends on what's set in the $config->wireInputOrder variable
-			$order = (string) $this->wire('config')->wireInputOrder; 
+			$order = (string) $this->wire()->config->wireInputOrder; 
 			if(!$order) return null;
 			$types = explode(' ', $order); 
 			foreach($types as $t) {
@@ -963,7 +966,7 @@ class WireInput extends Wire {
 		
 		$defaults = array(
 			'withQueryString' => is_bool($options) ? $options : false,
-			'page' => $this->wire('page'), 
+			'page' => $this->wire()->page, 
 			'pageNum' => 0, 
 		);
 
@@ -971,8 +974,8 @@ class WireInput extends Wire {
 		
 		/** @var Page $page */
 		$page = $options['page'];
-		$config = $this->wire('config');
-		$sanitizer = $this->wire('sanitizer');
+		$config = $this->wire()->config;
+		$sanitizer = $this->wire()->sanitizer;
 		$url = '';
 		
 		if($page && $page->id) {
@@ -1092,12 +1095,12 @@ class WireInput extends Wire {
 	 */
 	public function httpHostUrl($scheme = null, $httpHost = '') {
 		if(empty($httpHost)) {
-			$httpHost = $this->wire('config')->httpHost;
+			$httpHost = $this->wire()->config->httpHost;
 		}
 		if($scheme === true) {
 			$scheme = 'https://';
 		} else if($scheme === false) {
-			$scheme = 'http://';
+			$scheme = 'http' . '://';
 		} else if(is_string($scheme)) {
 			if(strlen($scheme)) {
 				if(strpos($scheme, '//') === false) $scheme = "$scheme://";
@@ -1139,7 +1142,7 @@ class WireInput extends Wire {
 	public function canonicalUrl(array $options = array()) {
 		
 		$defaults = array(
-			'page' => $this->wire('page'),
+			'page' => $this->wire()->page,
 			'scheme' => '', 
 			'host' => '',
 			'urlSegments' => true, 
@@ -1154,7 +1157,7 @@ class WireInput extends Wire {
 		$pageUrl = $page->url();
 		$template = $page->template;
 		$requestUrl = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-		$languages = $this->wire('languages'); /** @var Languages|null $languages */
+		$languages = $this->wire()->languages;
 		$language = $options['language']; /** @var Language|int|string|bool */
 		
 		if(is_string($options['notSegments'])) {
@@ -1162,7 +1165,6 @@ class WireInput extends Wire {
 		}
 
 		if($language !== true && $languages) {
-			$language = $options['language'];
 			if($language === false) {
 				$language = $languages->getDefault();
 			} else if(!$language instanceof Language) {
@@ -1290,7 +1292,7 @@ class WireInput extends Wire {
 		// bundle in scheme and host and return canonical URL
 		$url = $this->httpHostUrl($scheme, $options['host']) . $url;
 		
-		if($page->of()) $url = $this->wire('sanitizer')->entities($url);
+		if($page->of()) $url = $this->wire()->sanitizer->entities($url);
 		
 		return $url;
 	}
@@ -1513,7 +1515,7 @@ class WireInput extends Wire {
 	 *
 	 */
 	public function scheme() {
-		return $this->wire('config')->https ? 'https' : 'http'; 
+		return $this->wire()->config->https ? 'https' : 'http'; 
 	}
 
 	/**
@@ -1596,7 +1598,7 @@ class WireInput extends Wire {
 			
 		} else if($value === null && $valid === null && $fallback === null) {
 			// everything null
-			$cleanValue = null;
+			// $cleanValue = null;
 			
 		} else if($valid === null) {
 			// no sanitization/validation requested
@@ -1681,7 +1683,7 @@ class WireInput extends Wire {
 	 * @param string $method Sanitizer method name or CSV string of sanitizer method names
 	 * @param string|array|null $value
 	 * @param bool $getArray
-	 * @return array|mixed|null
+	 * @return array|int|float|string|null
 	 * @throws WireException If given unknown sanitizer method
 	 * 
 	 */
@@ -1844,7 +1846,7 @@ class WireInput extends Wire {
 	protected function patternMatchesValue($pattern, $value, $partial = false) {
 		if(is_array($value)) {
 			$result = '';
-			foreach($value as $k => $v) {
+			foreach($value as $v) {
 				$result = $this->patternMatchesValue($pattern, $v, $partial); 
 				if($result !== '') break;
 			}

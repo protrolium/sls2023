@@ -3,7 +3,7 @@
 /**
  * Base class for Page List rendering
  * 
- * ProcessWire 3.x, Copyright 2020 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
  * https://processwire.com
  * 
  * @method array getPageActions(Page $page)
@@ -80,6 +80,24 @@ abstract class ProcessPageListRender extends Wire {
 	protected $useTrash = false;
 
 	/**
+	 * Page IDs to hide in page list (both keys and values are page IDs)
+	 * 
+	 * @var array
+	 * 
+	 */
+	protected $hidePages = array();
+
+	/**
+	 * Do not hide above pages when current state matches value [ 'debug', 'advanced', 'superuser' ]
+	 * 
+	 * Both keys and values are the same. 
+	 * 
+	 * @var array
+	 * 
+	 */
+	protected $hidePagesNot = array();
+
+	/**
 	 * @var string Quantity type
 	 * 
 	 */
@@ -121,7 +139,8 @@ abstract class ProcessPageListRender extends Wire {
 	 * 
 	 */
 	public function wired() {
-		$this->superuser = $this->wire('user')->isSuperuser();
+		$this->superuser = $this->wire()->user->isSuperuser();
+		
 		$this->actionLabels = array(
 			'edit' => $this->_('Edit'), // Edit page action
 			'view' => $this->_('View'), // View page action
@@ -137,10 +156,13 @@ abstract class ProcessPageListRender extends Wire {
 			'trash' => $this->_('Trash'), // Trash page action
 			'restore' => $this->_('Restore'), // Restore from trash action
 		);
+		
 		require_once(dirname(__FILE__) . '/ProcessPageListActions.php');
+		
 		$this->actions = $this->wire(new ProcessPageListActions());
 		$this->actions->setActionLabels($this->actionLabels);
-		$this->numChildrenHook = $this->wire('hooks')->isMethodHooked($this, 'getNumChildren');
+		$this->numChildrenHook = $this->wire()->hooks->isMethodHooked($this, 'getNumChildren');
+		
 		parent::wired();
 	}
 
@@ -221,6 +243,24 @@ abstract class ProcessPageListRender extends Wire {
 	}
 
 	/**
+	 * Set when pages should be hidden in page list
+	 * 
+	 * @param array $hidePages IDs of pages that should be hidden
+	 * @param array $hidePagesNot Do not hide pages when state matches one or more of 'debug', 'advanced', 'superuser'
+	 * 
+	 */
+	public function setHidePages($hidePages, $hidePagesNot) {
+		if(is_array($hidePages)) {
+			$this->hidePages = array();
+			foreach($hidePages as $id) $this->hidePages[(int) $id] = (int) $id;
+		}
+		if(is_array($hidePagesNot)) {
+			$this->hidePagesNot = array();
+			foreach($hidePagesNot as $state) $this->hidePagesNot[$state] = $state;
+		}
+	}
+
+	/**
 	 * Set the quantity type
 	 * 
 	 * @param string $qtyType
@@ -248,7 +288,20 @@ abstract class ProcessPageListRender extends Wire {
 	 *
 	 */
 	public function ___getPageActions(Page $page) {
-		return $this->actions->getActions($page); 
+		$actions = $this->actions->getActions($page);
+		/*
+		 * @todo force 'extras' option to be last
+		if(isset($actions['extras'])) {
+			$keys = array_keys($actions);
+			$lastKey = array_pop($keys);
+			if($lastKey !== 'extras') {
+				$extras = $actions['extras'];
+				unset($actions['extras']);
+				$actions['extras'] = $extras; // move to last
+			}
+		}
+		*/
+		return $actions;
 	}
 	
 	/**
@@ -264,8 +317,13 @@ abstract class ProcessPageListRender extends Wire {
 	public function ___getPageLabel(Page $page, array $options = array()) {
 
 		$sanitizer = $this->wire()->sanitizer;
-
-		if(strpos($this->pageLabelField, '!') === 0) {
+		$formatLabel = true;
+		$label = $page->getPageListLabel();
+		
+		if(!empty($label)) {
+			// label from custom page class overrides others
+			$formatLabel = false;
+		} else if(strpos($this->pageLabelField, '!') === 0) {
 			// exclamation forces this one to be used, rather than template-specific one
 			$label = trim(ltrim($this->pageLabelField, '!'));
 		} else {
@@ -281,20 +339,24 @@ abstract class ProcessPageListRender extends Wire {
 		if(!empty($options['noIcon'])) $icon = '';
 		
 		while(strpos($label, '  ') !== false) $label = str_replace('  ', ' ', $label);
-		
-		$bracket1 = strpos($label, '{'); 
-		
-		if($bracket1 !== false && $bracket1 < strpos($label, '}')) {
-			// predefined format string
-			// adjust string so that it'll work on a single line, without the markup in it
-			$value = $page->getText($label, true, true); // oneLine=true, entities=true
-		} else {
-			// space delimited list of fields
-			$value = $this->getPageLabelDelimited($page, $label, $options);
-		}
+	
+		if($formatLabel) {
+			$bracket1 = strpos($label, '{');
 
-		if(!strlen($value)) {
-			$value = $sanitizer->entities($page->getUnformatted("title|name"));
+			if($bracket1 !== false && $bracket1 < strpos($label, '}')) {
+				// predefined format string
+				// adjust string so that it'll work on a single line, without the markup in it
+				$value = $page->getText($label, true, true); // oneLine=true, entities=true
+			} else {
+				// space delimited list of fields
+				$value = $this->getPageLabelDelimited($page, $label, $options);
+			}
+
+			if(!strlen($value)) {
+				$value = $sanitizer->entities($page->getUnformatted("title|name"));
+			}
+		} else {
+			$value = $label;
 		}
 		
 		if(!empty($options['noTags']) && strpos($value, '<') !== false) {
@@ -448,7 +510,9 @@ abstract class ProcessPageListRender extends Wire {
 	public function getMoreURL() {
 		if($this->limit && ($this->numChildren($this->page, 1) > ($this->start + $this->limit))) {
 			$start = $this->start + $this->limit;
-			return $this->config->urls->admin . "page/list/?&id={$this->page->id}&start=$start&render=" . $this->getRenderName();
+			$config = $this->wire()->config;
+			$render = $this->getRenderName();
+			return $config->urls->admin . "page/list/?&id={$this->page->id}&start=$start&render=$render";
 		}
 		return '';
 	}

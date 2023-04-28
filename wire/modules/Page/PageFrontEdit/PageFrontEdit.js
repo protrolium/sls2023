@@ -2,6 +2,7 @@ function PageFrontEditInit($) {
 	
 	var buttons = $('.pw-edit-buttons'); // wrapper for fixed position edit buttons
 	var ckeditors = {}; // instances of ckeditor
+	var tinymces = {}; // instances of tinymce
 	var isTouch = (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
 	var busy = false;
 
@@ -50,7 +51,7 @@ function PageFrontEditInit($) {
 			}
 		}
 	};
-
+	
 	/**
 	 * Event when editable area is double clicked or touched
 	 * 
@@ -71,7 +72,7 @@ function PageFrontEditInit($) {
 		buttons.show();
 
 		// init ckeditor, if used for this field
-		if(t.hasClass('pw-edit-InputfieldCKEditor') && typeof CKEDITOR != 'undefined') {
+		if(t.hasClass('pw-edit-InputfieldCKEditor') && typeof CKEDITOR !== 'undefined') {
 			if(typeof ckeditors[copyID] == "undefined") {
 				var editor = CKEDITOR.inline(copyID, ProcessWire.config['InputfieldCKEditor_' + name]);
 				ckeditors[copyID] = editor;
@@ -81,10 +82,18 @@ function PageFrontEditInit($) {
 				});
 				editor.on('change', ckeBlurEvent);
 			}
+		} else if(t.hasClass('pw-edit-InputfieldTinyMCE')) {
+			if(typeof tinymces[copyID] === 'undefined') {
+				InputfieldTinyMCE.init('#' + copyID, 'PageFrontEdit'); 
+				var editor = tinymce.get(copyID);
+				tinymces[copyID] = editor;
+				editor.on('dirty change', function(e) {
+					t.addClass('pw-changed'); 
+				}); 
+			}
 		}
-
 		setTimeout(function() {
-			copy.focus();
+			copy.trigger('focus');
 		}, 250);
 	};
 
@@ -101,23 +110,24 @@ function PageFrontEditInit($) {
 		var name = t.attr('data-name');
 
 		copy.hide();
+		orig.show();
 
 		if(isTouch) orig.on('pwdoubletap', function(e) {
 			inlineEditEvent(e, t, orig, copy);
 			return false;
 		});
 		
-		orig.dblclick(function(e) {
+		orig.on('dblclick', function(e) {
 			inlineEditEvent(e, t, orig, copy);
 			return false;
 		});
 
 		if(t.is('span')) { // single-line text
 			// via @canrau
-			copy.keydown(function(e) {
+			copy.on('keydown', function(e) {
 				if(e.keyCode == 13){
 					e.preventDefault();
-					$(this).blur();
+					$(this).trigger('blur');
 				}
 			});
 		}
@@ -138,7 +148,7 @@ function PageFrontEditInit($) {
 					timer = setTimeout(function() {
 						clicks = 0;
 						allowClick = true;
-						$a[0].click();
+						$a[0].trigger('click');
 						return true;
 					}, 700);
 				} else {
@@ -154,9 +164,9 @@ function PageFrontEditInit($) {
 			});
 		}
 
-		// handler for non-cke blur event
-		if(!t.hasClass('pw-edit-InputfieldCKEditor')) {
-			copy.blur(function() {
+		// handler for non-cke/mce blur event
+		if(!t.hasClass('pw-edit-InputfieldCKEditor') && !t.hasClass('pw-edit-InputfieldTinyMCE')) {
+			copy.on('blur', function() {
 				var copy = $(this);
 				var t = copy.closest('.pw-editing');
 				if(t.length == 0) return;
@@ -253,6 +263,9 @@ function PageFrontEditInit($) {
 				}
 				*/
 				postData.fields[key] = editor.getData();
+			} else if(t.hasClass('pw-edit-InputfieldTinyMCE')) {
+				var editor = tinymces[copy.attr('id')];
+				postData.fields[key] = editor.getContent();
 			} else {
 				var textarea = document.createElement('textarea');
 				textarea.innerHTML = copy[0].innerHTML;
@@ -263,7 +276,14 @@ function PageFrontEditInit($) {
 		btnSave.hide();
 		btnCancel.hide();
 		btnSaving.show();
-
+		
+		for(var copyID in tinymces) {
+			InputfieldTinyMCE.destroyEditors($('#' + copyID));
+		}
+		$('.InputfieldTinyMCELoaded').removeClass('InputfieldTinyMCELoaded');
+		$('.pw-edit-InputfieldTinyMCE').removeClass('pw-editing pw-edited');
+		tinymces = {}
+		
 		// post save data to server
 		$.post(ProcessWire.config.PageFrontEdit.pageURL, postData, function(data) {
 			btnSaving.hide();
@@ -306,7 +326,7 @@ function PageFrontEditInit($) {
 				buttons.hide();
 				$('.pw-editing, .pw-edited').each(function() {
 					var t = $(this);
-					t.removeClass('pw-editing, pw-edited, pw-changed');
+					t.removeClass('pw-editing pw-edited pw-changed');
 					var orig = t.children('.pw-edit-orig');
 					var copy = t.children('.pw-edit-copy');
 					copy.hide();
@@ -319,6 +339,9 @@ function PageFrontEditInit($) {
 				instance.destroy();
 			}
 			ckeditors = {};
+			$('.pw-edit-InputfieldTinyMCE').each(function() {
+				inlineInitEditableRegion($(this));
+			});
 			
 		});
 	}
@@ -343,7 +366,7 @@ function PageFrontEditInit($) {
 			viewURL += (viewURL.indexOf('?') > -1 ? '&' : '?') + 'pw_edit_fields=' + target.attr('data-fields');
 			setBusy(true);
 
-			target.load(viewURL + ' #' + targetID, {}, function() {
+			target.on('load', viewURL + ' #' + targetID, {}, function() {
 				var t = $(this);
 				var children = t.children();
 				if(children.length) {
@@ -383,6 +406,21 @@ function PageFrontEditInit($) {
 		// initialize modal edit regions
 		modalInitEditableRegions();
 		
+		if($('.pw-edit-InputfieldTinyMCE').length) {
+			var file1 = ProcessWire.config.PageFrontEdit.files.tinymce1;
+			var file2 = ProcessWire.config.PageFrontEdit.files.tinymce2;
+			jQuery.getScript(file1, function() {
+				tinymce.baseURL = TINYMCE_BASEURL;
+				tinymce.suffix = '.min';
+				jQuery.getScript(file2, function() {
+				}).fail(function(jqxhr, settings, exception) {
+					alert('failed to load ' + file2 + ': ' + exception);
+				});
+			}).fail(function(jqxhr, settings, exception) {
+				alert('failed to load ' + file1 + ': ' + exception);
+			});
+		}
+		
 		// load ckeditor, modal and plugins, if needed
 		if($('.pw-edit-InputfieldCKEditor').length) {
 			jQuery.getScript(ProcessWire.config.PageFrontEdit.files.ckeditor, function() {
@@ -405,11 +443,11 @@ function PageFrontEditInit($) {
 		}
 
 		// click action to cancel edits
-		$('.pw-edit-cancel').click(inlineCancelClickEvent);
+		$('.pw-edit-cancel').on('click', inlineCancelClickEvent);
 
 		// click action to save edits
-		$('.pw-edit-save').click(function() {
-			$('.pw-editing:not(.pw-edit-InputfieldCKEditor)').blur();
+		$('.pw-edit-save').on('click', function() {
+			$('.pw-editing:not(.pw-edit-InputfieldCKEditor)').trigger('blur');
 			setTimeout(function() {
 				inlineSaveClickEvent();
 			}, 250); 

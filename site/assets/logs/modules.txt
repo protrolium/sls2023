@@ -41,3 +41,95 @@
 2022-10-16 19:54:41	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=98	Saved module info caches
 2022-10-20 21:11:22	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=105	Installed module 'InputfieldPageAutocomplete'
 2022-10-20 21:11:23	entelec9	http://localhost:8888/sls2023/processwire/setup/field/edit?id=105	Saved module info caches
+2022-10-25 12:48:46	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-25 12:48:47	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-25 12:48:50	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'MagicPages'
+2022-10-25 12:48:50	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'RockMigrations'
+2022-10-25 12:48:50	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-10-25 12:48:50	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations&collapse_info=1	Uninstalled module 'MagicPages'
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations&collapse_info=1	Saved module info caches
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations&collapse_info=1	Uninstalled module 'RockMigrations'
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations&collapse_info=1	Saved module info caches
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/?uninstalled=1	Installed module 'MagicPages'
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/?uninstalled=1	Installed module 'RockMigrations'
+2022-10-25 13:42:17	entelec9	http://localhost:8888/sls2023/processwire/module/?uninstalled=1	Saved module info caches
+2022-10-25 13:42:42	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations	Uninstalled module 'MagicPages'
+2022-10-25 13:42:42	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations	Saved module info caches
+2022-10-25 13:42:42	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations	Uninstalled module 'RockMigrations'
+2022-10-25 13:42:43	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=RockMigrations	Saved module info caches
+2022-10-25 13:42:43	entelec9	http://localhost:8888/sls2023/processwire/module/?uninstalled=1	Installed module 'MagicPages'
+2022-10-25 13:42:43	entelec9	http://localhost:8888/sls2023/processwire/module/?uninstalled=1	Installed module 'RockMigrations'
+2022-10-25 13:42:43	entelec9	http://localhost:8888/sls2023/processwire/module/?uninstalled=1	Saved module info caches
+2022-10-31 14:37:08	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-31 14:37:08	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/MagicPages.module.php, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module.php
+2022-10-31 14:37:10	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-10-31 14:37:10	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/MagicPages.module.php, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module.php
+2022-10-31 14:37:19	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'ProcessDuplicator'
+2022-10-31 14:37:19	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'Duplicator'
+2022-10-31 14:37:19	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-10-31 14:37:19	entelec9	http://localhost:8888/sls2023/processwire/module/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-09 12:49:59	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-09 12:49:59	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-09 12:50:01	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-09 12:50:01	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-09 12:50:04	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'TextformatterEmoji'
+2022-12-09 12:50:05	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-12-09 12:50:05	entelec9	http://localhost:8888/sls2023/processwire/module/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-13 12:23:02	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-13 12:23:02	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-13 12:23:03	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-13 12:23:03	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-13 12:23:07	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'SubscribeToMailchimp'
+2022-12-13 12:23:07	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-12-13 12:23:07	entelec9	http://localhost:8888/sls2023/processwire/module/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-14 14:21:46	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-14 14:21:46	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-14 14:21:47	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-14 14:21:47	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-14 14:21:52	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'MarkupMetadata'
+2022-12-14 14:21:52	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-12-14 14:21:52	entelec9	http://localhost:8888/sls2023/processwire/module/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-14 14:42:35	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=SubscribeToMailchimp&collapse_info=1	Uninstalled module 'SubscribeToMailchimp'
+2022-12-14 14:42:35	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=SubscribeToMailchimp&collapse_info=1	Saved module info caches
+2022-12-14 14:42:35	entelec9	http://localhost:8888/sls2023/processwire/module/edit?name=SubscribeToMailchimp&collapse_info=1	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-15 15:05:19	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-15 15:05:19	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-15 15:05:21	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2022-12-15 15:05:21	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2022-12-15 15:05:24	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'SearchEngine'
+2022-12-15 15:05:24	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2022-12-15 15:05:24	entelec9	http://localhost:8888/sls2023/processwire/module/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 13:45:58	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-26 13:45:58	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 13:46:01	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-26 13:46:01	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 13:46:01	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 1 module version changes (applied when each module is loaded): 2.1.4 => 2.39.2: RockFrontend
+2023-04-26 13:46:05	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=RockFrontend	Saved module info caches
+2023-04-26 13:46:05	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=RockFrontend	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 13:46:05	entelec9	http://localhost:8888/sls2023/?rockfrontend-livereload=jz5hmNuLxLIHUWuFmAmxvxgLtp7PEPm	Saved module info caches
+2023-04-26 14:37:37	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-26 14:37:37	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 14:37:39	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-26 14:37:39	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 14:37:42	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=Duplicator	Saved module info caches
+2023-04-26 14:37:42	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=Duplicator	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-26 14:37:42	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=Duplicator	Found 2 module version changes (applied when each module is loaded): 1.4.26 => 1.4.29: Duplicator, 1.4.26 => 1.4.29: ProcessDuplicator
+2023-04-27 11:55:57	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1	Saved module info caches
+2023-04-27 11:55:57	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-27 11:56:18	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1	Saved module info caches
+2023-04-27 11:56:18	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1	Found 2 module(s) missing file: MagicPages => /Applications/MAMP/htdocs/sls2023/site/modules/MagicPages/MagicPages.module, RockMigrations => /Applications/MAMP/htdocs/sls2023/site/modules/RockMigrations/RockMigrations.module
+2023-04-27 12:15:20	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-27 12:15:21	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-27 12:15:23	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'ProcessWireUpgradeCheck'
+2023-04-27 12:15:23	entelec9	http://localhost:8888/sls2023/processwire/module/	Installed module 'ProcessWireUpgrade'
+2023-04-27 12:15:23	entelec9	http://localhost:8888/sls2023/processwire/module/	Saved module info caches
+2023-04-27 12:16:26	entelec9	http://localhost:8888/sls2023/processwire/setup/upgrades/refresh	Saved module info caches
+2023-04-27 12:18:34	entelec9	http://localhost:8888/sls2023/processwire/setup/upgrades/	Saved module info caches
+2023-04-27 12:18:34	entelec9	http://localhost:8888/sls2023/processwire/setup/upgrades/	Found 14 module version changes (applied when each module is loaded): 0.0.3 => 0.0.6: PageFrontEdit, 1.9.6 => 1.10.4: JqueryUI, 2.2.1 => 2.31.3: JqueryTableSorter, 1.8.3 => 1.12.4: JqueryCore, 0.0.1 => 1.1.0: JqueryMagnific, 4.9.6 => 4.9.7: MarkupHTMLPurifier, 1.2.4 => 1.2.6: InputfieldImage, 1.2.6 => 1.2.8: InputfieldFile, 1.0.1 => 1.0.2: InputfieldEmail, 1.7.0 => 1.7.1: InputfieldCKEditor, 1.1.3 => 1.1.4: ProcessField, 1.0.9 => 1.1.1: ProcessPageEditLink, 1.1.1 => 1.1.2: ProcessPageEdit, 1.0.8 => 1.0.9: ProcessLogin
+2023-04-27 12:18:45	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-27 12:18:45	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 10 module version changes (applied when each module is loaded): 0.0.1 => 1.1.0: JqueryMagnific, 4.9.6 => 4.9.7: MarkupHTMLPurifier, 1.2.4 => 1.2.6: InputfieldImage, 1.2.6 => 1.2.8: InputfieldFile, 1.0.1 => 1.0.2: InputfieldEmail, 1.7.0 => 1.7.1: InputfieldCKEditor, 1.1.3 => 1.1.4: ProcessField, 1.0.9 => 1.1.1: ProcessPageEditLink, 1.1.1 => 1.1.2: ProcessPageEdit, 1.0.8 => 1.0.9: ProcessLogin
+2023-04-27 12:18:46	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Saved module info caches
+2023-04-27 12:18:46	entelec9	http://localhost:8888/sls2023/processwire/module/download/	Found 11 module version changes (applied when each module is loaded): 0.0.1 => 1.1.0: JqueryMagnific, 4.9.6 => 4.9.7: MarkupHTMLPurifier, 1.2.4 => 1.2.6: InputfieldImage, 1.2.6 => 1.2.8: InputfieldFile, 1.0.1 => 1.0.2: InputfieldEmail, 1.7.0 => 1.7.1: InputfieldCKEditor, 1.1.3 => 1.1.4: ProcessField, 1.0.9 => 1.1.1: ProcessPageEditLink, 1.1.1 => 1.1.2: ProcessPageEdit, 1.0.8 => 1.0.9: ProcessLogin, 0.35.2 => 0.35.3: SearchEngine
+2023-04-27 12:18:48	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=SearchEngine	Saved module info caches
+2023-04-27 12:18:48	entelec9	http://localhost:8888/sls2023/processwire/module/?reset=1&edit=SearchEngine	Found 10 module version changes (applied when each module is loaded): 0.0.1 => 1.1.0: JqueryMagnific, 4.9.6 => 4.9.7: MarkupHTMLPurifier, 1.2.4 => 1.2.6: InputfieldImage, 1.2.6 => 1.2.8: InputfieldFile, 1.0.1 => 1.0.2: InputfieldEmail, 1.7.0 => 1.7.1: InputfieldCKEditor, 1.1.3 => 1.1.4: ProcessField, 1.0.9 => 1.1.1: ProcessPageEditLink, 1.1.1 => 1.1.2: ProcessPageEdit, 1.0.8 => 1.0.9: ProcessLogin

@@ -1,10 +1,13 @@
+<img src=RockFrontend.svg height=80><br><br>
+
 # Take your ProcessWire Frontend Development to the Next Level 🚀🚀
 
 <br>
 
 See the video here:
 
-<a href="https://www.youtube.com/watch?v=7CoIj--u4ps"><img src=thumb.jpg></a>
+<a href="https://www.youtube.com/watch?v=7CoIj--u4ps"><img src=thumb.jpg height=300></a>
+<a href="https://www.youtube.com/watch?v=6ld4daFDQlY"><img src=https://user-images.githubusercontent.com/8488586/200658445-641f8127-7c22-4d41-8eb1-6c00bc0fccba.png height=300></a>
 
 <br>
 
@@ -14,9 +17,7 @@ https://processwire.com/talk/topic/27417-rockfrontend-%F0%9F%9A%80%F0%9F%9A%80-t
 
 # Donations
 
-<a href=https://github.com/sponsors/baumrock><img src=donate.svg></a>
-
-😎🤗👍
+https://github.com/sponsors/baumrock 😎🤗👍
 
 <img src=hr.svg>
 
@@ -211,14 +212,8 @@ href=/site/assets/files/1/favicon.192x192.png> <link rel='apple-touch-icon'
 type='image/png' sizes='167x167' href=/site/assets/files/1/favicon.167x167.png>
 <link rel='apple-touch-icon' type='image/png' sizes='180x180'
 href=/site/assets/files/1/favicon.180x180.png>
-<link
-  rel="manifest"
-  href="/website.webmanifest"
-/>
-<meta
-  name="theme-color"
-  content="#074589"
-/>
+<link rel="manifest" href="/website.webmanifest" />
+<meta name="theme-color" content="#074589" />
 ```
 
 ### Adding a manifest file to your project
@@ -410,7 +405,7 @@ $rockfrontend->styles('foo')->render() --> /site/templates/bundle/foo.css
 
 ### Does RockFrontend force me to use a CSS Frontend Framework?
 
-No! Some examples might use UIkit classes, but you can choose whatever framework you like (or none of course). You can also use TailwindCSS but of course you'll need to add your own frontend build pipeline!
+No! Some examples might use UIkit classes, but you can choose whatever framework you like (or none of course). You can also use TailwindCSS but of course you'll need to add your own frontend build pipeline! Or use https://github.com/gebeer/RockFrontendTailwind
 
 ### Does RockFrontend use an MVC pattern or force me to use one?
 
@@ -420,42 +415,7 @@ RockFrontend does not force you to use an MVC architecture, though I'm always us
 
 # Example \_main.php
 
-```php
-<?php namespace ProcessWire;
-/** @var RockFrontend $rockfrontend */
-$rockfrontend->styles()
-  ->add(/path/to/your/file.css)
-  ;
-$rockfrontend->scripts()
-  ->add(/path/to/your/file.js)
-  ;
-?><!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <?= $rockfrontend->seo() ?>
-  <?php
-  // your scripts will be injected here automatically
-  // see the video for details!
-  ?>
-</head>
-<body>
-  <?php
-  // render layout from page field or from /site/templates/layouts
-  echo $rockfrontend->renderLayout($page);
-
-  // this is just an example of how you could add another scripts section
-  // you can safely remove this call if you don't want to add any scripts
-  // at the bottom of your page body
-  echo $rockfrontend->scripts('body')
-    ->add('site/templates/bundle/main.js')
-    ->render();
-  ?>
-</body>
-</html>
-```
+Please see https://github.com/baumrock/RockFrontend/blob/main/profiles/rock/files/site/templates/_main.php
 
 <img src=hr.svg>
 
@@ -463,25 +423,30 @@ $rockfrontend->scripts()
 
 ## LATTE and translatable strings
 
-Unfortunately you can't use ProcessWire's translation system in LATTE files. You can either use an MVC approach and move your translatable strings into the controller file (custom page class) or you can use RockFrontend's translation helper:
+Since version 2.24.0 RockFrontend supports translatable strings in LATTE files!! 😎🥳
+
+This are the three versions that you can use to translate strings in your LATTE files - choose whatever you prefer.
 
 ```php
-// define translations, eg in /site/init.php
-/** @var RockFrontend $rf */
-$rf = $this->wire->modules->get('RockFrontend');
-$rf->x([
-  'status_loggedin' => __('You are now logged in'),
-  'status_loggedout' => __('Pleas log in'),
-  'logout' => __('Logout'),
-  'login' => __('Login'),
-]);
+<p>{=__('Das ist ein Test')}</p>
+<p>{=_x('foo bar', 'context')}</p>
+<p>{=_n('Found one item', 'Found multiple items', 1)}</p>
+<p>{=_n('Found one item', 'Found multiple items', 2)}</p>
+
+<p>{$rf->_('Das ist ein Test')}</p>
+<p>{$rf->_x('foo bar', 'context')}</p>
+<p>{$rf->_n('Found one item', 'Found multiple items', 1)}</p>
+<p>{$rf->_n('Found one item', 'Found multiple items', 2)}</p>
+
+<p>{$rockfrontend->_('Das ist ein Test')}</p>
+<p>{$rockfrontend->_x('foo bar', 'context')}</p>
+<p>{$rockfrontend->_n('Found one item', 'Found multiple items', 1)}</p>
+<p>{$rockfrontend->_n('Found one item', 'Found multiple items', 2)}</p>
 ```
 
-In your LATTE files you can output translations like this:
+Note that when using the function-syntax you must prepend the function call with an equal sign! While the translation will - in theory - also work without the equal sign you will not be able to translate the string in the backend, because the regex will not find it!
 
-```html
-<button>{$user->isLoggedin() ? x('logout') : x('login')}</button>
-```
+In case you have an older version of RockFrontend [here](https://github.com/baumrock/RockFrontend/tree/12fa350b69873054bb529e985f01c2dcdeef594f#latte-and-translatable-strings) is the link to the outdated workaround.
 
 ## Adding assets to your site (JS or CSS)
 
@@ -492,6 +457,8 @@ $rockfrontend->scripts()
   ->add('/path/to/your/script.js')
   // you can add any custom flags to your $rockfrontend variable at runtime!
   ->addIf('/path/to/foo.js', $rockfrontend->needsFooScript)
+  ->addIf('/path/to/slider.js', $page instanceof HomePage)
+  ->addIf('/path/to/blogscript.js', $page->template == 'blogitem')
   ;
 $rockfrontend->styles()
   ->add(...)
@@ -550,11 +517,7 @@ You can even provide variables to replace, so you can create completely dynamic 
 RockFrontend comes with a handy method `isActive()` to keep your menu markup clean. Using `latte` you'll get super simple markup without if-else-hell:
 
 ```html
-<nav
-  id="tm-menu"
-  class="tm-boxed-padding"
-  uk-navbar
->
+<nav id="tm-menu" class="tm-boxed-padding" uk-navbar>
   <div class="uk-navbar-center uk-visible@m">
     <ul class="uk-navbar-nav">
       <li n:foreach="$home->children() as $item">
@@ -564,10 +527,7 @@ RockFrontend comes with a handy method `isActive()` to keep your menu markup cle
         >
           {$item->title}
         </a>
-        <div
-          class="uk-navbar-dropdown"
-          n:if="$item->numChildren()"
-        >
+        <div class="uk-navbar-dropdown" n:if="$item->numChildren()">
           <ul class="uk-nav uk-navbar-dropdown-nav">
             <li
               n:foreach="$item->children() as $child"
@@ -583,71 +543,9 @@ RockFrontend comes with a handy method `isActive()` to keep your menu markup cle
 </nav>
 ```
 
-## Grow feature
+## Grow/Shrink feature
 
-RockFrontend will automatically add the `--rf-grow` CSS variable to the pages root element. You can use this variable to easily scale fonts/paddings/margins along with the users viewport width.
-
-### Examples using REM
-
-```css
-h1 {
-  /* min size = 3rem */
-  /* max size = 5rem */
-  font-size: calc(3rem + 2rem * var(--rf-grow));
-}
-h2 {
-  /* min size = 2rem */
-  /* max size = 3rem */
-  font-size: calc(2rem + 1rem * var(--rf-grow));
-}
-section {
-  /* min padding: 3rem */
-  /* max padding: 6rem */
-  padding-top: calc(3rem + 3rem * var(--rf-grow));
-  padding-bottom: calc(3rem + 3rem * var(--rf-grow));
-}
-```
-
-By default the minimum width is set to `400` and the maximum is set to `1440`. You can set custom min/max values like this:
-
-```php
-// somewhere in ready.php or _main.php
-$rockfrontend->js('growMin', 800);
-$rockfrontend->js('growMax', 1000);
-```
-
-### Setting min/max values as PX
-
-If you want hardcoded pixel values in your CSS you can do this:
-
-```css
-h1 {
-  font-size: calc(10px + 30px * var(--rf-grow));
-}
-```
-
-The problem is that <a href=https://uxdesign.cc/why-designers-should-move-from-px-to-rem-and-how-to-do-that-in-figma-c0ea23e07a15>PX units are not always the best option for the web</a>. Though you'll likely get font size information from designers in PX units. For example the design might have H1 headlines on mobile in 30px and on desktop in 50px. Same goes for line-height etc.
-
-Transforming those PX values into REM units is tedious and you'll end up with weird numbers like 1.234rem which is not easy to read by humans. That's why RockFrontend comes
-with a helper that you can use in any CSS or LESS file and that will transform this:
-
-```css
-h2 {
-  font-size: rfGrow(10pxrem, 30pxrem);
-  line-height: rfGrow(15pxrem, 35pxrem);
-  border-bottom: rfGrow(1px, 10px) solid red;
-}
-```
-
-Into that:
-
-```css
-h2 {
-  font-size: calc(0.625rem + 1.25rem * var(--rf-grow));
-  line-height: calc(0.938rem + 1.25rem * var(--rf-grow));
-  border-bottom: calc(1px + 9px * var(--rf-grow)) solid red;
-}
-```
+<a href="https://www.youtube.com/watch?v=6ld4daFDQlY"><img src=https://user-images.githubusercontent.com/8488586/200658445-641f8127-7c22-4d41-8eb1-6c00bc0fccba.png height=300></a>
 
 ## PostCSS
 
@@ -673,3 +571,7 @@ Into that output:
 ```css
 /* This is a bar + bar comment */
 ```
+
+## Multisite
+
+Some features of RockFrontend might rely on the /site folder being present and therefore might not work in a multisite setup. See https://processwire.com/talk/topic/27895-multisite-support/

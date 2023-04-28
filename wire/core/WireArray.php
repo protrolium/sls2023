@@ -11,7 +11,7 @@
  *
  * @todo can we implement next() and prev() like on Page, as alias to getNext() and getPrev()?
  * 
- * ProcessWire 3.x, Copyright 2021 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
  * https://processwire.com
  * 
  * @method WireArray and($item)
@@ -93,7 +93,8 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * 
 	 */
 	public function __construct() {
-		if($this->className() === 'WireArray') $this->duplicateChecking = false;	
+		if($this->className() === 'WireArray') $this->duplicateChecking = false;
+		parent::__construct();
 	}
 
 	/**
@@ -285,7 +286,6 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 			}
 		}
 
-		$key = null;
 		if($this->duplicateChecking && ($key = $this->getItemKey($item)) !== null) {
 			// avoid two copies of the same item, re-add it to the end 
 			if(isset($this->data[$key])) unset($this->data[$key]); 
@@ -298,6 +298,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 
 		$this->trackChange("add", null, $item); 
 		$this->trackAdd($item, $key); 
+		
 		return $this;
 	}
 
@@ -409,14 +410,14 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 				$k = null;
 				if($value === $a) {
 					if(method_exists($b, 'getItemKey')) {
-						$k = $b->getItemKey();
+						$k = $b->getItemKey(); // item provides its own key
 					} else {
 						$k = $this->getItemKey($b);
 					}
 					$value = $b; 
 				} else if($value === $b) {
 					if(method_exists($a, 'getItemKey')) {
-						$k = $a->getItemKey();
+						$k = $a->getItemKey(); // item provides its own key
 					} else {
 						$k = $this->getItemKey($a);
 					}
@@ -554,9 +555,9 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 
 		// if given an array of keys, return all matching items
 		if(is_array($key)) { 
-			/** @var array $key */
 			if(ctype_digit(implode('', array_keys($key)))) {
 				$items = array();
+				/** @var array $key */
 				foreach($key as $k) {
 					$item = $this->get($k);
 					$items[$k] = $item;
@@ -611,7 +612,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 
 			// if the WireArray uses numeric keys, then it's okay to
 			// match a 'name' field if the provided key is a string
-			if(is_string($key) && $this->usesNumericKeys()) {
+			if($this->usesNumericKeys()) {
 				$match = $this->getItemThatMatches('name', $key);
 			}
 		}
@@ -626,14 +627,14 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * Not applicable to numerically indexed arrays. 
 	 * Fuel properties and hooked properties have precedence with this type of call.
 	 * 
-	 * @param int|string $property 
+	 * @param int|string $name
 	 * @return Wire|WireData|Page|mixed|bool Value of item requested, or false if it doesn't exist. 
 	 *
 	 */
-	public function __get($property) {
-		$value = parent::__get($property); 
-		if(is_null($value)) $value = $this->getProperty($property);
-		if(is_null($value)) $value = $this->get($property); 
+	public function __get($name) {
+		$value = parent::__get($name); 
+		if(is_null($value)) $value = $this->getProperty($name);
+		if(is_null($value)) $value = $this->get($name); 
 		return $value; 
 	}
 
@@ -693,7 +694,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		if(ctype_digit("$key")) return null;
 		$item = null;
 		foreach($this->data as $wire) {
-			if(is_object($wire) && $wire instanceof Wire) { 
+			if($wire instanceof Wire) { 
 				if($wire->$key === $value) {
 					$item = $wire; 
 					break;
@@ -1056,7 +1057,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		reset($this->data);
 		$key = key($this->data);
 		$item = array_shift($this->data); 
-		if(is_null($item)) return $item;
+		if(is_null($item)) return null;
 		$this->trackChange('shift', $item, null);
 		$this->trackRemove($item, $key); 
 		return $item; 
@@ -1092,7 +1093,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		end($this->data);
 		$key = key($this->data);
 		$item = array_pop($this->data); 
-		if(is_null($item)) return $item;
+		if(is_null($item)) return null;
 		$this->trackChange('pop', $item, null);
 		$this->trackRemove($item, $key); 
 		return $item; 
@@ -1408,12 +1409,33 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		}
 
 		foreach($data as $item) {
-			/** @var Wire $item */
-			$key = $this->getItemPropertyValue($item, $property); 
+			
+			if($item instanceof Wire) {
+				$key = $this->getItemPropertyValue($item, $property);
+			} else if(is_object($item)) {
+				if($property === '') {
+					$key = method_exists($item, '__toString') ? "$item" : wireClassName($item);
+				} else {
+					$key = $item->$property;
+				}
+			} else if(is_array($item)) {
+				$key = isset($item[$property]) ? $item[$property] : null;
+			} else {
+				// $property does not apply to non-object/non-array items
+				$key = $item; 
+			}
 
-			// if item->property resolves to another Wire, then try to get the subProperty from that Wire (if it exists)
-			if($key instanceof Wire && $subProperty) {
-				$key = $this->getItemPropertyValue($key, $subProperty);
+			// if there’s a $subProperty and $key resolves to a containing type, then try to get it
+			if($subProperty && $key) { 
+				if($key instanceof Wire) {
+					$key = $this->getItemPropertyValue($key, $subProperty);
+				} else if(is_object($key)) {
+					$key = $key->$subProperty;
+				} else if(is_array($key)) {
+					$key = isset($key[$subProperty]) ? $key[$subProperty] : null;
+				} else {
+					// no containing type, $subProperty ignored
+				}
 			}
 
 			if($key === null) {
@@ -1468,7 +1490,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 
 		// restore sorted array to lose sortable keys and restore proper keys
 		$a = array();
-		foreach($sortable as $key => $value) {
+		foreach($sortable as $value) {
 			if(is_array($value)) {
 				// if more properties to sort by exist, use them for this sub-array
 				$n = null;
@@ -1476,7 +1498,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 				if(count($properties)) {
 					$value = $this->stableSort($value, $properties, $n);
 				}
-				foreach($value as $k => $v) {
+				foreach($value as $v) {
 					$newKey = $this->getItemKey($v); 
 					$a[$newKey] = $v; 
 					// are we done yet?
@@ -1523,11 +1545,12 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 */
 	protected function filterData($selectors, $not = false) {
 
-		if(is_object($selectors) && $selectors instanceof Selectors) {
+		if($selectors instanceof Selectors) {
 			$selectors = clone $selectors;
 		} else {
 			if(!is_array($selectors) && ctype_digit("$selectors")) $selectors = "id=$selectors";
 			$selector = $selectors; 
+			/** @var Selectors $selectors */
 			$selectors = $this->wire(new Selectors()); 
 			$selectors->init($selector);
 		}
@@ -1584,10 +1607,13 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 				if(is_array($selector->field)) {
 					$value = array();
 					foreach($selector->field as $field) {
-						$value[] = (string) $this->getItemPropertyValue($item, $field);
+						$v = $this->getItemPropertyValue($item, $field);
+						if(is_array($v)) $v = implode(' ', $this->wire()->sanitizer->flatArray($v));
+						$value[] = (string) $v;
 					}
 				} else {
-					$value = (string) $this->getItemPropertyValue($item, $selector->field);
+					$value = $this->getItemPropertyValue($item, $selector->field);
+					$value = is_array($value) ? $this->wire()->sanitizer->flatArray($value) : (string) $value;
 				}
 				if($not === $selector->matches($value) && isset($this->data[$key])) {
 					$qtyMatch++;
@@ -1832,13 +1858,18 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * 
 	 * #pw-internal
 	 * 
-	 * @param int|string $key Key of item to set.
+	 * @param int|string $offset Key of item to set.
 	 * @param Wire|mixed $value Value of item. 
 	 * 
 	 */
 	#[\ReturnTypeWillChange] 
-	public function offsetSet($key, $value) {
-		$this->set($key, $value); 
+	public function offsetSet($offset, $value) {
+		if($offset === null) { 
+			// i.e. $wireArray[] = $item;
+			$this->add($value);
+		} else {
+			$this->set($offset, $value);
+		}
 	}
 
 	/**
@@ -1846,14 +1877,14 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * 
 	 * #pw-internal
 	 *
-	 * @param int|string $key Key of item to retrieve. 
+	 * @param int|string $offset Key of item to retrieve. 
 	 * @return Wire|mixed|bool Value of item requested, or false if it doesn't exist. 
 	 * 
 	 */
-	#[\ReturnTypeWillChange] 
-	public function offsetGet($key) {
-		if($this->offsetExists($key)) {
-			return $this->data[$key];
+	#[\ReturnTypeWillChange]
+	public function offsetGet($offset) {
+		if($this->offsetExists($offset)) {
+			return $this->data[$offset];
 		} else {
 			return false;
 		}
@@ -1866,14 +1897,14 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * 
 	 * #pw-internal
 	 *
-	 * @param int|string $key Key of the item to unset. 
+	 * @param int|string $offset Key of the item to unset. 
 	 * @return bool True if item existed and was unset. False if item didn't exist. 
 	 * 
 	 */
 	#[\ReturnTypeWillChange] 
-	public function offsetUnset($key) {
-		if($this->offsetExists($key)) {
-			$this->remove($key); 
+	public function offsetUnset($offset) {
+		if($this->offsetExists($offset)) {
+			$this->remove($offset); 
 			return true;
 		} else {
 			return false;
@@ -1887,13 +1918,13 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * 
 	 * #pw-internal
 	 * 
-	 * @param int|string $key Key of the item to check for existance.
+	 * @param int|string $offset Key of the item to check for existance.
 	 * @return bool True if the item exists, false if not.
 	 * 
 	 */
 	#[\ReturnTypeWillChange] 
-	public function offsetExists($key) {
-		return array_key_exists($key, $this->data);
+	public function offsetExists($offset) {
+		return array_key_exists($offset, $this->data);
 	}
 
 	/**
@@ -1904,7 +1935,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 */
 	public function __toString() {
 		$s = '';
-		foreach($this as $key => $value) {
+		foreach($this as $value) {
 			if(is_array($value)) $value = "array(" . count($value) . ")";
 			$s .= "$value|";
 		}
@@ -2153,6 +2184,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		$n = 0;
 
 		foreach($this as $key => $item) {
+			/** @var WireData $item */
 			if($isFunction) {
 				$value = $property($item, $key);
 			} else if(strlen($property) && $itemIsObject) {
@@ -2213,9 +2245,10 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 				$values[$key] = $item;
 				continue;
 			}
+			/** @var WireData $item */
 			if(!empty($options['key']) && is_string($options['key'])) {
 				$key = $item->get($options['key']);	
-				if(!is_string($key) || !is_int($key)) $key = (string) $key;	
+				if(!is_string($key) && !is_int($key)) $key = (string) $key;	
 				if(!strlen($key)) continue;
 				if(isset($values[$key])) continue;
 			}
@@ -2585,7 +2618,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		if(count($this->data)) {
 			$info['items'] = array();
 			foreach($this->data as $key => $value) {
-				if(is_object($value) && $value instanceof Wire) $key = $value->className() . ":$key";
+				if($value instanceof Wire) $key = $value->className() . ":$key";
 				$info['items'][$key] = $this->debugInfoItem($value);
 			}
 		}
@@ -2600,7 +2633,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 		foreach($trackers as $key => $value) {
 			if(!count($value)) continue;
 			$info[$key] = array();
-			foreach($value as $k => $v) {
+			foreach($value as $v) {
 				$info[$key][] = $this->debugInfoItem($v); 
 			}
 		}
@@ -2638,7 +2671,7 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 	 * 
 	 * @param string $name
 	 * @param array $arguments
-	 * @return mixed
+	 * @return WireArray
 	 * @throws WireException
 	 * 
 	 */

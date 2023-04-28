@@ -21,11 +21,12 @@ function InputfieldPageTableDialog() {
 						$table.find('tbody').css('overflow', 'visible');
 						InputfieldPageTableSortable($table);
 						
-						// restore appearnace of any items marked for deletion
+						// restore appearance of any items marked for deletion
 						var deleteIDs = $container.siblings("input.InputfieldPageTableDelete").eq(0).val().split('|');
 						if(deleteIDs.length) {
 							for(var n = 0; n < deleteIDs.length; n++) {
 								var deleteID = deleteIDs[n];
+								if(!deleteID.length) continue;
 								$table.find("tr[data-id=" + deleteID + "]")
 									.addClass('InputfieldPageTableDelete ui-state-error-text ui-state-disabled');
 							}
@@ -40,7 +41,7 @@ function InputfieldPageTableDialog() {
 	
 	if($a.is('.InputfieldPageTableAdd')) closeOnSave = false; 
 
-	$iframe.load(function() {
+	$iframe.on('load', function() {
 
 		var buttons = []; 	
 		//$dialog.dialog('option', 'buttons', {}); 
@@ -91,7 +92,7 @@ function InputfieldPageTableDialog() {
 					'text': text, 
 					'class': ($button.is('.ui-priority-secondary') ? 'ui-priority-secondary' : ''), 
 					'click': function() {
-						$button.click();
+						$button.trigger('click');
 						if(closeOnSave) closeOnSaveReady = true; 
 						if(!noclose) closeOnSave = true; // only let closeOnSave happen once
 					}
@@ -171,7 +172,7 @@ $(document).ready(function() {
 	$(document).on('click', '.InputfieldPageTableAdd, .InputfieldPageTableEdit', InputfieldPageTableDialog); 
 	$(document).on('click', 'a.InputfieldPageTableDelete', InputfieldPageTableDelete); 
 	$(document).on('dblclick', '.InputfieldPageTable .AdminDataTable td', function() {
-		$(this).closest('tr').find('.InputfieldPageTableEdit').click();
+		$(this).closest('tr').find('.InputfieldPageTableEdit').trigger('click');
 	}); 
 
 	InputfieldPageTableSortable($(".InputfieldPageTable table"));

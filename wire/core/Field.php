@@ -38,6 +38,7 @@
  * @property array $allowContexts Names of settings that are custom configured to be allowed for context. #pw-group-properties
  * @property bool|int|null $flagUnique Non-empty value indicates request for, or presence of, Field::flagUnique flag. #pw-internal
  * @property Fieldgroup|null $_contextFieldgroup Fieldgroup field is in context for or null if not in context. #pw-internal
+ * @property true|null $distinctAutojoin When true and flagAutojoin is set, a distinct autojoin will be used. 3.0.208+ #pw-internal
  *
  * Common Inputfield properties that Field objects store:  
  * @property int|bool|null $required Whether or not this field is required during input #pw-group-properties
@@ -249,6 +250,18 @@ class Field extends WireData implements Saveable, Exportable {
 	 * 
 	 */
 	protected $tagList = null;
+
+	/**
+	 * Setup name to apply when field is saved 
+	 * 
+	 * Set via $field->type = 'FieldtypeName.setupName'; 
+	 * or applySetup() method
+	 * 
+	 * @var string 
+	 * @since 3.0.213
+	 * 
+	 */
+	protected $setupName = '';
 
 	/**
 	 * True if lowercase tables should be enforce, false if not (null = unset). Cached from $config
@@ -512,7 +525,7 @@ class Field extends WireData implements Saveable, Exportable {
 
 		if($this->type) {
 			$typeData = $this->type->exportConfigData($this, $data);
-			$data = array_merge($data, $typeData);
+			$data = array_merge($typeData, $data); // argument order reversed per #1638
 		}
 
 		// remove named flags from data since the 'flags' property already covers them
@@ -532,7 +545,7 @@ class Field extends WireData implements Saveable, Exportable {
 			foreach(array('viewRoles', 'editRoles') as $roleType) {
 				if(!is_array($data[$roleType])) $data[$roleType] = array();
 				$roleNames = array();
-				foreach($data[$roleType] as $key => $roleID) {
+				foreach($data[$roleType] as $roleID) {
 					$role = $roles->get($roleID);
 					if(!$role || !$role->id) continue;
 					$roleNames[] = $role->name;
@@ -675,10 +688,15 @@ class Field extends WireData implements Saveable, Exportable {
 	 */
 	public function setFieldtype($type) {
 
-		if(is_object($type) && $type instanceof Fieldtype) {
+		if($type instanceof Fieldtype) {
 			// good for you
 
 		} else if(is_string($type)) {
+			if(strpos($type, '.')) {
+				// FieldtypeName.setupName
+				list($type, $setupName) = explode('.', $type, 2);
+				$this->setSetupName($setupName);
+			}
 			$typeStr = $type;
 			$type = $this->wire()->fieldtypes->get($type);
 			if(!$type) {
@@ -812,7 +830,7 @@ class Field extends WireData implements Saveable, Exportable {
 				$ids[] = (int) $role->id;
 			} else if(is_string($role) && strlen($role)) {
 				$rolePage = $this->wire()->roles->get($role); 
-				if($rolePage && $rolePage->id) {
+				if($rolePage instanceof Role && $rolePage->id) {
 					$ids[] = $rolePage->id;
 				} else {
 					$this->error("Unknown role '$role'"); 
@@ -978,6 +996,10 @@ class Field extends WireData implements Saveable, Exportable {
 		// predefined field settings
 		$inputfield->attr('name', $this->name . $contextStr); 
 		$inputfield->set('label', $this->label);
+		if($contextStr) {
+			// keep track of original field name in Inputfields that are are renamed by context
+			if(!$inputfield->attr('data-field-name')) $inputfield->attr('data-field-name', $this->name);
+		}
 
 		// just in case an Inputfield needs to know its Fieldtype/Field context, or lack of it
 		$inputfield->set('hasFieldtype', $this->type);
@@ -997,7 +1019,7 @@ class Field extends WireData implements Saveable, Exportable {
 			}
 		}
 
-		if($locked && $locked === 'hidden') {
+		if($locked === 'hidden') {
 			// Inputfield should not be shown
 			$inputfield->collapsed = Inputfield::collapsedHidden;
 		} else if($locked) {
@@ -1098,7 +1120,8 @@ class Field extends WireData implements Saveable, Exportable {
 		}
 
 		if(!$fieldgroupContext || count($allowContext)) {
-			
+		
+			/** @var InputfieldWrapper $inputfields */
 			$inputfields = $this->wire(new InputfieldWrapper());
 			if(!$fieldgroupContext) $inputfields->head = $this->_('Field type details');
 			$inputfields->attr('title', $this->_('Details'));
@@ -1111,12 +1134,14 @@ class Field extends WireData implements Saveable, Exportable {
 				if(!$fieldtypeInputfields) $fieldtypeInputfields = $this->wire(new InputfieldWrapper());
 				$configArray = $this->type->getConfigArray($this); 
 				if(count($configArray)) {
+					/** @var InputfieldWrapper $w */
 					$w = $this->wire(new InputfieldWrapper());
 					$w->importArray($configArray);
 					$w->populateValues($this);
 					$fieldtypeInputfields->import($w);
 				}
 				foreach($fieldtypeInputfields as $inputfield) {
+					/** @var Inputfield $inputfield */
 					if($fieldgroupContext && !in_array($inputfield->name, $allowContext)) continue;
 					$inputfields->append($inputfield);
 					unset($remainingNames[$inputfield->name]);
@@ -1139,6 +1164,7 @@ class Field extends WireData implements Saveable, Exportable {
 			if(count($inputfields)) $wrapper->append($inputfields); 
 		}
 
+		/** @var InputfieldWrapper $inputfields */
 		$inputfields = $this->wire(new InputfieldWrapper());
 		$dummyPage = $this->wire()->pages->get('/'); // only using this to satisfy param requirement 
 
@@ -1157,17 +1183,21 @@ class Field extends WireData implements Saveable, Exportable {
 			}
 			$inputfields->attr('title', $this->_('Input')); 
 			$inputfields->attr('id+name', 'inputfieldConfig');
-			/** @var InputfieldWrapper $inputfieldInputfields */
 			$inputfieldInputfields = $inputfield->getConfigInputfields();
-			if(!$inputfieldInputfields) $inputfieldInputfields = $this->wire(new InputfieldWrapper());
+			if(!$inputfieldInputfields) {
+				/** @var InputfieldWrapper $inputfieldInputfields */
+				$inputfieldInputfields = $this->wire(new InputfieldWrapper());
+			}
 			$configArray = $inputfield->getConfigArray(); 
 			if(count($configArray)) {
+				/** @var InputfieldWrapper $w */
 				$w = $this->wire(new InputfieldWrapper());
 				$w->importArray($configArray);
 				$w->populateValues($this);
 				$inputfieldInputfields->import($w);
 			}
 			foreach($inputfieldInputfields as $i) { 
+				/** @var Inputfield $i */
 				if($fieldgroupContext && !in_array($i->name, $allowContext)) continue; 
 				$inputfields->append($i); 
 				unset($remainingNames[$i->name]); 
@@ -1531,6 +1561,18 @@ class Field extends WireData implements Saveable, Exportable {
 		$url .= "setup/field/edit?id=$this->id";
 		if(!empty($options['find'])) $url .= '#find-' . $this->wire()->sanitizer->fieldName($options['find']);
 		return $url;
+	}
+
+	/**
+	 * Set setup name from Fieldtype to apply when field is saved 
+	 * 
+	 * @param string $setupName Setup name or omit to instead get the current value
+	 * @return string Returns current value
+	 * 
+	 */
+	public function setSetupName($setupName = null) {
+		if($setupName !== null) $this->setupName = $setupName;
+		return $this->setupName;
 	}
 
 	/**

@@ -522,8 +522,8 @@ class PagesPathFinder extends Wire {
 		}
 
 		if(stripos($lastPart, 'index.') === 0 && preg_match('/^index\.(php\d?|s?html?)$/i', $lastPart)) {
-			array_pop($parts); // removing last part will force a 301
-			$this->addResultError('indexFile', 'Path had index file');
+			// index file will be allowed as URL segment, or 301 redirect if not allowed as URL segment
+			$this->addResultError('indexFile', 'Path had index file', true);
 		}
 	
 		if($result['response'] < 400 && count($badNames)) {
@@ -572,7 +572,7 @@ class PagesPathFinder extends Wire {
 		$this->addResultNote("Detected language '$language->name' from first segment '$segment'"); 
 		$this->setResultLanguage($language, $segment);
 		
-		if($this->verbose && $languageKey !== false) {
+		if($this->verbose) {
 			$this->result['parts'][] = array(
 				'type' => 'language',
 				'value' => $segment,
@@ -582,7 +582,7 @@ class PagesPathFinder extends Wire {
 
 		// reduce to just applicable language to limit name columns
 		// searched for by getPagesRow() method
-		if($language) $this->useLanguages = array($language);
+		$this->useLanguages = array($language);
 		
 		return $language;
 	}
@@ -639,7 +639,7 @@ class PagesPathFinder extends Wire {
 	 * Update paths for template info like urlSegments and pageNum and populate urls property
 	 *
 	 * @param string $path
-	 * @return bool|string
+	 * @return bool
 	 *
 	 */
 	protected function applyResultTemplate($path) {
@@ -720,7 +720,14 @@ class PagesPathFinder extends Wire {
 
 		$_path = $path;
 		if(strlen($appendPath)) $path = rtrim($path, '/') . $appendPath;
-		if($fail || $_path !== $path) $result['redirect'] = '/' . ltrim($path, '/');
+		
+		if($fail || $_path !== $path) {
+			if($fail && isset($result['errors']['indexFile']) && count($result['urlSegments']) === 1) {
+				// allow for an /index.php or /index.html type urlSegmentStr to redirect rather than fail
+				$fail = false;
+			}
+			$result['redirect'] = '/' . ltrim($path, '/');
+		}
 		
 		$result['pathAdd'] = $appendPath;
 
@@ -783,7 +790,7 @@ class PagesPathFinder extends Wire {
 		// if there were any non-default language segments, let that dictate the language
 		if(empty($result['language']['segment'])) {
 			$useLangName = 'default';
-			foreach($result['parts'] as $key => $part) {
+			foreach($result['parts'] as $part) {
 				$langName = $part['language'];
 				if(empty($langName) || $langName === 'default') continue;
 				$useLangName = $langName;
@@ -1415,9 +1422,8 @@ class PagesPathFinder extends Wire {
 			$this->admin = true;
 		} else {
 			$template = $this->getResultTemplate();
-			if(!$template) {
-				return false; // may need to detect later
-			} if(in_array($template->name, $config->adminTemplates, true)) {
+			if(!$template) return false; // may need to detect later
+			if(in_array($template->name, $config->adminTemplates, true)) {
 				$this->admin = true;
 			} else if(in_array($template->name, array('user', 'role', 'permission', 'language'))) {
 				$this->admin = true;
@@ -1474,10 +1480,11 @@ class PagesPathFinder extends Wire {
 	 * 
 	 * @param string $name
 	 * @param string $message
+	 * @param bool $force Force add even if not in verbose mode? (default=false)
 	 * 
 	 */
-	protected function addResultError($name, $message) {
-		if(!$this->verbose) return;
+	protected function addResultError($name, $message, $force = false) {
+		if(!$this->verbose && !$force) return;
 		$this->result['errors'][$name] = $message;
 	}
 
@@ -1663,7 +1670,7 @@ class PagesPathFinder extends Wire {
 	 * Return Languages if installed w/languageSupportPageNames module or blank array if not
 	 * 
 	 * @param bool $getArray Force return value as an array indexed by language name
-	 * @return Languages|array
+	 * @return Languages|Language[]
 	 *
 	 */
 	protected function languages($getArray = false) {
@@ -2098,7 +2105,7 @@ class PagesPathFinderTests extends Wire {
 		$defaultPath = $item->path();
 		if($languages) {
 			foreach($languages as $language) {
-				// $user->setLanguage($language);
+				/** @var Language $language */
 				$path = $item->localPath($language);
 				if($language->isDefault() || $path === $defaultPath) {
 					$expect = 200;

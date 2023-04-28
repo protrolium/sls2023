@@ -873,7 +873,6 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 		$pdoStatement = $pdo->prepare($statement, $driver_options);
 		if($this->debugMode) {
 			if($pdoStatement instanceof WireDatabasePDOStatement) {
-				/** @var WireDatabasePDOStatement $pdoStatement */
 				$pdoStatement->setDebugNote($note);
 			} else {
 				$this->queryLog($statement, $note);
@@ -897,7 +896,7 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 	 * 
 	 */
 	public function exec($statement, $note = '') {
-		if(is_object($statement) && $statement instanceof \PDOStatement) {
+		if($statement instanceof \PDOStatement) {
 			return $this->execute($statement);
 		}
 		if($this->debugMode) $this->queryLog($statement, $note); 
@@ -976,13 +975,13 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 	 * 
 	 * #pw-group-custom
 	 * 
-	 * @param string $sql Query (string) to log, boolean true to reset/start query logging, boolean false to stop query logging
+	 * @param string|bool $sql Query (string) to log, boolean true to reset/start query logging, boolean false to stop query logging
 	 * @param string $note Any additional debugging notes about the query
-	 * @return array|bool|int Returns query log array, boolean true on success, boolean false if not
+	 * @return array|bool Returns query log array, boolean true on success, boolean false if not
 	 * 
 	 */
 	public function queryLog($sql = '', $note = '') {
-		if(empty($sql)) return $this->queryLog;
+		if($sql === '') return $this->queryLog;
 		if($sql === true) {
 			$this->debugMode = true; 
 			$this->queryLog = array();
@@ -1310,7 +1309,7 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 	 * @param array $columns Associative array with one or more of `[ 'old_name' => 'new_name' ]`
 	 * @return int Number of columns renamed
 	 * @since 3.0.185
-	 * @throws \PDOException|WireException
+	 * @throws \PDOException
 	 * 
 	 */
 	public function renameColumns($table, array $columns) {
@@ -1353,7 +1352,7 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 	 * @param string $oldName
 	 * @param string $newName
 	 * @return bool
-	 * @throws \PDOException|WireException
+	 * @throws \PDOException
 	 * @since 3.0.185
 	 * 
 	 */
@@ -1497,12 +1496,17 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 	 *
 	 * @param string $str
 	 * @return string
+	 * @throws WireDatabaseException
 	 *
 	 */
 	public function escapeTableCol($str) {
 		if(strpos($str, '.') === false) return $this->escapeTable($str); 
-		list($table, $col) = explode('.', $str); 
-		return $this->escapeTable($table) . '.' . $this->escapeCol($col);
+		list($table, $col) = explode('.', $str, 2);
+		$col = $this->escapeCol($col);
+		$table = $this->escapeTable($table);
+		if(!strlen($table)) throw new WireDatabaseException('Invalid table');
+		if(!strlen($col)) return $table;
+		return "$table.$col";
 	}
 
 	/**
@@ -1562,7 +1566,7 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 		if($this->stripMB4 && is_string($str) && !empty($str)) {
 			$str = $this->wire()->sanitizer->removeMB4($str);
 		}
-		return $this->pdoLast()->quote($str);
+		return $this->pdoLast()->quote((string) $str);
 	}
 
 	/**
@@ -1592,16 +1596,16 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string $name
 	 * @return mixed|null|\PDO
 	 * 
 	 */
-	public function __get($key) {
-		if($key === 'pdo') return $this->pdo();
-		if($key === 'pdoReader') return $this->pdoReader();
-		if($key === 'pdoWriter') return $this->pdoWriter();
-		if($key === 'debugMode') return $this->debugMode;
-		return parent::__get($key);
+	public function __get($name) {
+		if($name === 'pdo') return $this->pdo();
+		if($name === 'pdoReader') return $this->pdoReader();
+		if($name === 'pdoWriter') return $this->pdoWriter();
+		if($name === 'debugMode') return $this->debugMode;
+		return parent::__get($name);
 	}
 
 	/**
@@ -1641,7 +1645,6 @@ class WireDatabasePDO extends Wire implements WireDatabase {
 		$query = $this->prepare('SHOW VARIABLES WHERE Variable_name=:name');
 		$query->bindValue(':name', $name);
 		$query->execute();
-		/** @noinspection PhpUnusedLocalVariableInspection */
 		if($query->rowCount()) {
 			list(,$value) = $query->fetch(\PDO::FETCH_NUM);
 			$this->variableCache[$name] = $value;

@@ -11,7 +11,7 @@
  * ~~~~~
  * #pw-body
  *
- * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
  * https://processwire.com
  * 
  * @method Page|NullPage getPage()
@@ -180,6 +180,7 @@ class PagesRequest extends Wire {
 	 *
 	 */
 	public function __construct(Pages $pages) {
+		parent::__construct();
 		$this->pages = $pages;
 		$this->config = $pages->wire()->config;
 		$this->init();
@@ -274,7 +275,6 @@ class PagesRequest extends Wire {
 
 		$input = $this->wire()->input;
 		$languages = $this->wire()->languages;
-		$page = null;
 
 		// get the requested path
 		$path = $this->getRequestPath();
@@ -301,11 +301,16 @@ class PagesRequest extends Wire {
 		
 		// populate request path to class as other methods will now use it
 		$this->setRequestPath($path);
-	
-		// determine if index.php is referenced in URL
-		if(stripos($this->dirtyUrl, 'index.php') !== false && stripos($path, 'index.php') === false) {
-			// this will force pathFinder to detect a redirect condition
-			$path = rtrim($path, '/') . '/index.php';
+
+		// determine if original URL had anything filtered out of path that will suggest a redirect
+		list($dirtyUrl,) = explode('?', "$this->dirtyUrl?", 2); // exclude query string
+		if(stripos($dirtyUrl, 'index.php') !== false && stripos($path, 'index.php') === false) {
+			// force pathFinder to detect a redirect condition without index.php
+			$dirtyUrl = strtolower(rtrim($dirtyUrl, '/'));
+			if(substr("/$dirtyUrl", -10) === '/index.php') $path = rtrim($path, '/') . '/index.php';
+		} else if(strpos($dirtyUrl, '//') !== false) {
+			// force pathFinder to detect redirect sans double slashes, /page/path// => /page/path/
+			$path = rtrim($path, '/') . '//';
 		}
 		
 		// get info about requested path

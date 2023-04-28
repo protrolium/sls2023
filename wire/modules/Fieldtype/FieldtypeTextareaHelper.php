@@ -3,7 +3,7 @@
 /**
  * Helper class for FieldtypeTextarea configuration
  * 
- * ProcessWire 3.x, Copyright 2016 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
  * https://processwire.com
  *
  */
@@ -27,17 +27,38 @@ class FieldtypeTextareaHelper extends Wire {
 	 * 
 	 */
 	function getConfigInputfields(Field $field, InputfieldWrapper $inputfields) {
+		$modules = $this->wire()->modules;
+		
+		$f = $inputfields->getChildByName('textformatters'); 
+		if($f && !$this->wire()->input->is('post')) {
+			$htmlInputTypes = array('InputfieldCKEditor', 'InputfieldTinyMCE');
+			$inputType = $field->get('inputfieldClass');
+			$contentType = $field->get('contentType');
+			if($contentType >= FieldtypeTextarea::contentTypeHTML || in_array($inputType, $htmlInputTypes)) {
+				$value = $field->get('textformatters');
+				$key = is_array($value) ? array_search('TextformatterEntities', $value) : false;
+				if($key !== false) {
+					$field->warning($this->_('Please remove “HTML Entity Encoder” from “Text formatters” since this field allows Markup/HTML.'));
+				}
+			}
+		}
+		
 		$value = $field->get('inputfieldClass');
 		/** @var InputfieldSelect $f */
-		$f = $this->modules->get('InputfieldSelect');
+		$f = $modules->get('InputfieldSelect');
 		$f->attr('name', 'inputfieldClass');
 		$f->attr('value', $value ? $value : FieldtypeTextarea::defaultInputfieldClass);
 		$f->label = $this->_('Inputfield Type');
 		$f->description = $this->_('The type of field that will be used to collect input (Textarea is the default). Note that if you change this and submit, the available configuration options in the "input" tab section may change.'); // Inputfield type description
 		$f->required = true;
+		$f->notes = $this->_('We recommend using TinyMCE over CKEditor when creating new rich text fields.');
+		if(!$modules->isInstalled('InputfieldTinyMCE')) {
+			$installUrl = $modules->getModuleInstallUrl('InputfieldTinyMCE'); 
+			$f->notes .= ' [' . $this->_('Click here to install TinyMCE') . "]($installUrl)";
+		}
 
 		$baseClass = "InputfieldTextarea";
-		foreach($this->wire('modules')->find("className^=Inputfield") as $fm) {
+		foreach($modules->find("className^=Inputfield") as $fm) {
 			if("$fm" == $baseClass || is_subclass_of($fm->className(true), __NAMESPACE__ . "\\$baseClass")) {
 				$f->addOption("$fm", str_replace("Inputfield", '', "$fm"));
 			}
@@ -48,7 +69,8 @@ class FieldtypeTextareaHelper extends Wire {
 		$htmlLabel = $this->_('Markup/HTML');
 		$typeLabel = $this->_('Content Type');
 
-		$f = $this->modules->get('InputfieldRadios');
+		/** @var InputfieldRadios $f */
+		$f = $modules->get('InputfieldRadios');
 		$f->attr('name', 'contentType');
 		$f->label = $typeLabel;
 		$f->addOption(FieldtypeTextarea::contentTypeUnknown, $this->_('Unknown/Text'));
@@ -62,13 +84,15 @@ class FieldtypeTextareaHelper extends Wire {
 		$f->notes = sprintf($this->_('For more information about the options above see [description of content type options](%s).'), 'https://processwire.com/api/fieldtypes/textarea-fieldtype/#content-type');
 		$inputfields->append($f);
 
-		$fieldset = $this->wire('modules')->get('InputfieldFieldset');
+		/** @var InputfieldFieldset $fieldset */
+		$fieldset = $modules->get('InputfieldFieldset');
 		$fieldset->label = "$htmlLabel ($typeLabel)";
 		$fieldset->icon = 'html5';
 		$fieldset->showIf = 'contentType=' . FieldtypeTextarea::contentTypeHTML;
 		$inputfields->add($fieldset);
 
-		$f = $this->modules->get('InputfieldCheckboxes');
+		/** @var InputfieldCheckboxes $f */
+		$f = $modules->get('InputfieldCheckboxes');
 		$f->attr('name', 'htmlOptions');
 		$f->label = $this->_('HTML Options');
 		$f->description = $this->_('The following options provide additional quality assurance for HTML at runtime.');
@@ -112,7 +136,7 @@ class FieldtypeTextareaHelper extends Wire {
 		$fieldset->add($f);
 
 		/** @var InputfieldCheckbox $f */
-		$f = $this->wire('modules')->get('InputfieldCheckbox');
+		$f = $modules->get('InputfieldCheckbox');
 		$f->attr('name', '_applyHTML');
 		$f->label = $this->_('Apply HTML Options Now');
 		$f->description = $this->_('To apply the above options to all existing pages right now, check this box. This primarily focuses on the link abstraction option.');
@@ -123,9 +147,9 @@ class FieldtypeTextareaHelper extends Wire {
 		$f->showIf = 'htmlOptions=' . FieldtypeTextarea::htmlLinkAbstract;
 		$fieldset->add($f);
 
-		if($this->wire('input')->post('_applyHTML') && $this->wire('process') == 'ProcessField') {
+		if($this->wire()->input->post('_applyHTML') && $this->wire('process') == 'ProcessField') {
 			$this->applyFieldHTML = $field;
-			$this->wire('session')->addHookBefore('redirect', $this, 'applyFieldHTML');
+			$this->wire()->session->addHookBefore('redirect', $this, 'applyFieldHTML');
 		}
 
 		return $inputfields; 
@@ -140,15 +164,18 @@ class FieldtypeTextareaHelper extends Wire {
 	 */
 	public function applyFieldHTML(HookEvent $event) {
 		
+		$pages = $this->wire()->pages;
+		$config = $this->wire()->config;
+		
 		set_time_limit(3600);
 		
 		$field = $this->applyFieldHTML;
-		if(!$field || !$field instanceof Field || !$field->type instanceof FieldtypeTextarea) return;
+		if(!$field instanceof Field || !$field->type instanceof FieldtypeTextarea) return;
 		
 		$selector = "$field->name%=href|src, include=all";
-		$total = $this->wire('pages')->count($selector);
+		$total = $pages->count($selector);
 		
-		$applyMax = (int) $this->wire('config')->applyHTMLMaxItems;
+		$applyMax = (int) $config->applyHTMLMaxItems;
 		if(!$applyMax) $applyMax = 300;
 		
 		if($total > $applyMax) {
@@ -157,7 +184,7 @@ class FieldtypeTextareaHelper extends Wire {
 			$selector .= ", limit=$applyMax, modified<=$modified";
 		}
 		
-		$items = $this->wire('pages')->find($selector);
+		$items = $pages->find($selector);
 		$totals = array();
 		
 		foreach($items as $item) {
@@ -174,7 +201,7 @@ class FieldtypeTextareaHelper extends Wire {
 			}
 		}
 		
-		$this->wire('pages')->touch($items, time());
+		$pages->touch($items, time());
 		
 		if(!count($items) || count($items) == $total) {
 			$statusNote = ' ' . 
@@ -187,10 +214,10 @@ class FieldtypeTextareaHelper extends Wire {
 			$statusNote = sprintf($statusNote, '<code>$config->applyHTMLMaxItems = ' . ($applyMax * 2) . ';</code>');
 		}
 		
-		$logFile = $this->wire('config')->paths->logs . 'markup-qa-errors.txt';
+		$logFile = $config->paths->logs . 'markup-qa-errors.txt';
 		$logInfo = '';
 		if(is_file($logFile)) {
-			$logURL = $this->wire('config')->urls->admin . 'setup/logs/view/markup-qa-errors/';
+			$logURL = $config->urls->admin . 'setup/logs/view/markup-qa-errors/';
 			$logInfo = ' ' . sprintf($this->_('(see %s log)'), "<a target='_blank' href='$logURL'>markup-qa-errors</a>");
 		}
 
@@ -229,7 +256,7 @@ class FieldtypeTextareaHelper extends Wire {
 			}
 		}
 		
-		$this->wire('session')->message('<strong>' . 
+		$this->wire()->session->message('<strong>' . 
 			sprintf($this->_('Updated %1$d out of %2$d pages for HTML options.'), count($items), $total) . '</strong><br />' . 
 			"$statusNote<br />" . 
 			"<strong>$html5 " . $this->_('Markup/HTML quality assurance summary:') . '</strong><br />' .
@@ -246,9 +273,10 @@ class FieldtypeTextareaHelper extends Wire {
 	 *
 	 */
 	public function getInputfieldError(Field $field) {
+		$config = $this->wire()->config;
 
-		$editURL = $this->wire('config')->urls->admin . "setup/field/edit?id=$field->id";
-		$modulesURL = $this->wire('config')->urls->admin . "module/";
+		$editURL = $field->editUrl();
+		$modulesURL = $config->urls->admin . "module/";
 		$inputfieldClass = $field->get('inputfieldClass');
 		$findURL = "https://processwire.com/search/?q=$inputfieldClass&t=Modules";
 		$tab = '<br /> &nbsp; &nbsp; &nbsp;';
@@ -260,7 +288,7 @@ class FieldtypeTextareaHelper extends Wire {
 			"$tab 3. Select the \"Inputfield Type\". $tab 4. Click \"Save\".</small>";
 
 		if($inputfieldClass == 'InputfieldTinyMCE') {
-			$this->wire('modules')->getInstall('InputfieldCKEditor'); // install it so it's ready for them
+			$this->wire()->modules->getInstall('InputfieldCKEditor'); // install it so it's ready for them
 			$this->error(
 				"Field '$field->name' uses TinyMCE, which is no longer part of the core. " .
 				"Please install <a target='_blank' href='$findURL'>TinyMCE</a> " .

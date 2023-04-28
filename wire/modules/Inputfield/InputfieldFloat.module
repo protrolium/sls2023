@@ -72,16 +72,26 @@ class InputfieldFloat extends InputfieldInteger {
 	 * 
 	 */
 	protected function sanitizeValue($value) {
-		if(!strlen("$value")) return '';
-		if($this->digits > 0) {
-			return is_numeric("$value") ? (string) $value : '';
+		if(!strlen("$value")) {
+			$value = '';
+		} else if($this->digits > 0) {
+			$value = (string) $value;
+			if(!is_numeric("$value")) {
+				$value = $this->wire()->sanitizer->float($value, array(
+					'precision' => (int) $this->precision, 
+					'getString' => 'F', 
+					'blankValue' => '',
+				));
+			}
 		} else if(!is_float($value) && !is_int($value)) {
 			$value = $this->wire()->sanitizer->float($value, array('blankValue' => ''));
-			if(!strlen("$value")) return '';
+			if(!strlen("$value")) $value = '';
+		} else {
+			$precision = $this->precision;
+			if($precision === null || $precision === '') $precision = $this->getPrecision($value);
+			$value = is_int($precision) && $precision > 0 ? round((float) $value, $precision) : $value;
 		}
-		$precision = $this->precision;
-		if($precision === null || $precision === '') $precision = $this->getPrecision($value);
-		return is_int($precision) && $precision > 0 ? round((float) $value, $precision) : $value;
+		return $value;
 	}
 	
 	/**
@@ -120,7 +130,8 @@ class InputfieldFloat extends InputfieldInteger {
 	 * 
 	 */
 	public function getAttributesString(array $attributes = null) {
-		if($attributes && $attributes['type'] === 'number') { 
+		if(is_null($attributes)) $attributes = $this->getAttributes();
+		if($attributes['type'] === 'number') { 
 			$value = isset($attributes['value']) ? $attributes['value'] : null;
 			if(is_float($value) || (is_string($value) && strlen($value))) {
 				// the HTML5 number input type requires "." as the decimal
@@ -134,9 +145,17 @@ class InputfieldFloat extends InputfieldInteger {
 					$attributes['step'] = '.' . ($precision > 1 ? str_repeat('0', $precision - 1) : '') . '1';
 				}
 			}
+		} else if($this->digits > 0 && empty($attributes['inputmode'])) {
+			$attributes['inputmode'] = 'decimal';
 		}
-		if($attributes && !empty($attributes['value']) && $this->noE && $this->hasE($attributes['value'])) {
+		if(!empty($attributes['value']) && $this->noE && $this->hasE($attributes['value'])) {
 			$attributes['value'] = $this->wire()->sanitizer->float($attributes['value'], array('getString' => true));
+		}
+		if($this->precision > 0 && $this->digits > 0) {
+			if(isset($attributes['value']) && strlen("$attributes[value]")) {
+				$f = $attributes['type'] === 'number' ? 'F' : 'f'; // F=non-locale aware, f=locale aware
+				$attributes['value'] = sprintf("%.{$this->precision}$f", (float) $attributes['value']);
+			}
 		}
 		return parent::getAttributesString($attributes);
 	}

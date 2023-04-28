@@ -3,7 +3,10 @@
 /**
  * The Permissions class serves as the $permissions API variable. 
  * 
- * #pw-summary Provides management of all Permission pages independent of users, for access control. 
+ * #pw-summary Provides management of all Permission pages independent of users, for access control.
+ * 
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
+ * https://processwire.com
  * 
  * @method PageArray find($selector) Return the permissions(s) matching the the given selector query.
  * @method Permission|NullPage get($selector) Return permission by given name, numeric ID or a selector string.
@@ -13,7 +16,7 @@
  * @method void added(Page $page) Hook called just after a Permission is added #pw-hooker
  * @method void deleteReady(Page $page) Hook called before a Permission is deleted #pw-hooker
  * @method void deleted(Page $page) Hook called after a permission is deleted #pw-hooker
- *
+ * 
  */
 class Permissions extends PagesType {
 	
@@ -85,7 +88,7 @@ class Permissions extends PagesType {
 		
 		if(empty($this->permissionNames)) {
 
-			$cache = $this->wire('cache');
+			$cache = $this->wire()->cache;
 			$names = $cache->get(self::cacheName);
 
 			if(empty($names)) {
@@ -138,7 +141,7 @@ class Permissions extends PagesType {
 	 * #pw-group-manipulation
 	 *
 	 * @param string $name Name of permission you want to add, i.e. "hello-world"
-	 * @return Permission|Page|NullPage Returns a Permission page on success, or a NullPage on error
+	 * @return Permission|NullPage Returns a Permission page on success, or a NullPage on error
 	 *
 	 */
 	public function ___add($name) {
@@ -176,6 +179,10 @@ class Permissions extends PagesType {
 			$a["user-view-$role->name"] = sprintf($this->_('View users in role: %s'), $role->name); 
 			if($role->name === 'superuser') continue;
 			$a["user-admin-$role->name"] = sprintf($this->_('Administer users in role: %s'), $role->name);
+		}
+
+		if($this->wire()->modules->isInstalled('PagePathHistory')) {
+			$a['page-edit-redirects'] = $this->_('User can add/edit/delete redirect URLs in the page editor');
 		}
 		
 		$languages = $this->wire()->languages;
@@ -216,8 +223,8 @@ class Permissions extends PagesType {
 	 */
 	public function getReducerPermissions() {
 		$a = $this->reducerPermissions; 
-		$languages = $this->wire('languages');
-		if($languages && $this->wire('modules')->isInstalled('LanguageSupportFields')) {
+		$languages = $this->wire()->languages;
+		if($languages && $languages->hasPageNames()) {
 			foreach($languages as $language) {
 				$a[] = "page-edit-lang-$language->name";
 			}
@@ -253,10 +260,10 @@ class Permissions extends PagesType {
 	 * }
 	 * ~~~~~
 	 *
-	 * @return \ArrayObject
+	 * @return array|PageArray|\Traversable
 	 *
 	 */
-	#[\ReturnTypeWillChange] 
+	#[\ReturnTypeWillChange]
 	public function getIterator() {
 		return parent::getIterator();
 	}
@@ -274,7 +281,7 @@ class Permissions extends PagesType {
 	 */
 
 	public function ___saved(Page $page, array $changes = array(), $values = array()) {
-		$this->wire('cache')->delete(self::cacheName);
+		$this->wire()->cache->delete(self::cacheName);
 		parent::___saved($page, $changes, $values);
 	}
 
@@ -288,7 +295,7 @@ class Permissions extends PagesType {
 	 * 
 	 */
 	public function ___deleted(Page $page) {
-		$this->wire('cache')->delete(self::cacheName);
+		$this->wire()->cache->delete(self::cacheName);
 		parent::___deleted($page);
 	}
 }

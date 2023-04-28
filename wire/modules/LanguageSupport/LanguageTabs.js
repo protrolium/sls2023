@@ -7,23 +7,42 @@
 var clickLanguageTabActive = false;
 
 /**
- * Event called when language tab is long-clicked
+ * True after document.ready language tab events have been added
+ * 
+ * @type {boolean}
+ * 
+ */
+var languageTabsReady = false;
+
+/**
+ * Queue of selectors for language tabs to click on document ready
+ * 
+ * @type {*[]}
+ * 
+ */
+var languageTabsClickOnReady = [];
+
+/**
+ * Event called when language tab is double-clicked
  * 
  * @param e
  * 
  */
 function dblclickLanguageTab(e) {
+	if(!languageTabsReady) return;
 	if(clickLanguageTabActive) return;
 	clickLanguageTabActive = true;
 	var $tab = $(this);
 	var langID = $tab.attr('data-lang');
 	var $tabs = $tab.closest('form').find('a.langTab' + langID).not($tab);
-	$tab.click();
-	$tabs.click();
+	$tab.trigger('click');
+	$tabs.trigger('click');
 	$tabs.effect('highlight', 250);
 	setTimeout(function() {
 		clickLanguageTabActive = false;
 	}, 250);
+	var cfg = ProcessWire.config.LanguageTabs;
+	jQuery.cookie('langTabsDC', langID + '-' + cfg.requestId);
 }
 
 /**
@@ -50,11 +69,14 @@ function setupLanguageTabs($form) {
 		if($inputfield.length) $inputfield.addClass('hasLangTabs');
 		var $parent = $this.parent('.InputfieldContent'); 
 		if($parent.length) {
-			var $span = $("<span></span>")
-				.attr('title', cfg.labelOpen)
-				.attr('class', 'langTabsToggle')
-				.append("<i class='fa fa-folder-o'></i>");
-			$parent.prev('.InputfieldHeader').append($span);
+			var $header = $parent.prev('.InputfieldHeader');
+			if($header.length && !$header.children('.langTabsToggle').length) {
+				var $span = $("<span></span>")
+					.attr('title', cfg.labelOpen)
+					.attr('class', 'langTabsToggle')
+					.append("<i class='fa fa-folder-o'></i>");
+				$header.append($span);
+			}
 		}
 		
 		var $links = $this.find('a.langTabLink');
@@ -80,7 +102,7 @@ function setupLanguageTabs($form) {
 			var $items = $a.closest('ul').siblings('.LanguageSupport');
 			var $closeItem = $items.filter('.LanguageSupportCurrent');
 			var $openItem = $items.filter($a.attr('href'));
-			if($closeItem.attr('id') == $openItem.attr('id')) {
+			if(languageTabsReady && $closeItem.attr('id') == $openItem.attr('id')) {
 				$a.trigger('dblclicklangtab');
 			} else {
 				$closeItem.removeClass('LanguageSupportCurrent');
@@ -96,9 +118,19 @@ function setupLanguageTabs($form) {
 		}); 
 		
 		if(!cfg.jQueryUI) {
-			$links.eq(cfg.activeTab).click();
+			$links.eq(cfg.activeTab).trigger('click');
 		}
 	});
+	
+	var value = jQuery.cookie('langTabsDC'); // DC=DoubleClick
+	if(value && value.indexOf('-' + cfg.requestId) > 0) {
+		value = value.split('-'); // i.e. 123-ProcessPageEdit456
+		var languageId = value[0];
+		$('a.langTab' + languageId, $form).trigger('click');
+		if(!languageTabsReady) {
+			languageTabsClickOnReady.push('a.langTab' + languageId);
+		}
+	}
 }
 
 /**
@@ -121,7 +153,7 @@ function toggleLanguageTabs() {
 	if($content.hasClass('langTabsContainer')) {
 		$ul.find('.langTabLastActive').removeClass('langTabLastActive');
 		if(cfg.liActiveClass) $ul.find('.' + cfg.liActiveClass).addClass('langTabLastActive');
-		$ul.find('a').click(); // activate all (i.e. for CKEditor)
+		$ul.find('a').trigger('click'); // activate all (i.e. for CKEditor)
 		$content.removeClass('langTabsContainer');
 		$inputfield.removeClass('hasLangTabs').addClass('langTabsOff');
 		$this.addClass('langTabsOff');
@@ -136,7 +168,7 @@ function toggleLanguageTabs() {
 		if(cfg.jQueryUI) $langTabs.tabs();
 		$ul.show();
 		$(this).attr("title", cfg.labelOpen).find('i').addClass("fa-folder-o").removeClass("fa-folder-open-o");
-		$ul.find('.langTabLastActive').removeClass('langTabLastActive').children('a').click();
+		$ul.find('.langTabLastActive').removeClass('langTabLastActive').children('a').trigger('click');
 	}
 	
 	clickLanguageTabActive = false;
@@ -164,9 +196,9 @@ function hideLanguageTabs() {
 	});
 
 	// make sure first tab is clicked
-	var $tab = $(".langTabs").find("li:eq(0)");
+	var $tab = $(".langTabs").find('li').eq(0);
 	var cfg = ProcessWire.config.LanguageTabs;
-	if(cfg.liActiveClass && !$tab.hasClass(cfg.liActiveClass)) $tab.find('a').click();
+	if(cfg.liActiveClass && !$tab.hasClass(cfg.liActiveClass)) $tab.find('a').trigger('click');
 
 	// hide the tab toggler
 	$(".langTabsToggle, .LanguageSupportLabel:visible, .langTabs > ul").addClass('langTabsHidden');
@@ -200,5 +232,10 @@ jQuery(document).ready(function($) {
 	$(document).on('AjaxUploadDone', '.InputfieldHasFileList .InputfieldFileList', function() {
 		setupLanguageTabs($(this));
 	});
+	for(var n = 0; n < languageTabsClickOnReady.length; n++) {
+		var selector = languageTabsClickOnReady[n];
+		$(selector).trigger('click');
+	}
+	languageTabsClickOnReady = [];
+	languageTabsReady = true;
 }); 
-

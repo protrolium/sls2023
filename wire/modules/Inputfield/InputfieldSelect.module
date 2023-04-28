@@ -8,7 +8,7 @@
  * Sublcasses will want to override the render method, but it's not necessary to override processInput().
  * Subclasses that select multiple values should implement the InputfieldHasArrayValue interface.
  * 
- * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
  * https://processwire.com
  *
  * @property string|int $defaultValue
@@ -49,7 +49,7 @@ class InputfieldSelect extends Inputfield implements InputfieldHasSelectableOpti
 			'summary' => __('Selection of a single value from a select pulldown', __FILE__), // Module Summary
 			'version' => 102,
 			'permanent' => true, 
-			);
+		);
 	}
 
 	/**
@@ -144,9 +144,21 @@ class InputfieldSelect extends Inputfield implements InputfieldHasSelectableOpti
 	 * 
 	 */
 	public function optionLabel($key, $label = null) {
-		if(!isset($this->options[$key])) return false;
-		if($label !== null) $this->options[$key] = $label;
-		return isset($this->options[$key]) ? $this->options[$key] : null;
+		$returnLabel = false;
+		if(isset($this->options[$key])) {
+			if($label !== null) $this->options[$key] = $label;
+			$returnLabel = $this->options[$key];
+		} else {
+			foreach($this->options as $k => $v) {
+				if(is_array($v) && isset($v[$key])) {
+					// optgroup
+					if($label !== null) $this->options[$k][$key] = $label;
+					$returnLabel = $v[$key];
+					break;
+				}
+			}
+		}
+		return $returnLabel;
 	}
 
 	/**
@@ -280,7 +292,7 @@ class InputfieldSelect extends Inputfield implements InputfieldHasSelectableOpti
 			$line = trim($line);
 			$line = ltrim($line, '+');
 			if(strpos($line, 'disabled:') === 0) list(,$line) = explode('disabled:', $line, 2);
-			if(!strpos($line, '=')) continue; // 0 or false OK
+			if(strpos($line, '=') === false) continue;
 			list($key, $label) = explode('=', $line, 2);
 			if($languageID) {
 				$this->optionLanguageLabel($languageID, $key, $label); 

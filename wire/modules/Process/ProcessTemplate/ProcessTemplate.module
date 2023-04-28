@@ -104,7 +104,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 			'templateNameFormat' => 
 				$this->_('Template names may use letters (a-z A-Z), numbers (0-9), hyphens and underscores.') . ' ' .
 				$this->_('Lowercase is optional but recommended.') . ' ' . 
-				$this->_('Do not include a file extension.'),
+				$this->_('Do not include a file extension.') . ' ' . 
+				$this->_('Do not use only digits.'),
 			'invalidTemplateName' => $this->_('Template name does not match required format.'),
 			'nameAlreadyInUse' => $this->_('The name "%s" is already in use'),
 			'name' => $this->_('Name'), 
@@ -121,7 +122,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$jQueryUI = $modules->get('JqueryUI');
 		$jQueryUI->use('modal');
 
-		return parent::init();
+		parent::init();
 	}
 
 	/**
@@ -260,7 +261,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$button->addClass('add_template_button'); 
 		$button->showInHeader();
 		$out .= $button->render();
-		
+
+		/** @var InputfieldButton $button */
 		$button = $modules->get('InputfieldButton');
 		$button->id = 'tags_button';
 		$button->href = './tags/';
@@ -268,6 +270,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$button->value = $this->labels['manageTags'];
 		$out .= $button->render();
 
+		/** @var InputfieldButton $button */
 		$button = $modules->get('InputfieldButton');
 		$button->id = 'import_button';
 		$button->href = "./import/";
@@ -276,6 +279,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$button->setSecondary();
 		$out .= $button->render();
 
+		/** @var InputfieldButton $button */
 		$button = $modules->get('InputfieldButton');
 		$button->id = 'export_button';
 		$button->href = "./export/";
@@ -397,6 +401,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$rows = array();
 		
 		foreach($templates as $template) {
+			/** @var Template $template */
 			$label = $template->getLabel();
 			if($label && $label != $template->name) {
 				$useLabels = true;
@@ -568,6 +573,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 			if($ignoreRegex && preg_match($ignoreRegex, $filename)) continue;
 			$basename = basename($file->getFilename(), $ext); 
 			if($sanitizer->name($basename) !== $basename) continue;
+			if(ctype_digit($basename)) continue;
 			// if(count($templates->find("name=$basename"))) continue; 
 			if($templates->get($basename)) continue;
 			$templateFiles[] = $basename; 
@@ -576,7 +582,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		if(!$input->is('post')) {
 			// render form
 			$form = $this->buildAddForm($templateFiles);
-			if(count($this->input->post)) $form->processInput($this->input->post);
+			if(count($input->post)) $form->processInput($input->post);
 			return $form->render();
 		}
 		
@@ -600,6 +606,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		}
 
 		$postTemplates = $input->post('templates');
+		if(!is_array($postTemplates)) $postTemplates = array();
+		
 		$templateName = trim((string) $input->post('template_name')); 
 
 		// add any templates without files to the postTemplates
@@ -612,6 +620,10 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 			foreach($templateNames as $name) {
 				$name = $sanitizer->name(basename($name)); 
 				if(!strlen($name)) continue;
+				if(ctype_digit($name)) {
+					$this->error(sprintf($this->_('Template name “%s” not added because it contains only digits.'), $name));
+					continue;
+				}
 				if($templates->get($name) || $fieldgroups->get($name)) {	
 					$this->error(sprintf($this->labels['nameAlreadyInUse'], $name)); 
 				} else {
@@ -619,6 +631,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 				}
 			}
 		}
+		
+		$addedTemplates = array();
 
 		foreach($postTemplates as $basename) {
 			
@@ -638,7 +652,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 				$template->roles = array($this->wire()->roles->getGuestRole()->id); 
 				$template->save();
 				
-				$this->message(sprintf($this->_('Added template and fieldgroup: %s'), $basename)); 
+				$this->message(sprintf($this->_('Added template and fieldgroup: %s'), $template->name)); 
+				$addedTemplates[] = $template;
 				
 			} catch(\Exception $e) {
 				$this->error($e->getMessage()); 
@@ -657,8 +672,15 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 				$template->fieldgroup->save();
 			}
 		}
-
-		$session->redirect('./'); 
+		
+		if(count($addedTemplates) === 1) {
+			// redirect to edit template when only one has been added
+			/** @var Template $template */
+			$template = reset($addedTemplates);
+			$session->redirect($template->editUrl());
+		} else {
+			$session->redirect('./');
+		}
 		
 		return ''; // never reached
 	}	
@@ -686,11 +708,13 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		if(count($templateFiles)) { 
 			/** @var InputfieldCheckboxes $field */
 			$field = $modules->get('InputfieldCheckboxes');
-			$field->label = sprintf($this->_('Templates found in: %s'), "$templateUrl*.{$this->config->templateExtension}"); 
+			$field->label = sprintf($this->_('Templates found in: %s'), "$templateUrl*.{$config->templateExtension}"); 
 			$field->description = $this->_('The following new templates were found. Check the box next to each template you want to add.'); // Templates found, description
 			$field->attr('id+name', 'templates'); 
 			$field->icon = 'search-plus';
 			foreach($templateFiles as $file) {
+				$name = pathinfo($file, PATHINFO_FILENAME); 
+				if(ctype_digit($name)) continue;
 				$field->addOption($file);
 			}
 			$form->append($field); 
@@ -743,7 +767,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		}
 		
 		$min = $config->debug ? '' : '.min';
-		$config->scripts->add($config->urls->ProcessTemplate . "ProcessTemplateFieldCreator$min.js?v=1");
+		$config->scripts->add($config->urls('ProcessTemplate') . "ProcessTemplateFieldCreator$min.js?v=1");
 		
 		$label = $this->template->getLabel();
 		if(!$label) $label = $this->template->name;
@@ -791,7 +815,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$t->attr('class', 'WireTab');
 		$this->buildEditFormBasics($template, $t);
 		$form->add($t);
-		
+
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('title', $this->_x('Access', 'tab'));
 		$t->attr('id', 'tab_access');
@@ -800,36 +825,41 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$overrides = $this->buildEditFormAccessOverrides($template);
 		if($overrides) $t->add($overrides);
 		$t->add($this->buildEditFormAccessFiles($template));
-		$form->add($t); 
+		$form->add($t);
 
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('title', $this->_x('Family', 'tab'));
 		$t->attr('class', 'WireTab'); 
 		$t->attr('id', 'tab_family');
 		$t->add($this->buildEditFormFamily($template)); 
-		$form->add($t); 
+		$form->add($t);
 
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('title', $this->_x('URLs', 'tab'));
 		$t->attr('class', 'WireTab'); 
 		$t->attr('id', 'tab_urls');
 		$t->add($this->buildEditFormURLs($template)); 
 		$form->add($t);
-		
+
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('title', $this->_x('Files', 'tab'));
 		$t->attr('class', 'WireTab');
 		$t->attr('id', 'tab_files');
 		$t->add($this->buildEditFormFile($template));
-		$form->add($t); 
+		$form->add($t);
 
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('title', $this->_x('Cache', 'tab'));
 		$t->attr('class', 'WireTab'); 
 		$t->attr('id', 'tab_cache');
 		$t->add($this->buildEditFormCache($template)); 
-		$form->add($t); 
+		$form->add($t);
 
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('title', $this->_x('Advanced', 'tab'));
 		$t->attr('class', 'WireTab'); 
@@ -838,6 +868,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$form->add($t); 
 
 		if($config->advanced) {
+			/** @var InputfieldWrapper $t */
 			$t = $this->wire(new InputfieldWrapper());
 			$t->attr('title', $this->_x('System', 'tab'));
 			$t->attr('class', 'WireTab'); 
@@ -846,6 +877,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 			$form->add($t); 
 		}
 
+		/** @var InputfieldWrapper $t */
 		$t = $this->wire(new InputfieldWrapper());
 		$t->attr('class', 'WireTab'); 
 		$t->attr('title', $this->_x('Actions', 'tab'));
@@ -1068,6 +1100,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$field->description = $this->_("By default, each template manages it's own group of fields. If you want to have this template use the fields from another template, select it here."); // Fieldgroup description
 		
 		foreach($fieldgroups->getAll()->sort('name') as $fieldgroup) {
+			/** @var Fieldgroup $fieldgroup */
 			$name = $fieldgroup->name; 
 			if($name === $template->name) {
 				$name .= ' ' . $this->_('(default)'); // Label appended to default fieldgroup name in select box
@@ -1323,6 +1356,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$field->collapsed = Inputfield::collapsedYes;
 
 		foreach($this->wire()->fieldgroups->find('sort=name') as $fieldgroup) {
+			/** @var Fieldgroup $fieldgroup */
 			$template = $this->templates->get($fieldgroup->name);
 			if($template && ($template->flags & Template::flagSystem) && !$config->advanced) continue;
 			if($this->template && $fieldgroup->name == $this->template->name) continue;
@@ -1427,6 +1461,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 			$field->description=  $this->_('Selector to find the other pages that should have their cache cleared.');
 			$field->attr('value', $template->cacheExpireSelector);
 		} else {
+			/** @var InputfieldMarkup $field */
 			$field = $modules->get('InputfieldMarkup');
 			$field->value = $this->_('Save this template and then come back here to configure your selector.');
 		}
@@ -1469,6 +1504,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 
 		// --------------------
 
+		/** @var InputfieldText $field */
 		$field = $modules->get('InputfieldText'); 
 		$field->attr('name', 'noCachePostVars'); 
 		$field->label = $labelPOST; 
@@ -1790,7 +1826,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$field->attr('name', 'noTrash');
 		$field->label = $this->_("Disable Trash Option?");
 		$field->description = $this->_("When checked, pages using this template will not have the option of being sent to the trash."); // noTrash option, description
-		if($this->wire('config')->advanced) $field->notes = $this->_('API: $template->noTrash = 1; // or 0 to disable'); // noTrash option, API notes
+		if($this->wire()->config->advanced) $field->notes = $this->_('API: $template->noTrash = 1; // or 0 to disable'); // noTrash option, API notes
 
 		$field->attr('value', 1);
 		if($template->noTrash) {
@@ -1992,6 +2028,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		/** @var InputfieldRadios $field */
 		$field = $modules->get("InputfieldRadios"); 
 		$field->attr('name', 'noShortcut'); 
+		$field->icon = 'question-circle';
 		$field->label = $this->_('Show in the add-page shortcut menu?');
 		$field->description = 
 			$this->_('When checked, this template is eligible to appear on the "add new page" shortcut button/menu that appears on the main Pages screen. This assumes all other conditions are met (see below).') . ' ' . 
@@ -3121,6 +3158,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 	protected function importFieldgroup(Fieldgroup $fieldgroup, Template $template) {
 		$total = 0;
 		foreach($fieldgroup as $field) {
+			/** @var Field $field */
 			// if template already has the field, leave it, unless it's a closing fieldset.
 			// necessary because the fieldAdded hook may automatically add a closing fieldset, 
 			// so this prevents things from getting out of order. 
@@ -3142,7 +3180,6 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 	 */
 	protected function saveFields() {
 
-		$fieldtypes = $this->wire()->fieldtypes;
 		$sanitizer = $this->wire()->sanitizer;
 		$fields = $this->wire()->fields;
 		$input = $this->wire()->input;
@@ -3200,9 +3237,8 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 				foreach($badFieldsets as $field) {
 					$this->error(sprintf($this->_('Error with placement of fieldset/tab "%s" - please fix and save again'), $field->name));
 				}
-				/** @var FieldtypeFieldsetOpen $fieldset */
-				$fieldset = $fieldtypes->get('FieldtypeFieldsetOpen');
-				if($fieldset->checkFieldgroupFieldsets($this->template->fieldgroup)) $saveFieldgroup = true;
+				// $fieldset = $fieldtypes->get('FieldtypeFieldsetOpen');
+				// if($fieldset->checkFieldgroupFieldsets($this->template->fieldgroup)) $saveFieldgroup = true;
 			}
 		}
 
@@ -3220,6 +3256,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		if(count($removedFields)) {
 			$url = "removeFields?id={$this->template->id}&fields=";
 			foreach($removedFields as $field) {
+				/** @var Field $field */
 				$url .= $field->id . ',';
 			}
 			return rtrim($url, ','); 
@@ -3292,7 +3329,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 		$f->attr('value', $this->template->id); 
 		$form->append($f);
 
-		/** @var InputfieldSubmit $field */
+		/** @var InputfieldSubmit $f */
 		$f = $modules->get('InputfieldSubmit');
 		$f->attr('name', 'submit_change_fieldgroup'); 
 		$f->attr('value', $this->_x('Continue', 'submit-fieldgroup')); 
@@ -3759,7 +3796,7 @@ class ProcessTemplate extends Process implements ConfigurableModule {
 			$table->setEncodeEntities(false);
 			$table->headerRow(array($labels['name'], $labels['templates']));
 
-			foreach($tags as $key => $tag) {
+			foreach($tags as $tag) {
 				$table->row(array(
 					$tag => "./?edit_tag=$tag",
 					implode(', ', $templateNamesByTag[$tag])

@@ -164,6 +164,20 @@ class Sanitizer extends Wire {
 	 * 
 	 */
 	protected $textTools = null;
+	
+	/**
+	 * @var null|WireNumberTools
+	 *
+	 */
+	protected $numberTools = null;
+
+	/**
+	 * Runtime caches
+	 * 
+	 * @var array 
+	 * 
+	 */
+	protected $caches = array();
 
 	/**
 	 * UTF-8 whitespace hex codes
@@ -263,6 +277,8 @@ class Sanitizer extends Wire {
 		'filename' => 's',
 		'flatArray' => 'a',
 		'float' => 'f',
+		'htmlClass' => 's', 
+		'htmlClasses' => 's',
 		'httpUrl' => 's',
 		'hyphenCase' => 's',
 		'int' => 'i',
@@ -324,6 +340,7 @@ class Sanitizer extends Wire {
 	 *
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->multibyteSupport = function_exists("mb_internal_encoding"); 
 		if($this->multibyteSupport) mb_internal_encoding("UTF-8");
 		$this->allowedASCII = str_split($this->alphaASCII . $this->digitASCII);
@@ -361,7 +378,7 @@ class Sanitizer extends Wire {
 				$value = mb_strtolower($value);
 
 				if(empty($replacements)) {
-					$configData = $this->wire('modules')->getModuleConfigData('InputfieldPageName');
+					$configData = $this->wire()->modules->getModuleConfigData('InputfieldPageName');
 					$replacements = empty($configData['replacements']) ? InputfieldPageName::$defaultReplacements : $configData['replacements'];
 				}
 
@@ -591,6 +608,54 @@ class Sanitizer extends Wire {
 	}
 
 	/**
+	 * Sanitize string to ASCII-only HTML class attribute value
+	 * 
+	 * Note that this does not support all possible characters in an HTML class attribute 
+	 * and instead focuses on the most commonly used ones. Characters allowed in HTML class
+	 * attributes from this method include: `-_:@a-zA-Z0-9`. This method does not allow
+	 * values that have no letters or digits.
+	 * 
+	 * @param string $value
+	 * @return string 
+	 * @since 3.0.212
+	 * 
+	 */
+	public function htmlClass($value) {
+		$value = trim("$value");
+		if(empty($value)) return '';
+		$extras = array('-', '_', ':', '@');
+		$value = $this->nameFilter($value, $extras, '-');
+		$value = ltrim($value, '0123456789'); // cannot begin with digit
+		if(trim($value, implode('', $extras)) === '') $value = ''; // do not allow extras-only class
+		return $value;
+	}
+
+	/**
+	 * Sanitize string to ASCII-only space-separated HTML class attribute values with no duplicates
+	 * 
+	 * See additional notes in `Sanitizer::htmlClass()` method. 
+	 *
+	 * @param string|array $value
+	 * @param bool $getArray Get array rather than string? (default=false)
+	 * @return string|array
+	 * @since 3.0.212
+	 *
+	 */
+	public function htmlClasses($value, $getArray = false) {
+		if(is_array($value)) $value = implode(' ', $value);
+		$value = str_replace(array("\n", "\r", "\t", ",", "."), ' ', $value);
+		$value = trim("$value");
+		if(empty($value)) return $getArray ? array() : '';
+		$a = array();
+		foreach(explode(' ', $value) as $c) {
+			$c = $this->htmlClass($c);
+			if(!empty($c)) $a[$c] = $c;
+		}
+		if($getArray) return array_values($a);
+		return count($a) ? implode(' ', $a) : '';
+	}
+
+	/**
 	 * Sanitize consistent with names used by ProcessWire fields and/or PHP variables
 	 *
 	 * - Allows upper and lowercase ASCII letters, digits and underscore. 
@@ -719,7 +784,7 @@ class Sanitizer extends Wire {
 		if(!strlen($value)) return '';
 		
 		$defaults = array(
-			'charset' => $this->wire('config')->pageNameCharset
+			'charset' => $this->wire()->config->pageNameCharset
 		);
 		
 		if(is_array($beautify)) {
@@ -824,8 +889,10 @@ class Sanitizer extends Wire {
 		$value = $this->string($value);
 		if(!strlen($value)) return '';
 		
+		$config = $this->wire()->config;
+		
 		// if UTF8 module is not enabled then delegate this call to regular pageName sanitizer
-		if($this->wire('config')->pageNameCharset != 'UTF8') return $this->pageName($value, false, $maxLength);
+		if($config->pageNameCharset != 'UTF8') return $this->pageName($value, false, $maxLength);
 		
 		$tt = $this->getTextTools();
 	
@@ -836,7 +903,7 @@ class Sanitizer extends Wire {
 		$separators = array('.', '-', '_');
 
 		// whitelist of allowed characters and blacklist of disallowed characters
-		$whitelist = $this->wire('config')->pageNameWhitelist;
+		$whitelist = $config->pageNameWhitelist;
 		if(!strlen($whitelist)) $whitelist = false;
 		$blacklist = '/\\%"\'<>?#@:;,+=*^$()[]{}|&';
 		
@@ -846,8 +913,15 @@ class Sanitizer extends Wire {
 
 		// proceed only if value has some non-ascii characters
 		if(ctype_alnum(str_replace($extras, '', $value))) {
-			// let regular pageName sanitizer handle this
-			return $this->pageName($value, false, $maxLength);
+			$k = 'pageNameUTF8.whitelistIsLowercase';
+			if(!isset($this->caches[$k])) {
+				$this->caches[$k] = $whitelist !== false && $tt->strtolower($whitelist) === $whitelist;
+			}
+			if($this->caches[$k] || $tt->strtolower($value) === $value) {
+				// whitelist supports only lowercase OR value is all lowercase 
+				// let regular pageName sanitizer handle this
+				return $this->pageName($value, false, $maxLength);
+			}
 		}
 
 		// validate that all characters are in our whitelist
@@ -1105,7 +1179,7 @@ class Sanitizer extends Wire {
 	 * #pw-group-pages
 	 *
 	 * @param string $value Value to sanitize
-	 * @param bool $beautify Beautify the value? (default=false). Maybe any of the following:
+	 * @param bool|int $beautify Beautify the value? (default=false). Maybe any of the following:
 	 * - `true` (bool): Beautify the individual page names in the path to remove redundant and trailing punctuation and more.
 	 * - `false` (bool): Do not perform any conversion or attempt to make it more pretty, just sanitize (default). 
 	 * - `Sanitizer::translate` (constant): Translate UTF-8 characters to visually similar ASCII (using InputfieldPageName module settings).
@@ -1202,7 +1276,7 @@ class Sanitizer extends Wire {
 	 * 
 	 */
 	public function pagePathNameUTF8($value) {
-		if($this->wire('config')->pageNameCharset !== 'UTF8') return $this->pagePathName($value);
+		if($this->wire()->config->pageNameCharset !== 'UTF8') return $this->pagePathName($value);
 		$value = $this->string($value);
 		if(!strlen($value)) return '';
 		$parts = explode('/', $value);
@@ -1281,20 +1355,126 @@ class Sanitizer extends Wire {
 
 	/**
 	 * Sanitize and validate an email address
-	 * 
+	 *
 	 * Returns valid email address, or blank string if it isn’t valid.
-	 * 
+	 *
 	 * #pw-group-strings
 	 * #pw-group-validate
 	 *
 	 * @param string $value Email address to sanitize and validate.
-	 * @return string Sanitized, valid email address, or blank string on failure. 
-	 * 
-	 */ 
-	public function email($value) {
-		$value = filter_var($value, FILTER_SANITIZE_EMAIL); 
-		if(filter_var($value, FILTER_VALIDATE_EMAIL)) return $value;
-		return '';
+	 * @param array $options All options require 3.0.208+
+	 *  - `allowIDN` (bool|int): Allow internationalized domain names? (default=false)
+	 *     Specify int 2 to also allow UTF-8 in local-part of email [SMTPUTF8] (i.e. `bøb`).
+	 *  - `getASCII` (bool): Returns ASCII encoded version of email when host is IDN (default=false)
+	 *     Does not require the allowIDN option since returned email host will be only ASCII.
+	 *     Not meant to be combined with allowIDN=2 option since local-part of email does not ASCII encode.
+	 *  - `getUTF8` (bool): Converts ASCII-encoded IDNs to UTF-8, when present (default=false)
+	 *  - `checkDNS` (bool): Check that host part of email has a valid DNS record? (default=false)
+	 *     Warning: this slows things down a lot and should not be used in time sensitive cases.
+	 *  - `throw` (bool): Throw WireException on fail with details on why it failed (default=false)
+	 * @return string Sanitized, valid email address, or blank string on failure.
+	 *
+	 */
+	public function email($value, array $options = array()) {
+		
+		if(empty($value)) return '';
+		
+		$defaults = array(
+			'allowIDN' => false, 
+			'getASCII' => false, 
+			'getUTF8' => false, 
+			'checkDNS' => false, 
+			'throw' => false, 
+			'_debug' => false,
+		);
+		
+		$options = array_merge($defaults, $options);
+		$debug = $options['_debug'];
+		
+		if($options['throw']) {
+			unset($options['throw']); 
+			$value = $this->email($value, array_merge($options, array('_debug' => true)));
+			if(!strpos($value, '@')) throw new WireException($value);
+			return $value;
+		}
+		
+		if($options['checkDNS']) {
+			unset($options['checkDNS']);
+			$valueASCII = $this->email($value, array_merge($options, array('getASCII' => true)));
+			if(strpos($valueASCII, '@') === false) return $valueASCII; // fail
+			list(,$host) = explode('@', $value, 2);
+			$dns = dns_get_record($host, DNS_MX | DNS_A | DNS_CNAME | DNS_AAAA);
+			if(empty($dns)) return ($debug ? 'Failed DNS check' : ''); 
+			if($options['getASCII']) return $valueASCII;
+			return $this->email($value, $options);
+		}
+		
+		$value = trim(trim((string) $value), '.@');
+		
+		if(!strlen($value)) return ($debug ? 'Trimmed value is empty' : '');
+		if(!strpos($value, '@')) return ($debug ? 'Missing at symbol' : '');
+		if(strpos($value, ' ')) $value = str_replace(' ', '', $value);
+		
+		if($options['getUTF8'] && strpos($value, 'xn-') !== false && function_exists('\idn_to_utf8')) {
+			list($addr, $host) = explode('@', $value, 2);
+			if(strpos($host, 'xn-') !== false) {
+				$host = idn_to_utf8($host);
+				if($host !== false) $value = "$addr@$host";
+			}
+		}
+
+		if(filter_var($value, FILTER_VALIDATE_EMAIL)) return $value; // valid
+		
+		$pos = strpos($value, '<');
+		if($pos !== false && strpos($value, '>') > $pos+3) {
+			// John Smith <jsmith@domain.com> => jsmith@domain.com
+			list(,$value) = explode('<', $value, 2);
+			list($value,) = explode('>', $value, 2);
+			return $this->email($value, $options);
+		}
+		
+		// all following code for processing IDN emails
+		if(!$options['allowIDN'] && !$options['getASCII']) return ($debug ? 'Invalid+allowIDN/getASCII=0' : '');
+		if(preg_match('/^[-@_.a-z0-9]+$/i', $value)) return ($debug ? 'Invalid and not IDN' : '');
+		
+		$parts = explode('@', $value);
+		if(count($parts) !== 2) return ($debug ? 'More than one at symbol' : '');
+
+		$tt = $this->getTextTools();
+		list($addr, $host) = $parts;
+		if($tt->strlen($addr) > 64) return ($debug ? 'Local part exceeds 64 max length' : '');
+		if($tt->strlen($host) > 255) return ($debug ? 'Host part exceeds 255 max length' : '');
+		
+		if(function_exists('\idn_to_ascii')) {
+			// if email doesn't survive IDN conversions then not valid
+			$email = $value;
+			$hostASCII = idn_to_ascii($host);
+			if($hostASCII === false) return ($debug ? 'Fail UTF8-to-ASCII' : '');
+			$test = ($options['allowIDN'] === 2 ? 'bob' : $addr) . "@$hostASCII";
+			if(!filter_var($test, FILTER_VALIDATE_EMAIL)) return ($debug ? 'Fail validate post IDN-to-ASCII' : '');
+			$hostUTF8 = idn_to_utf8($hostASCII);
+			if($hostUTF8 === false) return ($debug ? 'Fail IDN-to-UTF8 conversion' : '');
+			$value = "$addr@$hostUTF8";
+			if($email !== $value) return ($debug ? 'Modified by IDN conversion' : '');
+			if($options['getASCII']) return "$addr@$hostASCII";
+		} else if($options['getASCII']) {
+			return ($debug ? 'getASCII requested and idn_to_ascii not available' : ''); 
+		}
+		
+		$regex = // regex adapted from Validators::isEmail() in https://github.com/nette/utils/
+			'@^' . 
+				'("([ !#-[\]-~]*|\\\[ -~])+"|LOCAL+(\.LOCAL+)*)\@' . // local-part
+				'([\dALPHA]([-\dALPHA]{0,61}[\dALPHA])?\.)+' . // domain
+				'[ALPHA]([-\dALPHA]{0,17}[ALPHA])?' . // TLD
+			'$@Di';
+		
+		$local = "-a-z\d!#$%&'*+/=?^_`{|}~" . ($options['allowIDN'] === 2 ? "\x80-\xFF" : '');
+		$regex = str_replace('LOCAL', "[$local]", $regex); // // RFC5322 unquoted characters
+		$regex = str_replace('ALPHA', "a-z\x80-\xFF", $regex); // superset of IDN
+		
+		if(!preg_match($regex, $value)) return ($debug ? 'Fail IDN regex' : ''); 
+		
+		return $value;
 	}
 
 	/**
@@ -1363,7 +1543,7 @@ class Sanitizer extends Wire {
 		
 		if($separator !== null && $count > 1) {
 			$value = implode($separator, $a);
-		} else if($count) {
+		} else {
 			$value = reset($a); 
 		}
 		
@@ -1559,7 +1739,7 @@ class Sanitizer extends Wire {
 		}
 		
 		if($options['stripQuotes']) {
-			$value = str_replace(array('"', "'"), (is_string($options['stripQuotes']) ? $options['strip_quotes'] : ''), $value);
+			$value = str_replace(array('"', "'"), (is_string($options['stripQuotes']) ? $options['stripQuotes'] : ''), $value);
 		}
 		
 		if($options['trim']) {
@@ -1774,6 +1954,8 @@ class Sanitizer extends Wire {
 		$options = array_merge($defaults, $options);
 		$newline = $options['newline'];
 		$value = $this->string($value);
+		
+		if(!is_string($newline) || !strlen($newline)) $newline = ' ';
 
 		if(strpos($value, "\r") !== false) {
 			// normalize newlines
@@ -1847,7 +2029,7 @@ class Sanitizer extends Wire {
 	 * 
 	 */
 	public function markupToLine($value, array $options = array()) {
-		if(!isset($options['newline'])) $options['newline'] = $options['newline'] = " "; 
+		if(!isset($options['newline'])) $options['newline'] = " "; 
 		if(!isset($options['separator'])) $options['separator'] = ", ";
 		return $this->markupToText($value, $options);
 	}
@@ -2098,7 +2280,8 @@ class Sanitizer extends Wire {
 	 * 
 	 */
 	public function httpUrl($value, $options = array()) {
-		$options['requireScheme'] = true; 
+		$options['requireScheme'] = true;
+		$options['allowRelative'] = false;
 		if(empty($options['allowSchemes'])) $options['allowSchemes'] = array('http', 'https'); 
 		return $this->url($value, $options);
 	}
@@ -2546,7 +2729,7 @@ class Sanitizer extends Wire {
 	 * 
 	 * @param $value
 	 * @param array $options
-	 * @return bool|mixed|string
+	 * @return string
 	 * 
 	 */
 	protected function selectorValueV1($value, $options = array()) {
@@ -2826,8 +3009,8 @@ class Sanitizer extends Wire {
 
 		if($options['fullMarkdown']) {
 			// full markdown
-			
-			$markdown = $this->wire('modules')->get('TextformatterMarkdownExtra');
+			/** @var TextformatterMarkdownExtra $markdown */	
+			$markdown = $this->wire()->modules->get('TextformatterMarkdownExtra');
 			if(is_int($options['fullMarkdown'])) {
 				$markdown->flavor = $options['fullMarkdown'];
 			} else {
@@ -3034,7 +3217,8 @@ class Sanitizer extends Wire {
 	 *
 	 */
 	public function purifier(array $options = array()) {
-		$purifier = $this->wire('modules')->get('MarkupHTMLPurifier');
+		/** @var MarkupHTMLPurifier $purifier */
+		$purifier = $this->wire()->modules->get('MarkupHTMLPurifier');
 		foreach($options as $key => $value) $purifier->set($key, $value);
 		return $purifier;
 	}
@@ -3332,7 +3516,7 @@ class Sanitizer extends Wire {
 		if($html) {
 			if(empty($whitespaceHTML)) {
 				$whitespaceHTML = $this->whitespaceHTML;
-				foreach($this->whitespaceUTF8 as $key => $value) {
+				foreach($this->whitespaceUTF8 as $value) {
 					$whitespaceHTML[] = "&#x$value;"; // hex entity
 					$whitespaceHTML[] = "&#" . hexdec($value) . ';'; // decimal entity
 				}
@@ -3446,7 +3630,7 @@ class Sanitizer extends Wire {
 	 * @param array $options Options to modify behavior, 3.0.169+ only:
 	 *  - `replaceWith` (string): Replace MB4+ characters with this character, may not be blank (default='�')
 	 *  - `version` (int): Replacement method version (default=2)
-	 * @return string|array|mixed 
+	 * @return string|array
 	 * 
 	 */
 	public function removeMB4($value, array $options = array()) {
@@ -3798,10 +3982,10 @@ class Sanitizer extends Wire {
 			'strict' => false,
 		);
 		$options = array_merge($defaults, $options);
-		$datetime = $this->wire('datetime');
+		$datetime = $this->wire()->datetime;
 		$iso8601 = 'Y-m-d H:i:s';
 		$_value = trim($this->string($value)); // original value string
-		if(empty($value)) return $options['default'];
+		if(empty($value) && !is_int($value) && !strlen("$value")) return $options['default'];
 		if(!is_string($value) && !is_int($value)) $value = $this->string($value);
 		if(ctype_digit("$value")) {
 			// value is in unix timestamp format
@@ -3812,7 +3996,7 @@ class Sanitizer extends Wire {
 			$value = $datetime->stringToTimestamp($value, $format); 
 		}
 		// value is now a unix timestamp
-		if(empty($value)) return null;
+		if($value === false) return null;
 		// if format is provided and in strict mode, validate for the format and bounds
 		if($format && $options['strict']) {
 			$test = $datetime->date($format, $value);
@@ -3829,7 +4013,7 @@ class Sanitizer extends Wire {
 			if($value > $max) return null;
 		}
 		if(!empty($options['returnFormat'])) $value = wireDate($options['returnFormat'], $value);
-		return empty($value) ? null : $value;
+		return ($value === null || $value === false) ? null : $value;
 	}
 
 	/**
@@ -3982,7 +4166,7 @@ class Sanitizer extends Wire {
 	/**
 	 * Sanitize value to be within the given min and max range
 	 * 
-	 * If float or decimal string specified for $min argument, return value will be a float,
+	 * If float or decimal string specified for $min or $max arguments, return value will be a float,
 	 * otherwise an integer is returned.
 	 * 
 	 * ~~~~~
@@ -4005,8 +4189,12 @@ class Sanitizer extends Wire {
 		if(is_string($min)) $min = ctype_digit($min) ? (float) $min : (int) $min;
 		if(is_string($max)) $max = ctype_digit($max) ? (float) $max : (int) $max;
 		$value = is_float($min) || is_float($max) ? (float) $value : (int) $value;
-		if($min === null) $min = is_float($value) ? PHP_FLOAT_MIN : PHP_INT_MIN;
-		if($max === null) $max = is_float($value) ? PHP_FLOAT_MAX : PHP_INT_MAX;
+		if($min === null) {
+			$min = is_float($value) && defined('PHP_FLOAT_MIN') ? constant('PHP_FLOAT_MIN') : PHP_INT_MIN;
+		}
+		if($max === null) {
+			$max = is_float($value) && defined('PHP_FLOAT_MAX') ? constant('PHP_FLOAT_MAX') : PHP_INT_MAX;
+		}
 		if($min > $max) list($min, $max) = array($max, $min); // swap args if necessary
 		if($value < $min) {
 			$value = $min;
@@ -4017,7 +4205,7 @@ class Sanitizer extends Wire {
 	}
 
 	/**
-	 * Sanitize value to be at least the given $min value
+	 * Sanitize to have a minimum value
 	 * 
 	 * If float or decimal string specified for $min argument, return value will be a float, 
 	 * otherwise an integer is returned.
@@ -4043,9 +4231,9 @@ class Sanitizer extends Wire {
 	}
 
 	/**
-	 * Sanitize value to be at least the given $min value
+	 * Sanitize to have a maximuim value
 	 *
-	 * If float or decimal string specified for $min argument, return value will be a float,
+	 * If float or decimal string specified for $max argument, return value will be a float,
 	 * otherwise an integer is returned.
 	 * 
 	 * ~~~~~
@@ -4415,7 +4603,7 @@ class Sanitizer extends Wire {
 		}
 		$clean = array();
 		$strict = isset($options['strict']) ? $options['strict'] : false;
-		foreach($value as $k => $v) {
+		foreach($value as $v) {
 			if($strict) {
 				$isInt = is_int($v);
 				$isStr = !$isInt && is_string($v); 
@@ -4572,7 +4760,7 @@ class Sanitizer extends Wire {
 		$options = is_array($options) ? array_merge($defaults, $options) : $defaults;
 		$preserveKeys = $options['preserveKeys'];
 		
-		foreach($value as $key => $val) {
+		foreach($value as $val) {
 			if(is_array($val)) $isFlat = false;
 			if(!$isFlat) break;
 		}	
@@ -4920,7 +5108,7 @@ class Sanitizer extends Wire {
 			if($value === "1") return true; 
 			if($value === "false") return false;
 			if($value === "true") return true;
-			if($length) return true; 
+			return true; 
 		} else if(is_object($value)) {
 			$value = $this->string($value);
 		} else if(is_array($value)) {
@@ -5154,6 +5342,24 @@ class Sanitizer extends Wire {
 			$this->wire($this->textTools);
 		}
 		return $this->textTools;
+	}
+	
+	/**
+	 * Get instance of WireNumberTools
+	 *
+	 * #pw-group-numbers
+	 * #pw-group-other
+	 *
+	 * @return WireNumberTools
+	 * @since 3.0.214
+	 *
+	 */
+	public function getNumberTools() {
+		if(!$this->numberTools) {
+			$this->numberTools = new WireNumberTools();
+			$this->wire($this->numberTools);
+		}
+		return $this->numberTools;
 	}
 
 	/**********************************************************************************************************************

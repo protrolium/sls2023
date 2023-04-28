@@ -3,7 +3,7 @@
 }
 body:not(.uk-offcanvas-container) .alfred:hover {
   outline: 4px groove #ececec;
-  z-index: 1;
+  z-index: 10;
 }
 .alfred-icon {
   pointer-events: all;
@@ -17,6 +17,7 @@ body:not(.uk-offcanvas-container) .alfred:hover {
   box-sizing: content-box;
   display: inline-block;
   text-align: center;
+  position: relative;
 }
 .alfred {
   position: relative;
@@ -58,6 +59,7 @@ body:not(.uk-offcanvas-container) .alfred:hover {
   box-sizing: content-box;
   display: inline-block;
   text-align: center;
+  position: relative;
 }
 .alfred .add-top {
   top: -30px;
@@ -87,6 +89,7 @@ body:not(.uk-offcanvas-container) .alfred:hover {
   top: -1px;
   right: 0;
   text-align: right;
+  z-index: 10;
 }
 .alfred.rpb-widget:hover {
   outline: 4px groove orange !important;
@@ -94,18 +97,54 @@ body:not(.uk-offcanvas-container) .alfred:hover {
 .alfred.rpb-widget .icon {
   border: 3px solid orange !important;
 }
-.alfred:hover > .alfredelements > .icons {
+.alfred .vspace {
+  width: 100%;
+  background: white;
+  border-left: 3px solid #ececec;
+  border-right: 3px solid #ececec;
+  position: absolute;
+  left: -3px;
+  top: 30px;
+  z-index: 2;
+}
+.alfred .vspace input[type="range"] {
+  writing-mode: bt-lr;
+  /* IE */
+  -webkit-appearance: slider-vertical;
+  /* Chromium */
+  width: 8px;
+  height: 100px;
+  padding: 0;
+  margin-top: 5px;
+}
+.alfred .vspace {
+  height: 0px;
+  transition: height 0.3s ease;
+  overflow: hidden;
+}
+.alfred .icons > a:hover .vspace {
+  height: 145px;
+  border-bottom: 3px solid #ececec;
+}
+.alfred:hover:not(.alfred-disabled) > .alfredelements > .icons {
   display: inline-block;
 }
-.alfred:hover > .alfredelements > .add-top {
+.alfred:hover:not(.alfred-disabled) > .alfredelements > .add-top {
   display: inline-block;
 }
-.alfred:hover > .alfredelements > .add-bottom {
+.alfred:hover:not(.alfred-disabled) > .alfredelements > .add-bottom {
   display: inline-block;
 }
-.alfred:hover > .alfredelements > .add-left {
+.alfred:hover:not(.alfred-disabled) > .alfredelements > .add-left {
   display: inline-block;
 }
-.alfred:hover > .alfredelements > .add-right {
+.alfred:hover:not(.alfred-disabled) > .alfredelements > .add-right {
   display: inline-block;
+}
+.alfred-cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }

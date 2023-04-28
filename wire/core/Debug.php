@@ -232,7 +232,7 @@ class Debug {
 	static public function getSavedTimer($key) {
 		$value = isset(self::$savedTimers[$key]) ? self::$savedTimers[$key] : null;	
 		if(!is_null($value) && isset(self::$savedTimerNotes[$key])) $value = "$value - " . self::$savedTimerNotes[$key];
-		return $value; 
+		return (string) $value; 
 	}
 
 	/**
@@ -248,6 +248,29 @@ class Debug {
 			$timers[$key] = self::getSavedTimer($key); // to include notes
 		}
 		return $timers; 
+	}
+
+	/**
+	 * Remove a previously saved timer
+	 * 
+	 * @param string $key
+	 * @since 3.0.202
+	 * 
+	 */
+	static public function removeSavedTimer($key) {
+		unset(self::$savedTimers[$key]); 
+		unset(self::$savedTimerNotes[$key]); 
+	}
+
+	/**
+	 * Remove all saved timers
+	 * 
+	 * @since 3.0.202
+	 * 
+	 */
+	static public function removeSavedTimers() {
+		self::$savedTimers = array();
+		self::$savedTimerNotes = array();
 	}
 
 	/**
@@ -295,6 +318,17 @@ class Debug {
 	 * Return a backtrace array that is simpler and more PW-specific relative to PHP’s debug_backtrace
 	 * 
 	 * @param array $options
+	 * - `limit` (int): The limit for the backtrace or 0 for no limit. (default=0)
+	 * - `flags` (int): Flags as used by PHP’s debug_backtrace() function. (default=DEBUG_BACKTRACE_PROVIDE_OBJECT)
+	 * - `showHooks` (bool): Show inernal methods for hook calls? (default=false)
+	 * - `getString` (bool): Get newline separated string rather than array? (default=false)
+	 * - `getCnt` (bool): Get index number count, used for getString option only. (default=true)
+	 * - `getFile` (bool|string): Get filename? Specify one of true, false or 'basename'. (default=true)
+	 * - `maxCount` (int): Max size for arrays (default=10)
+	 * - `maxStrlen` (int): Max length for strings (default=100)
+	 * - `maxDepth` (int): Max allowed recursion depth when converting variables to strings.  (default=5)
+	 * - `ellipsis` (string): Show this ellipsis when a long value is truncated (default='…')
+	 * - `skipCalls` (array): Method/function calls to skip. 
 	 * @return array|string
 	 * @since 3.0.136
 	 * 
@@ -303,7 +337,7 @@ class Debug {
 		
 		$defaults = array(
 			'limit' => 0, // the limit argument for the debug_backtrace call
-			'flags' => DEBUG_BACKTRACE_PROVIDE_OBJECT, // flags for PHP debug_backtrace method
+			'flags' => DEBUG_BACKTRACE_PROVIDE_OBJECT, // flags for PHP debug_backtrace function
 			'showHooks' => false, // show internal methods for hook calls?
 			'getString' => false, // get newline separated string rather than array?
 			'getCnt' => true, // get index number count (for getString only)
@@ -318,7 +352,7 @@ class Debug {
 		$options = array_merge($defaults, $options);
 		if($options['limit']) $options['limit']++;
 		$traces = @debug_backtrace($options['flags'], $options['limit']);
-		$config = wire('config');
+		$config = wire()->config;
 		$rootPath = ProcessWire::getRootPath(true);
 		$rootPath2 = $config && $config->paths ? $config->paths->root : $rootPath;
 		array_shift($traces); // shift of the simpleBacktrace call, which is not needed
@@ -331,7 +365,7 @@ class Debug {
 			$apiVars[wireClassName($value)] = '$' . $name;
 		}
 		
-		foreach($traces as $n => $trace) {
+		foreach($traces as $trace) {
 			
 			if(!is_array($trace) || !isset($trace['function']) || !isset($trace['file'])) {
 				continue;
@@ -408,7 +442,7 @@ class Debug {
 					} else if(is_array($arg)) { 
 						$count = count($arg); 
 						if($count < 4) {
-							$arg = $count ? self::toStr($arg, array('maxDepth' => 2)) : '[]';
+							$arg = $count ? self::traceStr($arg, array('maxDepth' => 2)) : '[]';
 						} else {
 							$arg = 'array(' . count($arg) . ')';
 						}
@@ -459,7 +493,7 @@ class Debug {
 	 * @return null|string
 	 * 
 	 */
-	static protected function toStr($value, array $options = array()) {
+	static protected function traceStr($value, array $options = array()) {
 		
 		$defaults = array(
 			'maxCount' => 10, // max size for arrays
@@ -499,7 +533,7 @@ class Debug {
 					$suffix = $options['ellipsis'];
 				}
 				foreach($value as $k => $v) {
-					$value[$k] = self::toStr($v, $options); 
+					$value[$k] = self::traceStr($v, $options); 
 				}
 				$str = '[ ' . implode(', ', $value) . $suffix . ' ]';
 			}
@@ -527,5 +561,102 @@ class Debug {
 		$depth--;
 		
 		return $str;
+	}
+
+	/**
+	 * Dump any variable to a debug string
+	 * 
+	 * @param int|float|object|string|array $value
+	 * @param array $options
+	 *  - `method` (string): Dump method to use, one of: json_encode, var_dump, var_export, print_r (default=json_encode)
+	 *  - `html` (bool): Return output-ready HTML string? (default=false)
+	 * @return string
+	 * @since 3.0.208
+	 * 
+	 */
+	static public function toStr($value, array $options = array()) {
+		
+		$defaults = array(
+			'method' => 'json_encode',
+			'html' => false,
+		);
+		
+		$options = array_merge($defaults, $options);
+		$method = $options['method'];
+		$prepend = '';
+		
+		if(is_object($value)) { 
+			// we format objects to arrays or strings
+			$className = wireClassName($value);
+			$classInfo = "object:$className";
+			$objectValue = $value;
+			if($objectValue instanceof \Countable) {
+				$classInfo .= '(' . count($objectValue) . ')';
+			}
+			if($value instanceof Wire) {
+				$value = $value->debugInfoSmall();
+			} else if(method_exists($value, '__debugInfo')) {
+				$value = $value->__debugInfo();
+			} else if(method_exists($value, '__toString')) {
+				$value = $classInfo . ":\"$value\"";
+			} else {
+				$value = $classInfo;
+			}
+			if(is_array($value)) {
+				if(empty($value)) {
+					$value = $classInfo;
+					if(method_exists($objectValue, '__toString')) {
+						$stringValue = (string) $objectValue;
+						if($stringValue != $className) $value .= ":\"$stringValue\"";
+					}
+				} else {
+					$prepend = "$classInfo ";
+				}
+			}
+			if(is_string($value)) {
+				$method = '';
+			}
+		} else if(is_int($value)) {
+			$prepend = 'int:';
+		} else if(is_float($value)) {
+			$prepend = 'float:';
+		} else if(is_string($value)) {
+			$prepend = 'string:';
+		} else if(is_callable($value)) {
+			$prepend = 'callable:';
+		} else if(is_resource($value)) {
+			$prepend = 'resource:';
+		}
+		
+		switch($method) {
+			case 'json_encode':
+				$value = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$value = str_replace('    ', '  ', $value);
+				break;
+			case 'var_export':
+				$value = var_export($value, true);
+				break;
+			case 'var_dump':	
+				ob_start();
+				var_dump($value);
+				$value = ob_get_contents();
+				ob_end_clean();
+				break;
+			case 'print_r':	
+				$value = print_r($value, true);
+				break;
+			default:	
+				$value = (string) $value;
+		}
+		
+		if($method && $method != 'json_encode') {
+			// array is obvious and needs no label
+			if(stripos($value, 'array') === 0) $value = trim(substr($value, 5));
+		}
+		
+		if($prepend) $value = $prepend . trim($value);
+		if($options['html']) $value = '<pre>' . wire()->sanitizer->entities($value) . '</pre>';
+
+		return $value;
 	}
 }

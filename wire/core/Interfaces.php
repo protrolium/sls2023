@@ -202,6 +202,39 @@ interface FieldtypeHasFiles {
 	public function getFilesPath(Page $page, Field $field); 
 }
 
+/**
+ * Indicates Fieldtype manages Pagefile/Pageimage objects
+ * 
+ */
+interface FieldtypeHasPagefiles {
+	
+	/**
+	 * Get Pagefiles
+	 * 
+	 * @param Page $page
+	 * @param Field $field
+	 * @return Pagefiles|Pagefile[]
+	 * 
+	 */
+	public function getPagefiles(Page $page, Field $field); 
+}
+
+/**
+ * Indicates Fieldtype manages Pageimage objects
+ *
+ */
+interface FieldtypeHasPageimages {
+
+	/**
+	 * Get Pageimages
+	 *
+	 * @param Page $page
+	 * @param Field $field
+	 * @return Pageimages|Pageimage[]
+	 *
+	 */
+	public function getPageimages(Page $page, Field $field);
+}
 
 /**
  * Indicates that an Inputfield provides tree selection capabilities
@@ -359,8 +392,23 @@ interface WireDatabase {
 interface WirePageEditor {
 	/**
 	 * @return Page The current page being edited
+	 * 
 	 */
 	public function getPage(); 	
+}
+
+/**
+ * Interface indicates item stores in a WireArray or type descending from it 
+ * 
+ * @since 3.0.205
+ * 
+ */
+interface WireArrayItem {
+	/**
+	 * @return WireArray
+	 * 
+	 */
+	public function getWireArray(); 
 }
 
 /**
@@ -471,7 +519,7 @@ interface LanguagesValueInterface {
 	 * Given a language, returns the value in that language
 	 *
 	 * @param Language|int
-	 * @return int
+	 * @return string|mixed
 	 *
 	 */
 	public function getLanguageValue($languageID);

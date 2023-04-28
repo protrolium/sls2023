@@ -97,16 +97,16 @@ function InputfieldRepeater($) {
 				$checkbox.prop('checked', false);
 				$header.removeClass('ui-state-error').addClass('ui-state-default');
 				//if($parent.is('.InputfieldStateCollapsed')) $parent.toggleClass('InputfieldStateCollapsed', 100);
-				$item.removeClass('InputfieldRepeaterDeletePending');
+				$item.removeClass('InputfieldRepeaterDeletePending').trigger('repeaterundelete');
 			} else {
 				// $checkbox.attr('checked', 'checked'); // JQM
 				$checkbox.prop('checked', true);
 				$header.removeClass('ui-state-default').addClass('ui-state-error');
 				if(!$item.hasClass('InputfieldStateCollapsed')) {
-					$header.find('.toggle-icon').click();
+					$header.find('.toggle-icon').trigger('click');
 					//$item.toggleClass('InputfieldStateCollapsed', 100);
 				}
-				$item.addClass('InputfieldRepeaterDeletePending');
+				$item.addClass('InputfieldRepeaterDeletePending').trigger('repeaterdelete'); 
 				$item.closest('.Inputfield').addClass('InputfieldStateChanged');
 			}
 			$header.find('.InputfieldRepeaterItemControls').css('background-color', $header.css('background-color'));
@@ -133,9 +133,9 @@ function InputfieldRepeater($) {
 				var $item = $(this);
 				var $trashLink = $item.children('.InputfieldHeader').find('.InputfieldRepeaterTrash');
 				if($item.hasClass('InputfieldRepeaterDeletePending')) {
-					if(undelete) $trashLink.click();
+					if(undelete) $trashLink.trigger('click');
 				} else {
-					if(!undelete) $trashLink.click();
+					if(!undelete) $trashLink.trigger('click');
 				}
 			});
 		}
@@ -160,7 +160,7 @@ function InputfieldRepeater($) {
 		ProcessWire.confirm(ProcessWire.config.InputfieldRepeater.labels.clone, function() {
 			var itemID = $item.attr('data-page');
 			var $addLink = $item.closest('.InputfieldRepeater').children('.InputfieldContent')
-				.children('.InputfieldRepeaterAddItem').find('.InputfieldRepeaterAddLink:eq(0)');
+				.children('.InputfieldRepeaterAddItem').find('.InputfieldRepeaterAddLink').first();
 			// $('html, body').animate({ scrollTop: $addLink.offset().top - 100}, 250, 'swing');
 			
 			$item.siblings('.InputfieldRepeaterInsertItem').remove();
@@ -185,7 +185,7 @@ function InputfieldRepeater($) {
 			}
 			setItemDepth($newItem, depth);
 			$newItem.show();
-			$addLink.attr('data-clone', itemID).click();
+			$addLink.attr('data-clone', itemID).trigger('click');
 		});
 		return false;
 	};
@@ -276,7 +276,7 @@ function InputfieldRepeater($) {
 		}
 		
 		if($item.hasClass('InputfieldStateCollapsed')) {
-			$this.closest('.InputfieldHeader').click(); //find('.InputfieldRepeaterToggle').click();	
+			$this.closest('.InputfieldHeader').trigger('click');
 		}
 		
 		if($settings.is(':visible')) {
@@ -356,7 +356,7 @@ function InputfieldRepeater($) {
 		var pageID = $repeater.attr('data-page'); // $("#Inputfield_id").val();
 		var itemID = parseInt($item.attr('data-page'));
 		var repeaterID = $repeater.attr('id');
-		var fieldName = repeaterID.replace('wrap_Inputfield_', '').replace('_LPID' + pageID, '');
+		var fieldName = getRepeaterFieldName($repeater);
 		var ajaxURL = ProcessWire.config.InputfieldRepeater.editorUrl + '?id=' + pageID + '&field=' + fieldName + '&repeater_edit=' + itemID;
 		var $spinner = $item.find('.InputfieldRepeaterDrag');
 		var $inputfields = $loaded.closest('.Inputfields');
@@ -483,7 +483,7 @@ function InputfieldRepeater($) {
 		
 		// get addItem from ajax
 		if(!pageID) pageID = inputfieldPageID;
-		var fieldName = $inputfieldRepeater.attr('id').replace('wrap_Inputfield_', '');
+		var fieldName = getRepeaterFieldName($inputfieldRepeater);
 		var $spinner = $addLink.parent().find('.InputfieldRepeaterSpinner');
 		var ajaxURL = ProcessWire.config.InputfieldRepeater.editorUrl + '?id=' + pageID + '&field=' + fieldName;
 
@@ -586,7 +586,7 @@ function InputfieldRepeater($) {
 		}
 		ProcessWire.confirm(label, function() {
 			$items.filter(selector).each(function() {
-				$(this).children('.InputfieldHeader').find('.toggle-icon').click();	
+				$(this).children('.InputfieldHeader').find('.toggle-icon').trigger('click');	
 			});
 		});
 		return false;
@@ -638,11 +638,10 @@ function InputfieldRepeater($) {
 		
 		if(!insertBefore && !$item.hasClass('InputfieldStateCollapsed')) scrollToItem($insertItem);
 		$insertItem.children('.InputfieldHeader').effect('highlight', {}, 500);
-		// var $addLinks = $item.parent('.Inputfields').siblings('.InputfieldRepeaterAddItem').find('.InputfieldRepeaterAddLink:eq(0)').click();
 		var $addLinks = $item.parent('.Inputfields').siblings('.InputfieldRepeaterAddItem').find('.InputfieldRepeaterAddLink');
 		if($addLinks.length === 1) {
 			// add new item now
-			$addLinks.eq(0).click();
+			$addLinks.eq(0).trigger('click');
 		} else if($addLinks.length > 1) {
 			// we need to know what type of link to add (i.e. matrix)
 			$item.trigger('repeaterinsert', [ $insertItem, $item, insertBefore ]);
@@ -822,6 +821,18 @@ function InputfieldRepeater($) {
 	
 	function getItemLabel($item) {
 		return $item.children('.InputfieldHeader').children('.InputfieldRepeaterItemLabel');
+	}
+	
+	function getRepeaterFieldName($inputfield) {
+		if(!$inputfield.hasClass('InputfieldRepeater')) $inputfield = $inputfield.closest('.InputfieldRepeater');
+		if(!$inputfield.length) return '';
+		var fieldName = $inputfield.attr('data-name');
+		if(typeof fieldName === 'undefined') {
+			fieldName = $inputfield.attr('id').replace('wrap_Inputfield_', '');
+			if(fieldName.indexOf('_LPID') > -1) fieldName = fieldName.replace(/_LPID\d+$/, '');
+			console.log('Warning: repeater inputfield lacks data-name so used fallback', $inputfield);
+		}
+		return fieldName;
 	}
 	
 	/*** SORT FUNCTIONS ***********************************************************************************/
@@ -1090,9 +1101,11 @@ function InputfieldRepeater($) {
 				});
 
 				// TinyMCE instances don't like to be dragged, so we disable them temporarily
+				/*
 				ui.item.find('.InputfieldTinyMCE textarea').each(function() {
 					tinyMCE.execCommand('mceRemoveControl', false, $(this).attr('id'));
 				});
+				*/
 			
 				if(familyFriendly && maxDepth > 0) {
 					// remember and hide depth children
@@ -1140,11 +1153,17 @@ function InputfieldRepeater($) {
 				});
 
 				// Re-enable the TinyMCE instances
+				/*
 				ui.item.find('.InputfieldTinyMCE textarea').each(function() {
 					tinyMCE.execCommand('mceAddControl', false, $(this).attr('id'));
 				});
+				 */
 				
 				$(this).closest('.InputfieldRepeater').trigger('sorted', [ ui.item ]);
+			},
+			
+			update: function(e, ui) {
+				$inputfieldRepeater.addClass('InputfieldStateChanged');
 			}
 		};
 
@@ -1166,9 +1185,9 @@ function InputfieldRepeater($) {
 			sortableOptions.axis = 'y';
 		}
 		// apply "ui-state-focus" class when an item is being dragged
-		$(".InputfieldRepeaterDrag", $inputfields).hover(function() {
+		$(".InputfieldRepeaterDrag", $inputfields).on('mouseenter', function() {
 			$(this).parent('label').addClass('ui-state-focus');
-		}, function() {
+		}).on('mouseleave', function() {
 			$(this).parent('label').removeClass('ui-state-focus');
 		});
 
@@ -1268,7 +1287,7 @@ function InputfieldRepeater($) {
 			isItem = true;
 		} else {
 			// enter repeater
-			$inputfields = $this.find('.Inputfields:eq(0)');
+			$inputfields = $this.find('.Inputfields').first();
 			$inputfieldRepeater = $this;
 			isItem = false;
 		}
@@ -1295,18 +1314,18 @@ function InputfieldRepeater($) {
 		}
 
 		// hovering the trash gives a preview of what clicking it would do
-		$(".InputfieldRepeaterTrash", $this).hover(function() {
+		$(".InputfieldRepeaterTrash", $this).on('mouseenter', function() {
 			var $label = $(this).closest('label');
 			if(!$label.parents().hasClass('InputfieldRepeaterDeletePending')) $label.addClass('ui-state-error');
 			$label.find('.InputfieldRepeaterItemControls').css('background-color', $label.css('background-color'));
-		}, function() {
+		}).on('mouseleave', function() {
 			var $label = $(this).closest('label');
 			if(!$label.parent().hasClass('InputfieldRepeaterDeletePending')) $label.removeClass('ui-state-error');
 			$label.find('.InputfieldRepeaterItemControls').css('background-color', $label.css('background-color'));
 		});
 
 		// if we only init'd a single item, now make $inputfields refer to all repeater items for sortable init
-		if(isItem) $inputfields = $inputfieldRepeater.find('.Inputfields:eq(0)');
+		if(isItem) $inputfields = $inputfieldRepeater.find('.Inputfields').first();
 
 		// setup the sortable
 		initSortable($inputfieldRepeater, $inputfields);
@@ -1314,7 +1333,7 @@ function InputfieldRepeater($) {
 		// setup the add links
 		$(".InputfieldRepeaterAddLink:not(.InputfieldRepeaterAddLinkInit)", $inputfieldRepeater)
 			.addClass('InputfieldRepeaterAddLinkInit')
-			.click(eventAddLinkClick);
+			.on('click', eventAddLinkClick);
 
 		// check for maximum items
 		if($inputfieldRepeater.hasClass('InputfieldRepeaterMax')) {
@@ -1462,7 +1481,7 @@ function InputfieldRepeater($) {
 		
 		var actionName = pasteValue === null ? 'clone' : 'paste';
 		var $addLink = $item.closest('.InputfieldRepeater').children('.InputfieldContent')
-			.children('.InputfieldRepeaterAddItem').find('.InputfieldRepeaterAddLink:eq(0)');
+			.children('.InputfieldRepeaterAddItem').find('.InputfieldRepeaterAddLink').first();
 		// $('html, body').animate({ scrollTop: $addLink.offset().top - 100}, 250, 'swing');
 
 		$item.siblings('.InputfieldRepeaterInsertItem').remove();
@@ -1497,10 +1516,10 @@ function InputfieldRepeater($) {
 		
 		if(actionName === 'paste') {
 			// data-clone attribute with 'pageID:itemID' indicates page ID and item ID to clone
-			$addLink.attr('data-clone', pasteValue.page + ':' + pasteValue.item).click();
+			$addLink.attr('data-clone', pasteValue.page + ':' + pasteValue.item).trigger('click');
 		} else {
 			// current page ID is implied when only itemID is supplied
-			$addLink.attr('data-clone', $item.attr('data-page')).click();
+			$addLink.attr('data-clone', $item.attr('data-page')).trigger('click');
 		}
 	}
 

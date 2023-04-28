@@ -89,6 +89,9 @@ function updateAdminThemeUikitExample() {
 	} else if(v == 'warning') {
 		example.addClass('InputfieldIsWarning');
 	}
+
+	var bgcolor = example.css('background-color');
+	$('#_adminTheme, #_adminTheme > *').css('background-color', bgcolor);
 }
 
 function initAdminThemeUikitColumnWidth() {
@@ -120,14 +123,13 @@ function initAdminThemeUikitColumnWidth() {
 		example.trigger('showInputfield', [ example[0] ]);
 	}); 
 	
-	$columnWidth.change();
+	$columnWidth.trigger('change');
 }
 
 $(document).ready(function() {
-	$('#_adminTheme').find('input[type=radio],input[type=checkbox]').change(function() {
+	$('#_adminTheme').find('input[type=radio],input[type=checkbox]').on('change', function() {
 		updateAdminThemeUikitExample();
 	});
-	$('#_adminTheme, #_adminTheme > *').css('background-color', '#fff');
 	updateAdminThemeUikitExample();
 	initAdminThemeUikitColumnWidth();
 
