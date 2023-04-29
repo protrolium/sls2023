@@ -11,20 +11,25 @@
                         href="{$item->url}" 
                         n:class="$rockfrontend->isActive($item) ? 'uk-active'">
                             <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
-                                {$item->title}
+                                {if $item->title == 'Projects'}
+                                    <span class="horizontal-line">{$item->title}</span>
+                                {else}
+                                    {$item->title}
+                                {/if}
                             </span>
                     </a>
                 </span>
                     
             {/foreach}
-
-            <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
+            
+            
+            {* <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
                     <a href="https://spiritbomb.ai" target="_blank">
                         <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
                             <span>Spirit Bomb</span>
                         </span>
                     </a>
-            </span>
+            </span> *}
 
             {* social media icons *}
             <span class="uk-float-right uk-margin-small-top uk-margin-small-bottom">
@@ -39,8 +44,11 @@
 
     {* projects column 3 *}
     <div>
-        <div class="uk-card uk-flex uk-flex-column">
+        <div class="projects-div uk-card uk-flex uk-flex-column">
             
+            {* add a margin to the very top of the list for the short border *}
+            <span style="margin-top: 10px;"></span>
+
             {foreach $pages->get('projects')->children()->not('name=virtual-artists|vj-tools') as $item}
                 
                 <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
@@ -48,7 +56,15 @@
                         href="{$item->url}" 
                         n:class="$rockfrontend->isActive($item) ? 'uk-active'">
                             <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
-                                {$item->title}
+                                {if $item->title == "Concert Visuals"}
+                                    <div class="projects-div-top"></div>
+                                    {$item->title}
+                                {elseif $item->title == "NFT"}
+                                    {$item->title}
+                                    <div class="projects-div-bottom"></div>
+                                {else}
+                                    {$item->title}
+                                {/if}
                             </span>
                     </a>
                 </span>

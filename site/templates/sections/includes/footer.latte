@@ -7,7 +7,7 @@
                 <img id="logo-footer" src="{$pages->get('sls-logo')->image->first->url}" alt="" width="150" height="141.5">
                 <img id="logo-light-footer" class="uk-hidden" src="{$pages->get('sls-logo-alpha-light')->image->first->url}" width="150" height="141.5" alt="" uk-img="loading: lazy;">
                 <span class="uk-text-large uk-text-lighter uk-text-middle uk-padding-small uk-text-uppercase">
-                    <a class="uk-text-emphasis" href="{$pages->get('/')}" alt="">Strangeloop Studios</a>
+                    <a class="uk-text-emphasis" href="{$pages->get('/')->url}" alt="">Strangeloop Studios</a>
                 </span>
             </div>
         
@@ -17,12 +17,22 @@
             {$rockfrontend->render("/sections/includes/footer-nav.latte")}
         </div>
 
-        <div class="uk-margin-small-top uk-grid-collapse uk-child-width-auto@m" uk-grid>
-            <div class="uk-margin-right uk-text-lighter">&copy; {$datetime->date('Y')} <a class="noExternalSVG uk-text-emphasis" href="https://spiritbomb.ai/" target="_blank">Spirit Bomb Ltd.</a></div>
-            <div class="uk-margin-right uk-text-lighter">All Rights Reserved</div>
-            <div class="uk-margin-right uk-text-lighter uk-text-nowrap">{$pages->get('taglines')->children()->shuffle()->first()->title|noescape}</div>
-            <div class="uk-margin-right uk-text-lighter uk-text-nowrap">Built with <a class="noExternalSVG uk-text-emphasis" href="https://processwire.com" target="_blank">ProcessWire</a></div>
+        <div class="uk-width-1-1 uk-margin-small-top" uk-grid>
+            <div class=" uk-width-1-2@s uk-grid-collapse uk-child-width-auto@m" uk-grid>
+                <div class="uk-margin-right uk-text-lighter">&copy; {$datetime->date('Y')} <a class="noExternalSVG uk-text-emphasis" href="https://spiritbomb.ai/" target="_blank">Spirit Bomb Ltd.</a></div>
+                <div class="uk-margin-right uk-text-lighter">All Rights Reserved</div>
+                <div class="uk-margin-right uk-text-lighter uk-text-nowrap">{$pages->get('taglines')->children()->shuffle()->first()->title|noescape}</div>
+                <div class="uk-margin-right uk-text-lighter uk-text-nowrap">Built with <a class="noExternalSVG uk-text-emphasis" href="https://processwire.com" target="_blank">ProcessWire</a></div>
+            </div>
+            <div class="uk-grid-collapse uk-child-width-auto@m uk-flex-right uk-flex-1" uk-grid>
+                <div class="uk-text-lighter uk-text-nowrap">
+                    <a class="noExternalSVG uk-text-emphasis uk-visible@m" href="https://spiritbomb.ai" target="_blank" class="uk-margin-small-right">Spirit Bomb</a>
+                    <a class="noExternalSVG" style="text-decoration: none;" href="https://spiritbomb.ai" rel="noreferrer noopener" target="_blank">
+                        <img id="logo-footer-small" alt="" class="hidpi" src="{$pages->get('spirit-bomb-logo')->image->first->url}" width="50" />
+                    </a>
+                </div>
+            </div>
+            {* uk-margin-right *}
         </div>
-
     </div>
 </footer>
