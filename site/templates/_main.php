@@ -16,14 +16,14 @@
 $home = $pages->get('/'); // homepage directory
 $rockfrontend->styles()
 	->add("/site/templates/uikit/src/less/uikit.theme.less")
-	->addDefaultFolders()
 	->add("/site/templates/styles/custom.less")
+	->addDefaultFolders()
 	;
 $rockfrontend
 	->scripts()
 	->add("/site/templates/uikit/dist/js/uikit.min.js", "defer")
 	->add("/site/templates/uikit/dist/js/uikit-icons.min.js", "defer")
-	->add("/site/templates/scripts/main.js")
+	->add("/site/templates/scripts/main.js", "defer")
 	;
 
 ?>
@@ -41,7 +41,7 @@ $rockfrontend
 		</script>
 		
 		<!-- hide our site content -->
-		<style>html{visibility: hidden;opacity:0;}body.preload * {transition: none !important;animation: none !important;}body.preload .page-content {opacity: 0;visibility: hidden;}</style>
+		<style>html{visibility: hidden;opacity:0;}</style>
 
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		
@@ -85,11 +85,9 @@ $rockfrontend
 		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
 
 		<!-- show our site content -->
-		<!-- <style>html{visibility: visible;opacity:1;}</style> -->
+		<style>html{visibility: visible;opacity:1;}</style>
 
 		<!-- scripts for once DOM is loaded -->
-		<!-- unhide the site content set via inline css above -->
-		<script type="text/javascript">window.addEventListener('load', function () {document.body.classList.remove('preload');});</script>
 		<script type="text/javascript" src="<?php echo $config->urls->templates?>scripts/onload.js" defer></script>
 	</body>
 </html>
