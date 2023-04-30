@@ -437,7 +437,7 @@
 		return (str + '').replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
 	};
 
-	var is_array = Array.isArray || function(object) {
+	var is_array = Array.isArray || (typeof $ !== 'undefined' && $.isArray) || function(object) {
 		return Object.prototype.toString.call(object) === '[object Array]';
 	};
 
@@ -1384,7 +1384,7 @@
 	
 			$input.attr('tabindex', -1).hide().after(self.$wrapper);
 	
-			if (Array.isArray(settings.items)) {
+			if ($.isArray(settings.items)) {
 				self.setValue(settings.items);
 				delete settings.items;
 			}
@@ -1567,9 +1567,8 @@
 				setTimeout(function() {
 					var pastedText = self.$control_input.val();
 					if(!pastedText.match(self.settings.splitOn)){ return }
-
-					pastedText = pastedText.toString().trim();	
-					var splitInput = pastedText.split(self.settings.splitOn);
+	
+					var splitInput = $.trim(pastedText).split(self.settings.splitOn);
 					for (var i = 0, n = splitInput.length; i < n; i++) {
 						self.createItem(splitInput[i]);
 					}
@@ -2198,7 +2197,7 @@
 			}
 	
 			var self              = this;
-			var query             = self.$control_input.val().toString().trim();
+			var query             = $.trim(self.$control_input.val());
 			var results           = self.search(query);
 			var $dropdown_content = self.$dropdown_content;
 			var active_before     = self.$activeOption && hash_key(self.$activeOption.attr('data-value'));
@@ -2217,7 +2216,7 @@
 				option      = self.options[results.items[i].id];
 				option_html = self.render('option', option);
 				optgroup    = option[self.settings.optgroupField] || '';
-				optgroups   = Array.isArray(optgroup) ? optgroup : [optgroup];
+				optgroups   = $.isArray(optgroup) ? optgroup : [optgroup];
 	
 				for (j = 0, k = optgroups && optgroups.length; j < k; j++) {
 					optgroup = optgroups[j];
@@ -2328,7 +2327,7 @@
 		addOption: function(data) {
 			var i, n, value, self = this;
 	
-			if (Array.isArray(data)) {
+			if ($.isArray(data)) {
 				for (i = 0, n = data.length; i < n; i++) {
 					self.addOption(data[i]);
 				}
@@ -2575,7 +2574,7 @@
 		 * @param {boolean} silent
 		 */
 		addItems: function(values, silent) {
-			var items = Array.isArray(values) ? values : [values];
+			var items = $.isArray(values) ? values : [values];
 			for (var i = 0, n = items.length; i < n; i++) {
 				this.isPending = (i < n - 1);
 				this.addItem(items[i], silent);
@@ -2698,7 +2697,7 @@
 		createItem: function(input, triggerDropdown) {
 			var self  = this;
 			var caret = self.caretPos;
-			input = input || self.$control_input.val().toString().trim() || '';
+			input = input || $.trim(self.$control_input.val() || '');
 	
 			var callback = arguments[arguments.length - 1];
 			if (typeof callback !== 'function') callback = function() {};
@@ -3391,8 +3390,7 @@
 			var data_raw = $input.attr(attr_data);
 	
 			if (!data_raw) {
-				var value = $input.val() || '';
-				value = value.toString().trim();
+				var value = $.trim($input.val() || '');
 				if (!settings.allowEmptyOption && !value.length) return;
 				values = value.split(settings.delimiter);
 				for (i = 0, n = values.length; i < n; i++) {
@@ -3444,7 +3442,7 @@
 						var arr = optionsMap[value][field_optgroup];
 						if (!arr) {
 							optionsMap[value][field_optgroup] = group;
-						} else if (!Array.isArray(arr)) {
+						} else if (!$.isArray(arr)) {
 							optionsMap[value][field_optgroup] = [arr, group];
 						} else {
 							arr.push(group);

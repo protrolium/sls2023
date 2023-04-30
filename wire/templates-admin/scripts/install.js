@@ -1,9 +1,10 @@
 $(document).ready(function() {
-	$(".ui-button").on('mouseenter', function() {
+	$(".ui-button").hover(function() {
 		$(this).removeClass("ui-state-default").addClass("ui-state-hover");
-	}).on('mouseleave', function() {
+	}, function() {
 		$(this).removeClass("ui-state-hover").addClass("ui-state-default");
-	}).on('click', function() {
+	}).click(function() {
 		$(this).removeClass("ui-state-default").addClass("ui-state-active");
 	});
 });
+

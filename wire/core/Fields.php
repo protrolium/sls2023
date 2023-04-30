@@ -5,7 +5,7 @@
  *
  * Manages collection of ALL Field instances, not specific to any particular Fieldgroup
  * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
  * https://processwire.com
  * 
  * #pw-summary Manages all custom fields in ProcessWire, independently of any Fieldgroup. 
@@ -27,7 +27,6 @@
  * @method void changeTypeReady(Saveable $item, Fieldtype $fromType, Fieldtype $toType) #pw-hooker
  * @method bool|Field clone(Field $item, $name = '') Clone a field and return it or return false on fail. 
  * @method array getTags($getFieldNames = false) Get tags for all fields (3.0.179+) #pw-advanced
- * @method bool applySetupName(Field $field, $setupName = '')
  *
  */
 
@@ -358,17 +357,8 @@ class Fields extends WireSaveableItems {
 		}
 
 		if(!$item->type) throw new WireException("Can't save a Field that doesn't have it's 'type' property set to a Fieldtype"); 
-		$item->type->saveFieldReady($item);
 		if(!parent::___save($item)) return false;
 		if($isNew) $item->type->createField($item); 
-
-		$setupName = $item->setSetupName();
-		if($setupName || $isNew) {
-			if($this->applySetupName($item, $setupName)) {
-				$item->setSetupName('');
-				parent::___save($item);
-			}
-		}
 
 		if($item->flags & Field::flagGlobal) {
 			// make sure that all template fieldgroups contain this field and add to any that don't. 
@@ -783,7 +773,7 @@ class Fields extends WireSaveableItems {
 			// so use verbose/slow method to delete the field from pages
 			
 			$ids = $this->getNumPages($field, array('template' => $template, 'getPageIDs' => true)); 
-			$items = $this->wire()->pages->getById($ids, $template); 
+			$items = $this->wire('pages')->getById($ids, $template); 
 			
 			foreach($items as $page) {
 				try {
@@ -801,7 +791,7 @@ class Fields extends WireSaveableItems {
 			
 			// large number of pages to operate on: use fast method
 			
-			$database = $this->wire()->database;
+			$database = $this->wire('database');
 			$table = $database->escapeTable($field->getTable());
 			$sql = 	"DELETE $table FROM $table " .
 					"INNER JOIN pages ON pages.id=$table.pages_id " .
@@ -1428,41 +1418,6 @@ class Fields extends WireSaveableItems {
 		}
 
 		return $getCount ? $count : $items;
-	}
-
-	/**
-	 * Setup a new field using predefined setup name(s) from the Field’s fieldtype
-	 * 
-	 * If no setupName is provided then this method doesn’t do anything, but hooks to it might.
-	 * 
-	 * @param Field $field Newly created field
-	 * @param string $setupName Setup name to apply
-	 * @return bool True if setup was appled, false if not
-	 * @since 3.0.213
-	 * 
-	 */
-	protected function ___applySetupName(Field $field, $setupName = '') {
-		
-		$setups = $field->type->getFieldSetups();
-		$setup = isset($setups[$setupName]) ? $setups[$setupName] : null;
-		
-		if(!$setup) return false;
-		
-		$title = isset($setup['title']) ? $setup['title'] : $setupName;
-		$func = isset($setup['setup']) ? $setup['setup'] : null;
-		
-		foreach($setup as $property => $value) {
-			if($property === 'title' || $property === 'setup') continue;
-			$field->set($property, $value);
-		}
-		
-		if($func && is_callable($func)) {
-			$func($field);
-		}
-		
-		$this->message("Applied setup: $title", Notice::debug | Notice::noGroup);
-		
-		return true;
 	}
 
 	/**

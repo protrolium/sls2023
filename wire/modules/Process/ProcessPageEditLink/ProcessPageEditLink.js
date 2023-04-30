@@ -1,22 +1,17 @@
 $(document).ready(function() {
-	
-	if(!ProcessWire.config.ProcessPageEditLink) return;
-	
-	var cfg = ProcessWire.config.ProcessPageEditLink;
 
 	var options = {
-		selectStartLabel: cfg.selectStartLabel,
-		selectSelectLabel: cfg.selectStartLabel,
-		langID: cfg.langID
+		selectStartLabel: ProcessWire.config.ProcessPageEditLink.selectStartLabel,
+		selectSelectLabel: ProcessWire.config.ProcessPageEditLink.selectStartLabel,
+		langID: ProcessWire.config.ProcessPageEditLink.langID
 		// openPageIDs: config.ProcessPageEditLink.openPageIDs
-	};
-	
+		};
 	var options2 = {
 		selectStartLabel: options.selectStartLabel,
 		selectSelectLabel: options.selectStartLabel,
 		langID: options.langID,
-		rootPageID: cfg.pageID
-	};
+		rootPageID: ProcessWire.config.ProcessPageEditLink.pageID
+		};
 
 	var selectedPageData = {
 		id: 0,
@@ -50,7 +45,7 @@ $(document).ready(function() {
 	}
 
 	function absoluteToRelativePath(path) {
-		if(cfg.urlType == 0) return path;
+		if(ProcessWire.config.ProcessPageEditLink.urlType == 0) return path;
 
 		function slashesToRelative(url) {
 			url = url.replace(/\//g, '../'); 
@@ -60,36 +55,36 @@ $(document).ready(function() {
 		
 		var url;
 
-		if(path === cfg.pageUrl) {
+		if(path === ProcessWire.config.ProcessPageEditLink.pageUrl) {
 			// account for the link to self
 			path = './'; 
-			if(!cfg.slashUrls) path += cfg.pageName;
+			if(!ProcessWire.config.ProcessPageEditLink.slashUrls) path += ProcessWire.config.ProcessPageEditLink.pageName;
 
-		} else if(path.indexOf(cfg.pageUrl) === 0) { 
+		} else if(path.indexOf(ProcessWire.config.ProcessPageEditLink.pageUrl) === 0) { 
 			// linking to child of current page
-			path = path.substring(cfg.pageUrl.length); 
-			if(!cfg.slashUrls) path = cfg.pageName + path;
+			path = path.substring(ProcessWire.config.ProcessPageEditLink.pageUrl.length); 
+			if(!ProcessWire.config.ProcessPageEditLink.slashUrls) path = ProcessWire.config.ProcessPageEditLink.pageName + path;
 
-		} else if(cfg.pageUrl.indexOf(path) === 0) {
+		} else if(ProcessWire.config.ProcessPageEditLink.pageUrl.indexOf(path) === 0) {
 			// linking to a parent of the current page
-			url = cfg.pageUrl.substring(path.length); 
+			url = ProcessWire.config.ProcessPageEditLink.pageUrl.substring(path.length); 
 			if(url.indexOf('/') != -1) {
 				url = slashesToRelative(url); 
 			} else {
 				url = './';
 			}
 			path = url;
-		} else if(path.indexOf(cfg.rootParentUrl) === 0) {
+		} else if(path.indexOf(ProcessWire.config.ProcessPageEditLink.rootParentUrl) === 0) {
 			// linking to a sibling or other page in same branch (but not a child)
-			url = path.substring(cfg.rootParentUrl.length); 
+			url = path.substring(ProcessWire.config.ProcessPageEditLink.rootParentUrl.length); 
 			var url2 = url;
 			url = slashesToRelative(url) + url2; 	
 			path = url;
 			
-		} else if(cfg.urlType == 2) { // 2=relative for all
+		} else if(ProcessWire.config.ProcessPageEditLink.urlType == 2) { // 2=relative for all
 			// page in a different tree than current
 			// traverse back to root
-			url = cfg.pageUrl.substring(ProcessWire.config.urls.root.length); 
+			url = ProcessWire.config.ProcessPageEditLink.pageUrl.substring(config.urls.root.length); 
 			url = slashesToRelative(url); 
 			path = path.substring(ProcessWire.config.urls.root.length); 
 			path = url + path; 
@@ -103,27 +98,27 @@ $(document).ready(function() {
 			selectedPageData = data;
 			selectedPageData.url = ProcessWire.config.urls.root + data.url.substring(1);
 			selectedPageData.url = absoluteToRelativePath(selectedPageData.url); 
-			$linkPageURL.val(selectedPageData.url).trigger('change');
+			$linkPageURL.val(selectedPageData.url).change();
 			populateFileSelect(selectedPageData); // was: if($fileSelect.is(":visible")) { ... }
 		}
 
-		$(this).parents(".InputfieldInteger").children(".InputfieldHeader").trigger('click') // to close the field
+		$(this).parents(".InputfieldInteger").children(".InputfieldHeader").click() // to close the field
 			.parent().find('.PageListSelectHeader').removeClass('hidden').show(); // to open the pagelist select header so it can be re-used if the field is opened again
 		
 	}
 	
-	$("#link_page_id").ProcessPageList(options).hide().on('pageSelected', pageSelected);
-	$("#child_page_id").ProcessPageList(options2).hide().on('pageSelected', pageSelected); 
+	$("#link_page_id").ProcessPageList(options).hide().bind('pageSelected', pageSelected);
+	$("#child_page_id").ProcessPageList(options2).hide().bind('pageSelected', pageSelected); 
 
-	$fileSelect.on('change', function() {
+	$fileSelect.change(function() {
 		var $t = $(this);
 		var src = $t.val();
-		if(src.length) $linkPageURL.val(src).trigger('change');
+		if(src.length) $linkPageURL.val(src).change();
 	}); 
 	
 	if($anchorSelect.length) {
 		var anchorPreviousValue = $anchorSelect.val();
-		$anchorSelect.on('change', function() {
+		$anchorSelect.change(function () {
 			var val = $(this).val();
 			if(val.length) {
 				// populated anchor value
@@ -134,10 +129,10 @@ $(document).ready(function() {
 				// make URL field blank only if present value is the same as a previously selected anchor value
 				if($linkPageURL.val() == anchorPreviousValue) $linkPageURL.val('');
 			}
-			$linkPageURL.trigger('change');
+			$linkPageURL.change();
 		});
 		// de-select anchor when URL is changed to something other than an ahcor
-		// $linkPageURL.on('change', function() {
+		// $linkPageURL.change(function() {
 		// }); 
 	}
 
@@ -158,15 +153,13 @@ $(document).ready(function() {
 			var val = $("<div />").text($linkTitle.val()).html();
 			$link.attr('title', val); 
 		}
-		
-		if(cfg.noLinkTextEdit) {
-			// link text editing disabled
-		} else if($linkText.length && $linkText.val().length) {
+
+		if($linkText.length && $linkText.val().length) {
 			$link.text($linkText.val());
 		}
 
 		var $linkRel = $("#link_rel"); 
-		if($linkRel.length && $linkRel.val() && $linkRel.val().length) {
+		if($linkRel.length && $linkRel.val().length) {
 			$link.attr('rel', $linkRel.val()); 
 		}
 		
@@ -188,7 +181,7 @@ $(document).ready(function() {
 	function urlKeydown() {
 		
 		var $this = $linkPageURL;
-		var val = ProcessWire.trim($this.val());
+		var val = $.trim($this.val());
 		var dotpos = val.indexOf('.');
 		var slashespos = val.indexOf('//');
 		var hasScheme = slashespos > -1 && slashespos < dotpos;
@@ -230,7 +223,7 @@ $(document).ready(function() {
 		}
 		
 		if(hasScheme) {
-			if(slashpos == -1) slashpos = val.length;
+			if (slashpos == -1) slashpos = val.length;
 			httpHost = (slashespos > -1 ? val.substring(slashespos + 2, slashpos) : val.substring(0, slashpos));
 			$this.attr('data-httphost', httpHost);
 		} else {
@@ -264,21 +257,17 @@ $(document).ready(function() {
 			if (!$this.hasClass('external-link')) {
 				icon().removeClass(allIcons).addClass(extLinkIcon);
 				$this.addClass('external-link');
-				var extLinkTarget = cfg.extLinkTarget;
-				if(extLinkTarget.length > 0) {
+				var extLinkTarget = ProcessWire.config.ProcessPageEditLink.extLinkTarget;
+				if (extLinkTarget.length > 0) {
 					$("#link_target").val(extLinkTarget);
 				}
-				var extLinkRel = cfg.extLinkRel;
-				if(extLinkRel.length > 0) {
+				var extLinkRel = ProcessWire.config.ProcessPageEditLink.extLinkRel;
+				if (extLinkRel.length > 0) {
 					$("#link_rel").val(extLinkRel);
 				}
-				var extLinkClass = cfg.extLinkClass;
-				if(extLinkClass.length > 0) {
-					if(extLinkClass.indexOf(' ') > -1) {
-						var extLinkClassAll = extLinkClass.replace(' ', '_');
-						$("#link_class_" + extLinkClassAll).prop('checked', true); // all classes in 1 option
-						extLinkClass = extLinkClass.split(' ');
-					}
+				var extLinkClass = ProcessWire.config.ProcessPageEditLink.extLinkClass;
+				if (extLinkClass.length > 0) {
+					extLinkClass = extLinkClass.split(' ');
 					for(n = 0; n < extLinkClass.length; n++) {
 						// $("#link_class_" + extLinkClass[n]).attr('checked', 'checked'); // JQM
 						$("#link_class_" + extLinkClass[n]).prop('checked', true);
@@ -287,31 +276,30 @@ $(document).ready(function() {
 			}
 		} else {
 			$this.removeClass('external-link');
-			var $icon = icon();
 			if($this.hasClass('email')) {
-				if(!$icon.hasClass(emailIcon)) $icon.removeClass(allIcons).addClass(emailIcon);
+				if (!icon().hasClass(emailIcon)) icon().removeClass(allIcons).addClass(emailIcon);
 			} else if($this.hasClass('anchor')) {
-				if(!$icon.hasClass(anchorIcon)) $icon.removeClass(allIcons).addClass(anchorIcon);
+				if (!icon().hasClass(anchorIcon)) icon().removeClass(allIcons).addClass(anchorIcon);
 			} else if(!$this.hasClass(primaryIcon)) {
-				$icon.removeClass(allIcons).addClass(primaryIcon);
+				icon().removeClass(allIcons).addClass(primaryIcon);
 			}
 		}
 		updateLinkPreview();
 	}
 	
 	var urlKeydownTimer = null;
-	$linkPageURL.trigger('focus').on('keydown', function(event) {
+	$linkPageURL.focus().keydown(function(event) {
 		if(urlKeydownTimer) clearTimeout(urlKeydownTimer); 
 		urlKeydownTimer = setTimeout(function() { urlKeydown(); }, 500); 
 	});
 	
-	$linkPageURL.on('change', function() {
+	$linkPageURL.change(function() {
 		var val = $(this).val();
 		if($anchorSelect.length) {
 			if(val.substring(0, 1) == '#') {
 				var found = '';
-				$anchorSelect.children('option').each(function() {
-					if($(this).attr('value') == val) found = val;
+				$anchorSelect.children('option').each(function () {
+					if ($(this).attr('value') == val) found = val;
 				});
 				$anchorSelect.val(found);
 			} else if($anchorSelect.val().length) {
@@ -323,22 +311,22 @@ $(document).ready(function() {
 	}); 
 	
 	setTimeout(function() {
-		$linkPageURL.trigger('change');
-		$linkText.trigger('change');
+		$linkPageURL.change();
+		$linkText.change();
 	}, 250); 
 	
-	$(":input").on('change', updateLinkPreview);
-	$("#link_title").on('keydown', function(event) { updateLinkPreview(); });
-	$linkText.on('keyup', function(event) { updateLinkPreview(); });
+	$(":input").change(updateLinkPreview);
+	$("#link_title").keydown(function(event) { updateLinkPreview(); });
+	$linkText.keyup(function(event) { updateLinkPreview(); });
 
 	// when header is clicked, open up the pageList right away
-	$(".InputfieldInteger .InputfieldHeader").on('click', function() {
+	$(".InputfieldInteger .InputfieldHeader").click(function() {
 
 		var $t = $(this);
 		var $toggle = $t.parent().find(".PageListSelectActionToggle");
 		var $pageSelectHeader = $toggle.parents('.PageListSelectHeader'); 
 
-		if($pageSelectHeader.is('.hidden')) {
+		if($pageSelectHeader.is(".hidden")) {
 			// we previously hid the pageSelectHeader since it's not necessary in this context
 			// so, we can assume the field is already open, and is now being closed
 			return true; 
@@ -348,19 +336,16 @@ $(document).ready(function() {
 		$pageSelectHeader.addClass('hidden').hide();
 
 		// automatically open the PageListSelect
-		setTimeout(function() { $toggle.trigger('click'); }, 250); 
+		setTimeout(function() { $toggle.click(); }, 250); 
 		return true; 
 	});
 
-	var $form = $('#ProcessPageEditLinkForm'); 
-	if($form.length) {
-		$form.WireTabs({
-			items: $(".WireTab"),
-			id: 'PageEditLinkTabs'
-		});
-	}
+	$('#ProcessPageEditLinkForm').WireTabs({
+		items: $(".WireTab"), 
+		id: 'PageEditLinkTabs'
+	});
 
 	setTimeout(function() {
-		$('#link_page_url_input').trigger('focus');
+		$('#link_page_url_input').focus();
 	}, 250); 
 }); 

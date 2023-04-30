@@ -119,7 +119,7 @@
         banMode: 'strict' // (strict|loose)
       };
 
-	  if(typeof options === "function" && !callback) {
+      if($.isFunction(options) && !callback) {
         callback = options;
         options = {};
       }
@@ -183,7 +183,7 @@
       });
 
       return this.each(function () {
-        $(this).on('keyup focus input propertychange mouseup', evaluateSecurity);
+        $(this).bind('keyup focus input propertychange mouseup', evaluateSecurity);
       });
 
     }

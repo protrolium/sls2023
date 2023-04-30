@@ -8,7 +8,7 @@
  * This file is licensed under the MIT license
  * https://processwire.com/about/license/mit/
  * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
  * https://processwire.com
  * 
  * #pw-summary Holds ProcessWire configuration settings as defined in /wire/config.php and /site/config.php. 
@@ -98,8 +98,8 @@
  * 
  * @property bool $advanced Special mode for ProcessWire system development. Not recommended for regular site development or production use. #pw-group-system
  * @property bool $demo Special mode for demonstration use that causes POST requests to be disabled. Applies to core, but may not be safe with 3rd party modules. #pw-group-system
- * @property bool|int|string $debug Special mode for use when debugging or developing a site. Recommended TRUE when site is in development and FALSE when not. Or set to `Config::debug*` constant. #pw-group-system
- * @property string|callable|array $debugIf Enable debug mode if condition is met. One of IP address to match, regex to match IP, array of IPs to match, or callable function that returns true|false. #pw-group-system
+ * @property bool|int $debug Special mode for use when debugging or developing a site. Recommended TRUE when site is in development and FALSE when not. Or set to Config::debugVerbose for verbose debug mode. #pw-group-system
+ * @property string $debugIf Enable debug mode if condition is met #pw-group-system
  * @property array $debugTools Tools, and their order, to show in debug mode (admin) #pw-group-system
  * 
  * @property string $ignoreTemplateFileRegex Regular expression to ignore template files #pw-group-template-files
@@ -192,25 +192,6 @@
  * @property int $externalPageID Page ID of page assigned to $page API variable when externally bootstrapped #pw-group-system-IDs
  * @property array $preloadPageIDs Page IDs of pages that will always be preloaded at beginning of request #pw-group-system-IDs
  * @property int $installed Timestamp of when this PW was installed, set automatically by the installer for future compatibility detection. #pw-group-system
- * 
- * @method array|string wireMail($key = '', $value = null)
- * @method array imageSizes($key = '', $value = null)
- * @method array|bool|string|int|float imageSizerOptions($key = '', $value = null)
- * @method array|int|bool webpOptions($key = '', $value = null)
- * @method array|string contentTypes($key = '', $value = null)
- * @method array|string fileContentTypes($key = '', $value = null)
- * @method array|string|bool fileCompilerOptions($key = '', $value = null)
- * @method array|string|string[] dbOptions($key = '', $value = null)
- * @method array|string|string[] dbSqlModes($key = '', $value = null)
- * @method array|int|bool pageList($key = '', $value = null)
- * @method array|bool pageEdit($key = '', $value = null)
- * @method array|string pageAdd($key = '', $value = null)
- * @method array|string moduleInstall($key = '', $value = null)
- * @method array|string substituteModules($key = '', $value = null)
- * @method array|string|bool AdminThemeUikit($key = '', $value = null)
- * @method array|string modals($key = '', $value = null)
- * @method array|bool markupQA($key = '', $value = null)
- * @method array|string statusFiles($key = '', $value = null)
  *
  */
 class Config extends WireData {
@@ -220,12 +201,6 @@ class Config extends WireData {
 	 * 
 	 */
 	const debugVerbose = 2;
-
-	/**
-	 * Constant for core development debug mode (makes it use newer JS libraries in some cases)
-	 * 
-	 */
-	const debugDev = 'dev';
 
 	/**
 	 * Get config property

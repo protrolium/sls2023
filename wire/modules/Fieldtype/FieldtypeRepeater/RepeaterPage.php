@@ -278,10 +278,5 @@ class RepeaterPage extends Page {
 		return $this;
 	}
 	 */
-	
-	public function getAccessTemplate($type = 'view') {
-		$p = $this->getForPageRoot();
-		return $p->id ? $p->getAccessTemplate($type) : parent::getAccessTemplate($type);
-	}
 }
 

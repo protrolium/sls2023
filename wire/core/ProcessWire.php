@@ -79,13 +79,13 @@ class ProcessWire extends Wire {
 	 * Reversion revision number
 	 * 
 	 */
-	const versionRevision = 216;
+	const versionRevision = 210;
 
 	/**
 	 * Version suffix string (when applicable)
 	 * 
 	 */
-	const versionSuffix = 'dev';
+	const versionSuffix = '';
 
 	/**
 	 * Minimum required index.php version, represented by the PROCESSWIRE define
@@ -291,7 +291,7 @@ class ProcessWire extends Wire {
 
 		$config->setWire($this);
 		
-		$this->debug = $this->setConfigDebug($config);
+		$this->debug = $config->debug; 
 		if($this->debug) Debug::timer('all');
 		$this->instanceID = self::addInstance($this);
 		$this->setWire($this);
@@ -357,6 +357,15 @@ class ProcessWire extends Wire {
 		$this->wire($config->paths);
 		$this->wire($config->urls);
 		
+		// If debug mode is on then echo all errors, if not then disable all error reporting
+		if($config->debug) {
+			error_reporting(E_ALL | E_STRICT);
+			ini_set('display_errors', 1);
+		} else {
+			error_reporting(0);
+			ini_set('display_errors', 0);
+		}
+
 		ini_set('date.timezone', $config->timezone);
 		ini_set('default_charset','utf-8');
 
@@ -379,6 +388,24 @@ class ProcessWire extends Wire {
 		$config->versionName = trim($version . " " . self::versionSuffix);
 		$config->moduleServiceKey .= str_replace('.', '', $version);
 		
+		// $config->debugIf: optional setting to determine if debug mode should be on or off
+		if($config->debugIf && is_string($config->debugIf)) {
+			$debugIf = trim($config->debugIf);
+			$ip = $config->sessionForceIP;
+			if(empty($ip)) $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+			if(strpos($debugIf, '/') === 0 && !empty($ip)) {
+				$debugIf = (bool) @preg_match($debugIf, $ip); // regex IPs
+			} else if(is_callable($debugIf)) {
+				$debugIf = $debugIf(); // callable function to determine debug mode for us 
+			} else if(!empty($ip)) {
+				$debugIf = $debugIf === $ip; // exact IP match
+			} else {
+				$debugIf = false;
+			}
+			unset($ip);
+			$config->debug = $debugIf;
+		}
+
 		if($config->useFunctionsAPI && !function_exists("\\ProcessWire\\pages")) {
 			$file = $config->paths->core . 'FunctionsAPI.php';
 			/** @noinspection PhpIncludeInspection */
@@ -406,57 +433,6 @@ class ProcessWire extends Wire {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Determine whether debug mode should be enabled
-	 * 
-	 * @param Config $config
-	 * @return bool|int Returns determined debug mode value
-	 * @since 3.0.212
-	 * 
-	 */
-	protected function setConfigDebug(Config $config) {
-		$debug = $config->debug;
-		if($debug) {
-			// use as-is
-		} else {
-			$debugIf = $config->debugIf;
-			if(empty($debugIf)) {
-				// no processing needed
-			} else if(is_callable($debugIf)) {
-				// callable function
-				$debug = $debugIf();
-			} else {
-				$ip = $config->sessionForceIP;
-				if(empty($ip)) $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
-				if(is_string($debugIf) && strlen($debugIf) && !empty($ip)) {
-					// match exact IP address or regex matching IP address(es)
-					$debugIf = trim($debugIf);
-					if(strpos($debugIf, '/') === 0) {
-						$debug = (bool) @preg_match($debugIf, $ip); // regex IPs
-					} else {
-						$debug = $debugIf === $ip; // exact IP match
-					}
-				} else if(is_array($debugIf) && !empty($ip)) {
-					// match IP address in array
-					$debug = in_array($ip, $debugIf);
-				}
-			}
-			if($debug) $config->debug = $debug;
-		}
-		
-		if($debug) {
-			// If debug mode is on then echo all errors
-			error_reporting(E_ALL | E_STRICT);
-			ini_set('display_errors', 1);
-		} else {
-			// disable all error reporting
-			error_reporting(0);
-			ini_set('display_errors', 0);
-		}
-		
-		return $debug;
 	}
 
 	/**
@@ -857,17 +833,17 @@ class ProcessWire extends Wire {
 	/**
 	 * Get API var directly
 	 * 
-	 * @param string $name
+	 * @param string $key
 	 * @return mixed
 	 * 
 	 */
-	public function __get($name) {
-		if($name === 'fuel') return $this->fuel;
-		if($name === 'shutdown') return $this->shutdown;
-		if($name === 'instanceID') return $this->instanceID;
-		$value = $this->fuel->get($name);
+	public function __get($key) {
+		if($key === 'fuel') return $this->fuel;
+		if($key === 'shutdown') return $this->shutdown;
+		if($key === 'instanceID') return $this->instanceID;
+		$value = $this->fuel->get($key);
 		if($value !== null) return $value;
-		return parent::__get($name);
+		return parent::__get($key);
 	}
 
 	/**
@@ -1285,3 +1261,5 @@ class ProcessWire extends Wire {
 	}
 
 }
+
+

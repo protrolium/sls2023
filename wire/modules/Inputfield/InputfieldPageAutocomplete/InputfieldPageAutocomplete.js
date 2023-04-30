@@ -46,13 +46,13 @@ var InputfieldPageAutocomplete = {
 			var $remove = $input.siblings('.InputfieldPageAutocompleteRemove');
 			InputfieldPageAutocomplete.setIconPosition($remove, 'right');
 			
-			$remove.on('click', function() {
-				$value.val('').trigger('change');
-				$input.val('').attr('placeholder', '').attr('data-selectedLabel', '').trigger('change').trigger('focus');
+			$remove.click(function() {
+				$value.val('').change();
+				$input.val('').attr('placeholder', '').attr('data-selectedLabel', '').change().focus();
 				$input.trigger('keydown');
 			});
 			
-			$input.on('change', function() {
+			$input.change(function() {
 				if($(this).val().length == 0) {
 					$remove.hide();
 				} else {
@@ -60,20 +60,21 @@ var InputfieldPageAutocomplete = {
 				}
 			});
 			
-			$input.on('focus', function() {
+			$input.focus(function() {
 				var val = $value.val();
 				if(!val.length) return;
 				if(hasDisableChar(val)) return;
 				if($(this).hasClass('added_item')) return;
 				$(this).attr('placeholder', $(this).attr('data-selectedLabel'));
 				$(this).val('');
-			}).on('blur', function() {
-				setTimeout(function() { }, 200);
+			}).blur(function() {
+				setTimeout(function() {
+				}, 200);
 			});
 		}
 		
 		
-		$icon.on('click', function() { $input.trigger('focus'); });
+		$icon.click(function() { $input.focus(); });
 		$icon.attr('data-class', $icon.attr('class')); 
 
 		function isAddAllowed() {
@@ -131,20 +132,20 @@ var InputfieldPageAutocomplete = {
 					if(!ui.item) return;
 					var $t = $(this);
 					if($t.hasClass('no_list')) {
-						$t.val(ui.item.label).trigger('change');
+						$t.val(ui.item.label).change();
 						$t.attr('data-selectedLabel', ui.item.label);
 						$t.closest('.InputfieldPageAutocomplete')
-							.find('.InputfieldPageAutocompleteData').val(ui.item.page_id).trigger('change');
-						$t.trigger('blur');
+							.find('.InputfieldPageAutocompleteData').val(ui.item.page_id).change();
+						$t.blur();
 					} else {
 						InputfieldPageAutocomplete.pageSelected($ol, ui.item);
-						$t.val('').trigger('focus');
+						$t.val('').focus();
 					}
 					event.stopPropagation();
 					return false;
 				}
 
-			}).on('blur', function() {
+			}).blur(function() {
 				var $input = $(this);
 				//if(!$input.val().length) $input.val('');
 				$icon.attr('class', $icon.attr('data-class'));
@@ -159,18 +160,19 @@ var InputfieldPageAutocomplete = {
 					} else {
 						$input.val('').attr('placeholder', '').attr('data-selectedLabel', '');
 					}
+					//$(this).closest('.InputfieldPageAutocomplete').find('.InputfieldPageAutocompleteData').val('').change();
 				}
 				if($input.hasClass('focus-after-blur')) {
 					$input.removeClass('focus-after-blur');
 					setTimeout(function() {
-						$input.trigger('focus');
+						$input.focus();
 					}, 250);
 				}
 
-			}).on('keyup', function() {
+			}).keyup(function() {
 				$icon.attr('class', $icon.attr('data-class'));
 
-			}).on('keydown', function(event) {
+			}).keydown(function(event) {
 				var $addNote;
 				if(event.keyCode == 13) {
 					// prevents enter from submitting the form
@@ -178,19 +180,19 @@ var InputfieldPageAutocomplete = {
 					// instead we add the text entered as a new item
 					// if there is an .InputfieldPageAdd sibling, which indicates support for this
 					if(isAddAllowed()) {
-						if($input.val().trim().length < 1) {
-							$input.trigger('blur');
+						if($.trim($input.val()).length < 1) {
+							$input.blur();
 							return false;
 						}
 						numAdded++;
 						// new items have a negative page_id
-						var page = { page_id: (-1 * numAdded), label: $input.val() };
+						var page = {page_id: (-1 * numAdded), label: $input.val()};
 						// add it to the list
 						if(noList) {
 							// adding new item while using input as the label
 							$value.val(page.page_id);
 							$("#_" + id.replace('Inputfield_', '') + '_add_items').val(page.label);
-							$input.addClass('added_item').trigger('blur');
+							$input.addClass('added_item').blur();
 							$addNote = $note.siblings(".InputfieldPageAutocompleteNoteAdd");
 							if(!$addNote.length) {
 								$addNote = $("<div class='notes InputfieldPageAutocompleteNote InputfieldPageAutocompleteNoteAdd'></div>");
@@ -202,11 +204,11 @@ var InputfieldPageAutocomplete = {
 						} else {
 							// adding new item to list
 							InputfieldPageAutocomplete.pageSelected($ol, page);
-							$input.val('').trigger('blur').trigger('focus');
+							$input.val('').blur().focus();
 						}
 						$note.hide();
 					} else {
-						$(this).addClass('focus-after-blur').trigger('blur');
+						$(this).addClass('focus-after-blur').blur();
 					}
 					return false;
 				}
@@ -315,7 +317,7 @@ var InputfieldPageAutocomplete = {
 		});
 		
 		var $inputText = $('#' + $ol.attr('data-id') + '_input');
-		$inputText.trigger('blur');
+		$inputText.blur();
 
 		if(dup) {
 			dup.effect('highlight'); 
@@ -425,3 +427,5 @@ $(document).ready(function() {
 		InputfieldPageAutocomplete.updateIcons($tab); 
 	});
 }); 
+
+

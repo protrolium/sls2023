@@ -1,14 +1,12 @@
 <?php namespace ProcessWire;
 
 /**
- * Actions manager for ProcessPageList
- * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
- * https://processwire.com
+ * ProcessPageListActions
  *
  * @method array getExtraActions(Page $page)
  * @method array getActions(Page $page)
  * @method array processAction(Page $page, $action)
+ * 
  * 
  */
 class ProcessPageListActions extends Wire {
@@ -34,8 +32,8 @@ class ProcessPageListActions extends Wire {
 	);
 	
 	public function wired() {
-		$this->superuser = $this->wire()->user->isSuperuser();
-		$settings = $this->wire()->config->ProcessPageList;
+		$this->superuser = $this->wire('user')->isSuperuser();
+		$settings = $this->wire('config')->ProcessPageList;
 		if(is_array($settings) && isset($settings['extrasLabel'])) {
 			$this->actionLabels['extras'] = $settings['extrasLabel'];
 		}
@@ -70,12 +68,11 @@ class ProcessPageListActions extends Wire {
 	 *
 	 */
 	public function ___getActions(Page $page) {
-		
-		$config = $this->wire()->config;
-		$actions = array();
-		$adminUrl = $config->urls->admin;
 
-		if($page->id == $config->trashPageID) {
+		$actions = array();
+		$adminUrl = $this->config->urls->admin;
+
+		if($page->id == $this->config->trashPageID) {
 
 			if($this->superuser) $actions['trash'] = array(
 				'cn' => 'Empty',
@@ -103,9 +100,7 @@ class ProcessPageListActions extends Wire {
 				'url' => "{$adminUrl}page/add/?parent_id={$page->id}"
 			);
 
-			$sortable = $page->parent->sortfield() == 'sort' 
-				&& $page->parent->id 
-				&& $page->parent->numChildren > 1 && $page->sortable();
+			$sortable = $page->parent->sortfield() == 'sort' && $page->parent->id && $page->parent->numChildren > 1 && $page->sortable();
 
 			if($page->id > 1 && ($sortable || $page->moveable())) $actions['move'] = array(
 				'cn' => 'Move',
@@ -123,6 +118,7 @@ class ProcessPageListActions extends Wire {
 					'extras' => $extras,
 				);
 			}
+
 		}
 
 		return $actions;
@@ -156,10 +152,10 @@ class ProcessPageListActions extends Wire {
 		if($page->id == 1 || $page->template == 'admin') return $extras;
 		if(!$this->superuser && ($noSettings || !$statusEditable)) return $extras;
 		
-		$adminUrl = $this->wire()->config->urls->admin . 'page/';
+		$adminUrl = $this->wire('config')->urls->admin . 'page/';
 		$locked = $page->isLocked();
 		$trash = $page->isTrash();
-		$user = $this->wire()->user;
+		$user = $this->wire('user');
 
 		if(!$locked && !$trash && !$noSettings && $statusEditable) {
 			if($page->publishable()) {
@@ -201,7 +197,7 @@ class ProcessPageListActions extends Wire {
 			}
 		}
 
-		if($user->hasPermission('page-lock', $page) && !$trash && $statusEditable) {
+		if($this->wire('user')->hasPermission('page-lock', $page) && !$trash && $statusEditable) {
 			if($locked) {
 				$extras['unlock'] = array(
 					'cn'    => 'Unlock',
@@ -220,7 +216,7 @@ class ProcessPageListActions extends Wire {
 		}
 
 		$trashable = $this->useTrash && $page->trashable();
-		$trashIcon = wireIconMarkup('trash-o') . '&nbsp;';
+		$trashIcon = "<i class='fa fa-trash-o'></i>&nbsp;";
 		if($trashable && !$user->isSuperuser()) {
 			// do not allow non-superuser ability to trash branches of pages, only individual pages
 			if($page->numChildren(1) > 0) $trashable = false;
@@ -244,28 +240,18 @@ class ProcessPageListActions extends Wire {
 		return $extras;
 	}
 
-	/**
-	 * Process action
-	 * 
-	 * @param Page $page
-	 * @param string $action
-	 * @return array
-	 * @throws WireException
-	 * 
-	 */
 	public function ___processAction(Page $page, $action) {
 
-		if($this->wire()->config->demo) {
+		if($this->wire('config')->demo) {
 			$result = array(
-				'action' => $action,
-				'success' => false, 
-				'message' => $this->_('Actions disabled in demo mode'),
-				'updateItem' => 0, // id of page to update in output
-				'remove' => false,
+				'action'          => $action,
+				'success'         => false, 
+				'message'         => $this->_('Actions disabled in demo mode'),
+				'updateItem'      => 0, // id of page to update in output
+				'remove'          => false,
 				'refreshChildren' => false,
 				// also available: 'appendItem' => $page->id, which adds a new item below the existing
 			);
-			return $result;
 		}
 
 		$actions = $this->getExtraActions($page);

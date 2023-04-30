@@ -8,7 +8,7 @@
  * For more details about how Process modules work, please see: 
  * /wire/core/Process.php 
  * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
  * https://processwire.com
  * 
  * @property bool $showRootPage Whether root page (like home) should be shown.
@@ -113,6 +113,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 * 
 	 */
 	public function __construct() {
+		
 		$this->set('showRootPage', true); 
 		$this->set('pageLabelField', 'title');
 		$this->set('limit', self::defaultLimit);
@@ -133,21 +134,18 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	public function init() {
 		
 		parent::init();
-		
-		$config = $this->wire()->config;
-		$input = $this->wire()->input;
+		$config = $this->wire('config');
+		$input = $this->wire('input');
 		$isAjax = $config->ajax;
 		$limit = (int) $input->get->int('limit');
 		$render = $input->get('render');
-		$settings = $config->pageList;
-		
-		$this->start = (int) $input->get->int('start');
+		$this->start = (int) $input->get->int('start'); //isset($_GET['start']) ? (int) $_GET['start'] : 0;
 		$this->limit = $limit > 0 && $limit < $this->limit ? $limit : $this->limit;
-		$this->render = $render ? strtoupper($this->wire()->sanitizer->name($render)) : '';
-		
+		$this->render = $render ? strtoupper($this->wire('sanitizer')->name($render)) : '';
 		if($isAjax && !$this->render && !$input->get('renderInputfieldAjax')) $this->render = 'JSON';
 		if(strlen($this->render) && !isset($this->allowRenderTypes[$this->render])) $this->render = null;
 
+		$settings = $config->pageList;
 		if(is_array($settings)) {
 			if(!empty($settings['useHoverActions'])) $this->set('useHoverActions', true);
 			$this->set('hoverActionDelay', isset($settings['hoverActionDelay']) ? (int) $settings['hoverActionDelay'] : 100);
@@ -157,13 +155,11 @@ class ProcessPageList extends Process implements ConfigurableModule {
 		}
 		
 		if(!$isAjax) {
-			$modules = $this->wire()->modules;
-			$jQuery = $modules->get('JqueryCore'); /** @var JqueryCore $jQuery */
-			$jQueryUI = $modules->get('JqueryUI'); /** @var JqueryUI $jQueryUI */
+			$modules = $this->wire('modules');
+			$jQuery = $modules->get('JqueryCore');
 			$jQuery->use('cookie');
 			$jQuery->use('longclick');
-			$jQueryUI->use('modal');
-			$jQueryUI->use('vex');
+			$modules->get('JqueryUI')->use('modal');	
 		}
 	}
 
@@ -176,55 +172,41 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 */
 	public function ___execute() {
 
-		$pages = $this->wire()->pages;
-		$input = $this->wire()->input;
-		$config = $this->wire()->config;
-		$session = $this->wire()->session;
-		
-		$ajax = $config->ajax;
-		$langID = (int) $input->get('lang');
-		
-		if($langID) {
-			$languages = $this->wire()->languages;
-			if($languages) $this->wire()->user->language = $languages->get($langID);
-		}
-
-		$id = $input->get('id');
-		if($id === 'bookmark') $session->location('./bookmarks/');
-		$id = (int) $id;
-		if(!$this->id && $id > 0) $this->id = $id;
-
+		$pages = $this->wire('pages');
+		$input = $this->wire('input');
+		$ajax = $this->wire('config')->ajax;
+		$langID = (int) $input->get('lang'); 
+		if($langID) $this->wire('user')->language = $this->languages->get($langID);
 		$this->trashLabel = $this->_('Trash'); // Label for 'Trash' page in PageList // Overrides page title if used
-	
+		
+		$id = $input->get('id');
+		if($id === 'bookmark') $this->wire('session')->redirect('./bookmarks/');
+		$id = (int) $id; 
+		if(!$this->id && $id > 0) $this->id = $id;
+		
 		$openID = (int) $input->get('open');
 		$this->openPage = $openID ? $pages->get($openID) : $pages->newNullPage();
 		if($this->openPage->id && $this->speed > 50) $this->speed = floor($this->speed / 2);
 		$this->page = $pages->get("id=" . ($this->id > 0 ? $this->id : 1) . ", status<" . Page::statusMax); 
 
-		if(!$this->page) {
-			throw new Wire404Exception("Unable to load page $this->id", Wire404Exception::codeSecondary);
-		}
-		
-		if(!$this->page->listable()) {
-			throw new WirePermissionException("You don't have access to list page {$this->page->url}");
-		}
-		
+		if(!$this->page) throw new Wire404Exception("Unable to load page {$this->id}", Wire404Exception::codeSecondary); 
+		if(!$this->page->listable()) throw new WirePermissionException("You don't have access to list page {$this->page->url}"); 
 		$this->page->setOutputFormatting(false);
 
 		$action = $input->post('action');
 		if($ajax && $action) {
-			return $this->ajaxAction($this->wire()->sanitizer->name($action));
+			return $this->ajaxAction($this->wire('sanitizer')->name($action));
 		}
 
-		$p = $this->wire()->page; 
-		if($p->name === 'list' && "$p->process" === "$this") {
+		$p = $this->wire('page'); 
+		if($p->name == 'list' && "$p->process" == "$this") {
 			// ensure that we use the page's title is always consistent in the admin (i.e. 'Pages' not 'Page List')
 			$p->title = $p->parent->title; 
 		}
 		
-		if($ajax && $this->id > 1 && "$p->process" === "$this" && $input->get('mode') != 'select') {
+		if($ajax && $this->id > 1 && "$p->process" == "$this" && $this->wire('input')->get('mode') != 'select') {
 			// remember last requested id
-			$session->setFor($this, 'lastID', $this->id);
+			$this->wire('session')->setFor($this, 'lastID', $this->id);
 		}
 	
 		return $this->render();
@@ -244,20 +226,18 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			return $this->getPageListRender($this->page)->render();
 		}
 		
-		$session = $this->wire()->session;
-		$input = $this->wire()->input;
-		$isAjax = $this->wire()->config->ajax;
+		$session = $this->wire('session');
+		$input = $this->wire('input');
+		$isAjax = $this->wire('config')->ajax;
 		$tokenName = $session->CSRF->getTokenName();
 		$tokenValue = $session->CSRF->getTokenValue();
 		$class = $this->id ? "PageListContainerPage" : "PageListContainerRoot";
+		$script = '';
 		
 		$this->renderReady();
 		
 		if($isAjax && $input->get('renderInputfieldAjax')) {
-			$script = 'script';
-			$script = "<$script>ProcessPageListInit();</$script>";
-		} else {
-			$script = '';
+			$script = "<script>ProcessPageListInit();</script>";
 		}
 	
 		return "\n" . 
@@ -274,23 +254,20 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 */
 	public function renderReady() {
 		
-		$input = $this->wire()->input;
-		$config = $this->wire()->config;
-		
+		$input = $this->wire('input');
+		$config = $this->wire('config');
 		$urls = $config->urls;
 		$isAjax = $config->ajax;
-		
 		$openPageIDs = array();
 		$openPageData = array();
 
 		if($this->openPage) {
-			$page = $this->wire()->page;
 			if($this->openPage->id > 1) {
 				$openPageIDs[] = $this->openPage->id;
 				foreach($this->openPage->parents() as $parent) {
 					if($parent->id > 1 && $parent->id != $this->id) $openPageIDs[] = $parent->id;
 				}
-			} else if(!$isAjax && ((string) $page->process) == "$this") {
+			} else if(!$isAjax && ((string) $this->wire('page')->process) == "$this") {
 				if($this->id) {
 					// leave openPageIDs as empty array
 				} else {
@@ -299,7 +276,6 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			}
 
 			if(!$isAjax && count($openPageIDs)) {
-				$pages = $this->wire()->pages;
 				$render = $this->render;
 				$this->render = 'JSON';
 				foreach($openPageIDs as $key => $openPageID) {
@@ -311,7 +287,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 					}
 					$openPageID = (int) $openPageID;
 					$openPageIDs[$key] = "$openPageID-$openPageStart";
-					$p = $pages->get($openPageID);
+					$p = $this->wire('pages')->get($openPageID);
 					if(!$p->id || !$p->listable()) continue;
 					$renderer = $this->getPageListRender($p, $this->limit, $openPageStart);
 					$openPageData["$openPageID-$openPageStart"] = $renderer->setOption('getArray', true)->render();
@@ -347,10 +323,8 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			'ajaxNetworkError' => $this->_('Network error, please try again later'), // Network error during AJAX request
 			'ajaxUnknownError' => $this->_('Unknown error, please try again later'), // Unknown error during AJAX request
 		);
-		
 		$settings = $config->ProcessPageList;
 		$settings = is_array($settings) ? array_merge($defaults, $settings) : $defaults;
-		
 		$config->js('ProcessPageList', $settings);
 	}
 
@@ -366,13 +340,12 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	protected function getPageListRender(Page $page, $limit = null, $start = null) {
 		
 		require_once(dirname(__FILE__) . '/ProcessPageListRender.php');
-		
 		if(!$this->render || !isset($this->allowRenderTypes[$this->render])) $this->render = 'JSON';
-		
 		$class = $this->allowRenderTypes[$this->render];
 		$className = wireClassName($class, true);
 		
-		$user = $this->wire()->user;
+		/** @var User $user */
+		$user = $this->wire('user');
 		$superuser = $user->isSuperuser();
 		
 		if(!class_exists($className, false)) require_once(dirname(__FILE__) . "/$class.php");
@@ -384,7 +357,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			$selector = "start=$start, limit=$limit, status<" . Page::statusMax;
 			
 			if($this->useTrash && !$superuser) { 
-				$trashID = $this->wire()->config->trashPageID;
+				$trashID = $this->wire('config')->trashPageID;
 				if($page->id == $trashID && $user->hasPermission('page-edit') && $page->listable()) {
 					$selector .= ", check_access=0";
 				}
@@ -392,7 +365,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			
 			$children = $this->find($selector, $page);
 		} else {
-			$children = $this->wire()->pages->newPageArray();
+			$children = $this->wire('pages')->newPageArray();
 		}
 
 		/** @var ProcessPageListRender $renderer */
@@ -416,7 +389,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 * 
 	 */
 	public function setPageLabelField($name, $pageLabelField) {
-		$this->wire()->session->setFor($this, $name, $pageLabelField);	
+		$this->wire('session')->setFor($this, $name, $pageLabelField);	
 	}
 
 	/**
@@ -428,11 +401,11 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	protected function getPageLabelField() {
 		
 		$pageLabelField = '';
-		$name = $this->wire()->input->get('labelName');
+		$name = $this->wire('input')->get('labelName');
 		
 		if($name) {
-			$name = $this->wire()->sanitizer->fieldName($name);
-			if($name) $pageLabelField = $this->wire()->session->getFor($this, $name);
+			$name = $this->wire('sanitizer')->fieldName($name);
+			if($name) $pageLabelField = $this->wire('session')->getFor($this, $name);
 			if($pageLabelField) $pageLabelField = '!' . $pageLabelField; // "!" means it may not be overridden by template
 		}
 		
@@ -453,8 +426,8 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 */
 	public function ___ajaxAction($action) {
 		
-		$input = $this->wire()->input;
-		$session = $this->wire()->session;
+		$input = $this->wire('input');
+		$session = $this->wire('session');
 		
 		if(!$this->page->editable()) throw new WireException("Page not editable");
 		if($this->page->id != $input->post('id')) throw new WireException("GET id does not match POST id");
@@ -473,7 +446,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 		}
 		
 		if(!empty($result['appendItem'])) {
-			$newChild = $this->wire()->pages->get((int) $result['appendItem']);
+			$newChild = $this->wire('pages')->get((int) $result['appendItem']);
 			$result['newChild'] = $renderer->renderChild($newChild);
 			unset($result['appendItem']);
 		}
@@ -520,10 +493,9 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 *
 	 */
 	public function setupBreadcrumbs() {
-		$process = $this->wire()->process;
-		if("$process" !== "$this" || !$this->wire()->breadcrumbs) return; 
-		if($this->wire()->input->urlSegment1) return;
-		$url = $this->wire()->config->urls->admin . 'page/list/?id=';
+		if($this->wire('process') != $this || !$this->wire('breadcrumbs')) return; 
+		if($this->wire('input')->urlSegment1) return;
+		$url = $this->wire('config')->urls->admin . 'page/list/?id=';
 		foreach($this->page->parents() as $p) {
 			$this->breadcrumb($url . $p->id, $p->get('title|name'));
 		}
@@ -538,7 +510,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	protected function getPageBookmarks() {
 		static $bookmarks = null;
 		if(is_null($bookmarks)) {
-			require_once($this->wire()->config->paths('ProcessPageEdit') . 'PageBookmarks.php');
+			require_once($this->wire('config')->paths->ProcessPageEdit . 'PageBookmarks.php');
 			$bookmarks = $this->wire(new PageBookmarks($this));
 		}
 		return $bookmarks;
@@ -553,8 +525,8 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 */
 	public function ___executeNavJSON(array $options = array()) {
 		
-		$config = $this->wire()->config;
-		$urls = $this->wire()->urls;
+		$config = $this->wire('config');
+		$urls = $this->wire('urls');
 		
 		if($this->useBookmarks) {
 			$bookmarks = $this->getPageBookmarks();
@@ -563,14 +535,12 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			return parent::___executeNavJSON($options);
 		}
 
-		$parentID = (int) $this->wire()->input->get('parent_id');
+		$parentID = (int) $this->wire('input')->get('parent_id');
 		if(!$parentID) $parentID = 1; 
-		
-		$parent = $this->wire()->pages->get($parentID);
+		$parent = $this->wire('pages')->get($parentID);
 		$parentViewable = $parent->viewable(false);
 		$renderer = $this->getPageListRender($parent);
 		$items = $parentViewable ? $renderer->getChildren() : new PageArray();
-		
 		if($parentID === 1 && $parentViewable) $items->prepend($parent);
 		$skipPageIDs = array($config->trashPageID, $config->adminRootPageID);
 		$maxLabelLength = 40;
@@ -603,14 +573,12 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			
 			$numChildren = $id > 1 ? $renderer->numChildren($page) : 0;
 			$label = $renderer->getPageLabel($page, array('noTags' => true, 'noIcon' => true));
-			
 			if(strlen($label) > $maxLabelLength) {
 				$label = substr($label, 0, $maxLabelLength); 
 				$pos = strrpos($label, ' '); 
 				if($pos !== false) $label = substr($label, 0, $pos);
 				$label .= ' &hellip;';
 			}
-			
 			$labelClasses = array();
 			if($page->isUnpublished()) $labelClasses[] = 'PageListStatusUnpublished';
 			if($page->isHidden()) $labelClasses[] = 'PageListStatusHidden';
@@ -663,17 +631,15 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	}
 	
 	public function ___executeOpen() {
-		$input = $this->wire()->input;
-		$id = (int) $input->urlSegment2;
-		$input->get->set('open', $id);	
-		$this->wire()->breadcrumbs->removeAll();
+		$id = (int) $this->wire('input')->urlSegment2;
+		$this->wire('input')->get->open = $id;	
+		$this->wire('breadcrumbs')->removeAll();
 		return $this->execute();
 	}
 	
 	public function ___executeId() {
-		$input = $this->wire()->input;
-		$id = (int) $input->urlSegment2;
-		$input->get->set('id', $id);
+		$id = (int) $this->wire('input')->urlSegment2;
+		$this->wire('input')->get->id = $id;
 		return $this->execute();
 	}
 
@@ -694,7 +660,7 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	 * URL to redirect to after non-authenticated user is logged-in, or false if module does not support
 	 *
 	 * @param Page $page
-	 * @return string
+	 * @return bool|string
 	 * @sine 3.0.167
 	 *
 	 */
@@ -778,9 +744,8 @@ class ProcessPageList extends Process implements ConfigurableModule {
 			// support bookmarks only if already in use as bookmarks for ProcessPageList to be phased out
 			$bookmarks = $this->getPageBookmarks();
 			$bookmarks->addConfigInputfields($fields);
-			$pages = $this->wire()->pages;
-			$admin = $pages->get($this->wire()->config->adminRootPageID);
-			$page = $pages->get($admin->path . 'page/list/');
+			$admin = $this->wire('pages')->get($this->wire('config')->adminRootPageID);
+			$page = $this->wire('pages')->get($admin->path . 'page/list/');
 			$bookmarks->checkProcessPage($page);
 		}
 	
@@ -835,3 +800,4 @@ class ProcessPageList extends Process implements ConfigurableModule {
 	}
 
 }
+

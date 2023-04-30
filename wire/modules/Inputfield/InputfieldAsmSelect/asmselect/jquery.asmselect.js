@@ -141,10 +141,10 @@
 
 				buildSelect();
 
-				$select.on('change', selectChangeEvent)
-					.on('click', selectClickEvent); 
+				$select.change(selectChangeEvent)
+					.click(selectClickEvent); 
 
-				$original.on('change', originalChangeEvent)
+				$original.change(originalChangeEvent)
 					.wrap($container).before($select).before($ol);
 
 				if(options.sortable) makeSortable();
@@ -337,7 +337,8 @@
 					// collapse any existing parents that are open (behave as accordion)
 					if(!$option.hasClass(options.optionChildClass)) {
 						$select.find('.' + options.optionParentOpenClass).each(function() {
-							$(this).prop('selected', true).trigger('change'); // trigger close if any existing open
+							// $(this).attr('selected', 'selected').change(); // trigger close if any existing open
+							$(this).prop('selected', true).change(); // trigger close if any existing open
 						});
 					}
 					// make the parent selected, encouraging them to click to select a child
@@ -376,7 +377,7 @@
 			 */
 			function selectClickEvent() {
 				// IE6 lets you scroll around in a select without it being pulled down
-				// making sure a click preceded the change event reduces the chance
+				// making sure a click preceded the change() event reduces the chance
 				// if unintended items being added. there may be a better solution?
 				ieClick = true; 
 			}
@@ -584,7 +585,8 @@
 			 * 
 			 */
 			function selectFirstItem() {
-				$select.children().first().prop("selected", true); 
+				// $select.children(":eq(0)").attr("selected", true);
+				$select.children(":eq(0)").prop("selected", true); 
 			}
 
 			/**
@@ -616,7 +618,7 @@
 			 */
 			function enableSelectOption($option) {
 
-				$option.removeClass(options.optionDisabledClass).prop("disabled", false);
+				$option.removeClass(options.optionDisabledClass).attr("disabled", false);
 				
 				if(options.hideWhenEmpty) $select.show();
 				if(options.hideWhenAdded) $option.show();
@@ -642,7 +644,7 @@
 					.attr("href", "#")
 					.addClass(options.removeClass)
 					.prepend(options.removeLabel)
-					.on('click', function() { 
+					.click(function() { 
 						dropListItem($(this).parent('li').attr('rel')); 
 						return false; 
 					}); 
@@ -665,7 +667,7 @@
 					if(options.editLinkModal === "longclick") {
 						$editLink.addClass('asmEditLinkModalLongclick');
 					} else if(options.editLinkModal) {
-						$editLink.on('click', clickEditLink);
+						$editLink.click(clickEditLink);
 					}
 					
 					$itemLabel.addClass(options.editClass).append($editLink);
@@ -679,7 +681,7 @@
 						if(options.editLinkModal === "longclick") {
 							$editLink2.addClass('asmEditLinkModalLongclick');
 						} else if(options.editLinkModal) {
-							$editLink2.on('click', clickEditLink);
+							$editLink2.click(clickEditLink);
 						}
 					}
 
@@ -699,9 +701,9 @@
 
 				if(options.jQueryUI) {
 					$item.addClass('ui-state-default')
-					.on('mouseenter', function() {
+					.hover(function() {
 						$(this).addClass('ui-state-hover').removeClass('ui-state-default'); 
-					}).on('mouseleave', function() {
+					}, function() {
 						$(this).addClass('ui-state-default').removeClass('ui-state-hover'); 
 					}); 
 					if(options.sortable) {
@@ -937,7 +939,7 @@
 				var href = $(this).attr('href'); 
 				var $iframe = pwModalWindow(href, {}, 'medium'); 
 
-				$iframe.on('load', function() {
+				$iframe.load(function() {
 
 					var $icontents = $iframe.contents();	
 					var buttons = [];
@@ -960,7 +962,7 @@
 								'class': (secondary ? 'ui-priority-secondary' : ''),
 								click: function() {
 									if($button.attr('type') == 'submit') {
-										$button.trigger('click'); 
+										$button.click(); 
 										$asmItem.effect('highlight', {}, 500); 
 										
 										var $asmSetStatus = $icontents.find('#' + options.listItemStatusClass); // first try to find by ID

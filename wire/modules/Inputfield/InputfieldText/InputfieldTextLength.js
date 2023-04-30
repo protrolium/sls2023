@@ -13,7 +13,7 @@ function InputfieldTextLength($inputs) {
 		if($note.length) {
 			if(!html.length) {
 				$note.remove();
-				$(window).trigger('resize');
+				$(window).resize();
 			}
 		} else if(html.length) {
 			$note = $("<div class='InputfieldTextLengthNote'></div>");
@@ -23,7 +23,7 @@ function InputfieldTextLength($inputs) {
 			} else {
 				$input.after($note);
 			}
-			$(window).trigger('resize');
+			$(window).resize();
 		} 
 		if(html.length) {
 			$note.html('<small class="detail">' + html + '</small>');
@@ -41,14 +41,15 @@ function InputfieldTextLength($inputs) {
 			val = val.replace(/&[#a-z0-9]+;/gi, ' '); // HTML entity only counts as 1 char
 			//val = editor.document.getBody().getText(); // getData();
 		} else {
-			val = $input.val().trim();
+			val = $.trim($input.val());
 		}
 		if(countWords) {
 			if(!val.length) return 0;
 			words = val;
 			var words = val.replace(/[\r\n\t,:.!?\/]+/g, ' ');
 			if(words.indexOf('&nbsp;') > -1) words = words.replace(/&nbsp;/gi, ' ');
-			words = words.replace(/\s\s+/g, ' ').trim();
+			words = $.trim(words.replace(/\s\s+/g, ' '));
+			console.log(words);
 			return words.split(' ').length;
 		} else {
 			return val.length;

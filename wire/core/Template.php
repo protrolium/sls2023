@@ -759,7 +759,7 @@ class Template extends WireData implements Saveable, Exportable {
 			$fieldgroup = $this->wire()->fieldgroups->get($value);
 			if($fieldgroup) {
 				$this->setFieldgroup($fieldgroup);
-			} else if($this->id) {
+			} else {
 				$this->error("Unable to load fieldgroup '$value' for template $this->name");
 			}
 			return;

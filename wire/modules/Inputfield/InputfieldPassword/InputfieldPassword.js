@@ -22,17 +22,17 @@ jQuery(document).ready(function($) {
 		};
 
 		if($inputOld.length) {
-			$input.prop('disabled', true);
+			$input.attr('disabled', 'disabled');
 			inputOldEvent = function() {
 				if($(this).val().length > 0) {
 					$inputOld.off('keyup input change blur', inputOldEvent);
-					$input.prop('disabled', false);
+					$input.removeAttr('disabled');
 				}
 			};
 			$inputOld.on('keyup input change blur', inputOldEvent);
 		}
 		
-		if($confirm.length) $confirm.prop('disabled', true);
+		if($confirm.length) $confirm.attr('disabled', 'disabled');
 
 		$input.complexify(options, function(valid, complexity) {
 			
@@ -122,15 +122,15 @@ jQuery(document).ready(function($) {
 			}
 			if($on.hasClass('pass-fail') || $on.hasClass('pass-short') || $on.hasClass('pass-common') 
 				|| $on.hasClass('pass-invalid') || $on.hasClass('pass-same')) {
-				$confirm.prop('disabled', true).val('').trigger('change');
+				$confirm.attr('disabled', 'disabled').val('').change();
 			} else {
-				$confirm.prop('disabled', false);
+				$confirm.removeAttr('disabled');
 				$on.find('small').remove();
 				$on.append("<small style='margin-left:0.5em'>(" + Math.floor(complexity) + "%)</small>");
 			}
 			
 			if($confirm.val().length) {
-				$confirm.trigger('change');
+				$confirm.change();
 			}
 			
 			//console.log(valid);
@@ -195,7 +195,7 @@ jQuery(document).ready(function($) {
 		setTimeout(function() {
 			$ffinputs.each(function() {
 				if($(this).val().length < 1 || $(this).attr('value').length > 0) return;
-				$(this).val('').trigger('keyup').trigger('change')
+				$(this).val('').trigger('keyup').change()
 					.closest('.Inputfield').removeClass('InputfieldStateChanged');
 			});
 		}, 1000);

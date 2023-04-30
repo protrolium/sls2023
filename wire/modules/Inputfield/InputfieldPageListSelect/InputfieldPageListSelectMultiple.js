@@ -29,8 +29,8 @@ var InputfieldPageListSelectMultiple = {
 			moreLabel: $t.attr('data-more'),
 			labelName: $t.attr('data-labelName')
 		}).hide().addClass('InputfieldPageListSelectMultipleInit');
-		$t.on('pageSelected', $t, InputfieldPageListSelectMultiple.pageSelected);
-		$t.on('pageListChildrenDone', $t, InputfieldPageListSelectMultiple.pageListChildrenDone);
+		$t.bind('pageSelected', $t, InputfieldPageListSelectMultiple.pageSelected);
+		$t.bind('pageListChildrenDone', $t, InputfieldPageListSelectMultiple.pageListChildrenDone);
 		InputfieldPageListSelectMultiple.initList($('#' + $t.attr('id') + '_items'));
 	},
 
@@ -66,6 +66,7 @@ var InputfieldPageListSelectMultiple = {
 		});
 
 		$ol.on('click', 'a.itemRemove', function() {
+			// $(".InputfieldPageListSelectMultiple ol li a.itemRemove").live('click', function() {
 			var $li = $(this).parent();
 			var $ol = $li.parent();
 			var id = $li.children(".itemValue").text();
@@ -149,7 +150,7 @@ var InputfieldPageListSelectMultiple = {
 			}
 		}); 
 		$input.val(value);
-		$input.trigger('change');
+		$input.change();
 	}
 
 
@@ -164,3 +165,5 @@ $(document).ready(function() {
 	});
 
 }); 
+
+

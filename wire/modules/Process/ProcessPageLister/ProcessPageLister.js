@@ -30,7 +30,7 @@ var ProcessLister = {
 		ProcessLister.filters = $("#ProcessListerFilters"); 
 		ProcessLister.results = $("#ProcessListerResults");
 		ProcessLister.lister = $("#ProcessLister"); 
-		ProcessLister.filters.on('change', function() { ProcessLister.submit(); }); 
+		ProcessLister.filters.change(function() { ProcessLister.submit(); }); 
 		ProcessLister.results.on('click', '.ProcessListerTable > thead th', ProcessLister.columnSort)
 
 		$(document).on('click', 'a.actions_toggle', ProcessLister.pageClick); 
@@ -43,7 +43,7 @@ var ProcessLister = {
 			return false; 
 		}); 
 
-		$("#submit_refresh").on('click', function() {
+		$("#submit_refresh").click(function() {
 			ProcessLister.resetTotal = true; 
 			ProcessLister.submit();
 			$(this).fadeOut("normal", function() {
@@ -52,7 +52,7 @@ var ProcessLister = {
 			return false; 
 		}); 
 
-		$("#lister_columns").on('change', function() {
+		$("#lister_columns").change(function() {
 			ProcessLister.submit();
 		}); 
 
@@ -61,16 +61,16 @@ var ProcessLister = {
 
 
 		$("#_ProcessListerRefreshTab").html("<i class='fa fa-fw fa-refresh ui-priority-secondary'></i>")
-			.off('click')
-			.on('click', function() {
+			.unbind('click')
+			.click(function() {
 				ProcessLister.resetTotal = true; 
 				ProcessLister.submit();
 				return false;
 			});
 
 		$("#_ProcessListerResetTab").html("<i class='fa fa-fw fa-rotate-left ui-priority-secondary'></i>")
-			.off('click')
-			.on('click', function() {
+			.unbind('click')
+			.click(function() {
 				window.location.href = './?reset=1';
 				return false;
 			});
@@ -236,7 +236,7 @@ var ProcessLister = {
 						$newRow.find(".actions_toggle").addClass('row_message_on').closest('.col_preview, td').append($message);
 						setTimeout(function() {
 							$message.fadeOut('normal', function() {
-								$newRow.find('.actions_toggle').removeClass('row_message_on').trigger('click');
+								$newRow.find('.actions_toggle').removeClass('row_message_on').click();
 							});
 						}, 1000);
 					}
@@ -280,7 +280,7 @@ var ProcessLister = {
 			}
 			$(ProcessLister.clickAfterRefresh).each(function() {
 				var $a = $(this);
-				$a.trigger('click');
+				$a.click();
 				var $tr = $a.closest('tr');
 				$tr.fadeTo(100, 0.1);
 				setTimeout(function() { $tr.fadeTo(250, 1.0); }, 250);
@@ -293,7 +293,7 @@ var ProcessLister = {
 		setTimeout(function() {
 			ProcessLister.results.trigger('loaded');
 			ProcessLister.results.find('.Inputfield:not(.reloaded)').addClass('reloaded').trigger('reloaded', [ 'ProcessPageLister' ]);
-			$("a.actions_toggle.open").trigger('click').removeClass('open'); // auto open items corresponding to "open" get var
+			$("a.actions_toggle.open").click().removeClass('open'); // auto open items corresponding to "open" get var
 			if(typeof AdminDataTable != "undefined") AdminDataTable.init();
 			$("a.lister-lightbox", ProcessLister.results).magnificPopup({ type: 'image', closeOnContentClick: true, closeBtnInside: true });
 			if(refreshAll) ProcessLister.results.fadeTo(0, 1.0);
@@ -380,7 +380,7 @@ var ProcessLister = {
 		var $refresh = ProcessLister.results.find(".MarkupPagerNavOn a");
 		if($refresh.length == 0) $refresh = $("#submit_refresh");
 		if($refresh.length == 0) $refresh = $("#_ProcessListerRefreshTab");
-		$refresh.trigger('click');
+		$refresh.click();
 	},
 
 	/**
@@ -416,7 +416,7 @@ var ProcessLister = {
 		
 		if($("body").hasClass("AdminThemeDefault")) $extraTrigger.addClass('ui-priority-secondary');
 		
-		$extraTrigger.off('click').on('click', function() {
+		$extraTrigger.unbind('click').click(function() {
 			var $t = $(this);
 			if($t.hasClass('extras-open')) {
 				$extraActions.hide();

@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 /**
- * ModuleConfig class
+ * Class ModuleConfig
  * 
  * Serves as the base for classes dedicated to configuring modules. 
  * 
@@ -10,9 +10,6 @@
  * 
  * This file is licensed under the MIT license
  * https://processwire.com/about/license/mit/
- * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
- * https://processwire.com
  * 
  */
 
@@ -49,7 +46,6 @@ class ModuleConfig extends WireData {
 	 * 
 	 */
 	public function __construct() {
-		parent::__construct();
 	}
 
 	/**
@@ -99,7 +95,7 @@ class ModuleConfig extends WireData {
 	 * Set an array that defines Inputfields
 	 * 
 	 * @param array $a
-	 * @return self
+	 * @return this
 	 * 
 	 */
 	public function add(array $a) {

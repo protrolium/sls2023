@@ -46,9 +46,9 @@ jQuery(document).ready(function($) {
 				 'Nothing selected, input was ' + this.value);
 				 */
 			}
-		}).on('blur', function() {
+		}).blur(function() {
 			$input.next(".language-phrase-search-cnt").text('');
-		}).on('keydown', function(e) {
+		}).keydown(function(e) {
 			if(e.keyCode == 13) return false;
 		});
 	});

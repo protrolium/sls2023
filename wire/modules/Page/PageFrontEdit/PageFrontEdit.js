@@ -87,13 +87,13 @@ function PageFrontEditInit($) {
 				InputfieldTinyMCE.init('#' + copyID, 'PageFrontEdit'); 
 				var editor = tinymce.get(copyID);
 				tinymces[copyID] = editor;
-				editor.on('dirty change', function(e) {
+				editor.on('dirty', function(e) {
 					t.addClass('pw-changed'); 
 				}); 
 			}
 		}
 		setTimeout(function() {
-			copy.trigger('focus');
+			copy.focus();
 		}, 250);
 	};
 
@@ -110,24 +110,23 @@ function PageFrontEditInit($) {
 		var name = t.attr('data-name');
 
 		copy.hide();
-		orig.show();
 
 		if(isTouch) orig.on('pwdoubletap', function(e) {
 			inlineEditEvent(e, t, orig, copy);
 			return false;
 		});
 		
-		orig.on('dblclick', function(e) {
+		orig.dblclick(function(e) {
 			inlineEditEvent(e, t, orig, copy);
 			return false;
 		});
 
 		if(t.is('span')) { // single-line text
 			// via @canrau
-			copy.on('keydown', function(e) {
+			copy.keydown(function(e) {
 				if(e.keyCode == 13){
 					e.preventDefault();
-					$(this).trigger('blur');
+					$(this).blur();
 				}
 			});
 		}
@@ -148,7 +147,7 @@ function PageFrontEditInit($) {
 					timer = setTimeout(function() {
 						clicks = 0;
 						allowClick = true;
-						$a[0].trigger('click');
+						$a[0].click();
 						return true;
 					}, 700);
 				} else {
@@ -166,7 +165,7 @@ function PageFrontEditInit($) {
 
 		// handler for non-cke/mce blur event
 		if(!t.hasClass('pw-edit-InputfieldCKEditor') && !t.hasClass('pw-edit-InputfieldTinyMCE')) {
-			copy.on('blur', function() {
+			copy.blur(function() {
 				var copy = $(this);
 				var t = copy.closest('.pw-editing');
 				if(t.length == 0) return;
@@ -280,8 +279,6 @@ function PageFrontEditInit($) {
 		for(var copyID in tinymces) {
 			InputfieldTinyMCE.destroyEditors($('#' + copyID));
 		}
-		$('.InputfieldTinyMCELoaded').removeClass('InputfieldTinyMCELoaded');
-		$('.pw-edit-InputfieldTinyMCE').removeClass('pw-editing pw-edited');
 		tinymces = {}
 		
 		// post save data to server
@@ -326,7 +323,7 @@ function PageFrontEditInit($) {
 				buttons.hide();
 				$('.pw-editing, .pw-edited').each(function() {
 					var t = $(this);
-					t.removeClass('pw-editing pw-edited pw-changed');
+					t.removeClass('pw-editing, pw-edited, pw-changed');
 					var orig = t.children('.pw-edit-orig');
 					var copy = t.children('.pw-edit-copy');
 					copy.hide();
@@ -339,9 +336,6 @@ function PageFrontEditInit($) {
 				instance.destroy();
 			}
 			ckeditors = {};
-			$('.pw-edit-InputfieldTinyMCE').each(function() {
-				inlineInitEditableRegion($(this));
-			});
 			
 		});
 	}
@@ -366,7 +360,7 @@ function PageFrontEditInit($) {
 			viewURL += (viewURL.indexOf('?') > -1 ? '&' : '?') + 'pw_edit_fields=' + target.attr('data-fields');
 			setBusy(true);
 
-			target.on('load', viewURL + ' #' + targetID, {}, function() {
+			target.load(viewURL + ' #' + targetID, {}, function() {
 				var t = $(this);
 				var children = t.children();
 				if(children.length) {
@@ -443,11 +437,11 @@ function PageFrontEditInit($) {
 		}
 
 		// click action to cancel edits
-		$('.pw-edit-cancel').on('click', inlineCancelClickEvent);
+		$('.pw-edit-cancel').click(inlineCancelClickEvent);
 
 		// click action to save edits
-		$('.pw-edit-save').on('click', function() {
-			$('.pw-editing:not(.pw-edit-InputfieldCKEditor)').trigger('blur');
+		$('.pw-edit-save').click(function() {
+			$('.pw-editing:not(.pw-edit-InputfieldCKEditor)').blur();
 			setTimeout(function() {
 				inlineSaveClickEvent();
 			}, 250); 

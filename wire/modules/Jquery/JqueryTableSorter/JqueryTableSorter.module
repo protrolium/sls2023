@@ -5,9 +5,9 @@ class JqueryTableSorter extends ModuleJS {
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'jQuery Table Sorter Plugin',
-			'version' => '2.31.3',
+			'version' => 221,
 			'summary' => 'Provides a jQuery plugin for sorting tables.',
-			'href' => 'https://mottie.github.io/tablesorter/', 
+			'href' => 'http://mottie.github.io/tablesorter/', 
 		);
 	}
 

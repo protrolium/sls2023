@@ -3,7 +3,7 @@
 /**
  * Inputfields and processing for Select Options Fieldtype
  *
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2020 by Ryan Cramer
  * https://processwire.com
  *
  */
@@ -42,7 +42,6 @@ class SelectableOptionConfig extends Wire {
 	 * 
 	 */
 	public function __construct(Field $field, InputfieldWrapper $inputfields) {
-		parent::__construct();
 		$this->field = $field;
 		$fieldtype = $field->type; /** @var FieldtypeOptions $fieldtype */
 		$this->fieldtype = $fieldtype; 
@@ -60,30 +59,25 @@ class SelectableOptionConfig extends Wire {
 	 *
 	 */
 	protected function process(Inputfield $inputfield) {
-		
-		$modules = $this->wire()->modules;
-		$input = $this->wire()->input;
-		$user = $this->wire()->user;
-		$process = $this->wire()->process;
-		$languages = $this->wire()->languages;
-		$session = $this->wire()->session;
 
-		$value = $input->post('_options');
+		$value = $this->wire('input')->post('_options');
+		$user = $this->wire('user'); /** @var User $user */
+		$process = $this->wire('process'); /** @var Process @process */
 		if($process != 'ProcessField' || (!$user->isSuperuser() && !$user->hasPermission('field-admin'))) return;
 		$ns = "$this$this->field"; // namespace for session
 
 		if(!is_null($value)) {
 			// _options has been posted
 
-			if($this->manager->useLanguages() && $inputfield->getSetting('useLanguages') && $languages) {
+			if($this->manager->useLanguages() && $inputfield->getSetting('useLanguages')) {
 				// multi-language
 
 				$valuesPerLanguage = array();
 				$changed = false;
 
-				foreach($languages as $language) {
+				foreach($this->wire('languages') as $language) {
 					$key = $language->isDefault() ? "_options" : "_options__$language";
-					$valuesPerLanguage[$language->id] = $input->post($key);
+					$valuesPerLanguage[$language->id] = $this->wire('input')->post($key);
 					$key = $language->isDefault() ? "value" : "value$language";
 					if($inputfield->$key != $valuesPerLanguage[$language->id]) $changed = true;
 				}
@@ -103,11 +97,11 @@ class SelectableOptionConfig extends Wire {
 			$removedOptionIDs = $this->manager->getRemovedOptionIDs(); // identified for removal
 			if(count($removedOptionIDs)) {
 				// stuff in session for next request
-				$session->set($ns, 'removedOptionIDs', $removedOptionIDs);
+				$this->wire('session')->set($ns, 'removedOptionIDs', $removedOptionIDs);
 			}
 
-			$deleteOptionIDs = $input->post('_delete_options');
-			$deleteConfirm = (int) $input->post('_delete_confirm'); 
+			$deleteOptionIDs = $this->wire('input')->post('_delete_options');
+			$deleteConfirm = (int) $this->wire('input')->post('_delete_confirm'); 
 			if($deleteOptionIDs && $deleteConfirm) {
 				// confirmed deleted
 				if(!ctype_digit(str_replace(',', '', $deleteOptionIDs))) throw new WireException("Invalid deleteOptionIDs");
@@ -119,17 +113,16 @@ class SelectableOptionConfig extends Wire {
 		} else {
 			// options not posted, check if there are any pending session activities
 
-			$removedOptionIDs = $session->get($ns, 'removedOptionIDs');
+			$removedOptionIDs = $this->wire('session')->get($ns, 'removedOptionIDs');
 			if(wireCount($removedOptionIDs)) {
-				/** @var InputfieldHidden $f */
-				$f = $modules->get('InputfieldHidden');
+				
+				$f = $this->wire('modules')->get('InputfieldHidden');
 				$f->attr('name', '_delete_options'); 
 				$f->attr('value', implode(',', $removedOptionIDs)); 
 				$this->inputfields->prepend($f); 
 				
 				// setup for confirmation
-				/** @var InputfieldCheckbox $f */
-				$f = $modules->get('InputfieldCheckbox');
+				$f = $this->wire('modules')->get('InputfieldCheckbox');
 				$f->attr('name', '_delete_confirm');
 				$f->label = $this->_('Please confirm that you want to delete options');
 				$f->label2 = $this->_n('Delete this option', 'Delete these options', count($removedOptionIDs));
@@ -138,14 +131,11 @@ class SelectableOptionConfig extends Wire {
 				$delimiter = $this->_('DELETE:') . ' ';
 				$f->description .= $delimiter . $removeOptions->implode("\n$delimiter", 'title');
 				// collapse other inputfields since we prefer them to focus on this one only for now
-				foreach($this->inputfields as $i) {
-					/** @var Inputfield $i */
-					$i->collapsed = Inputfield::collapsedYes;
-				}
+				foreach($this->inputfields as $i) $i->collapsed = Inputfield::collapsedYes;
 				// add our confirmation field
 				$this->inputfields->prepend($f);
 				// was stuffed in session from previous request, unset it now since this is a one time thing
-				$session->remove($ns, 'removedOptionIDs');
+				$this->wire('session')->remove($ns, 'removedOptionIDs');
 			}
 		}
 	}
@@ -164,18 +154,37 @@ class SelectableOptionConfig extends Wire {
 		$options = $this->manager->getOptions($field);
 		$modules = $this->wire('modules');
 
-		/** @var InputfieldSelect $f */
+		$labelSingle = $this->_('Single value');
+		$labelMulti = $this->_('Multiple values');
+		$labelSortable = $this->_('Multiple sortable values');
+
 		$f = $modules->get('InputfieldSelect');
 		$f->attr('name', 'inputfieldClass');
 		$f->label = $this->_('What should be used for input?');
 		$f->description = $this->_('Depending on what input type you choose, the user will be able to select either a single option or multiple options. Some input types (like AsmSelect) also support user-sortable selections. Some input types also provide more settings on the *Input* tab (visible after you save).'); 
-		$f->addOptions($this->fieldtype->getInputfieldClassOptions());
+
+		foreach($modules as $module) {
+			if(strpos($module->className(), 'Inputfield') !== 0) continue;
+			if($module instanceof ModulePlaceholder) {
+				$module = $modules->getModule($module->className(), array('noInit' => true));
+			}
+			if($module instanceof InputfieldSelect || $module instanceof InputfieldHasSelectableOptions) {
+				$name = str_replace('Inputfield', '', $module->className());
+				if($module instanceof InputfieldHasSortableValue) {
+					$name .= " ($labelSortable)";
+				} else if($module instanceof InputfieldSelectMultiple) {
+					$name .= " ($labelMulti)";
+				} else {
+					$name .= " ($labelSingle)";
+				}
+				$f->addOption($module->className(), $name);
+			} 
+		}
 		$value = $field->get('inputfieldClass');
 		if(!$value) $value = 'InputfieldSelect';
 		$f->attr('value', $value);
 		$inputfields->add($f);
 
-		/** @var InputfieldTextarea $f */
 		$f = $modules->get('InputfieldTextarea');
 		$f->attr('name', '_options');
 		$f->label = $this->_('What are the selectable options?');
@@ -197,7 +206,6 @@ class SelectableOptionConfig extends Wire {
 
 		$inputfieldClass = $field->get('inputfieldClass');
 		if($options->count() && $inputfieldClass && $f = $modules->get($inputfieldClass)) {
-			/** @var InputfieldSelect $f */
 			$f->attr('name', 'initValue'); 
 			$f->label = $this->_('What options do you want pre-selected? (if any)'); 
 			$f->collapsed = Inputfield::collapsedBlank;

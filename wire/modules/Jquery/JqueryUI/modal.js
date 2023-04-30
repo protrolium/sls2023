@@ -83,8 +83,8 @@ function pwModalWindowSettings(name) {
 			var val = modal[n];
 			if (val.indexOf('=') < 1) continue;
 			val = val.split('=');
-			var key = val[0].toString().trim();
-			val = val[1].toLowerCase().trim();
+			var key = jQuery.trim(val[0]);
+			val = jQuery.trim(val[1].toLowerCase());
 			if (typeof options[key] == "undefined") continue;
 			if (val == "true" || val == "1") {
 				val = true;
@@ -96,27 +96,17 @@ function pwModalWindowSettings(name) {
 			options[key] = val;
 		}
 	}
-
-	if(jQuery.ui.version === '1.10.4') {
-		var position = [ parseInt(modal[0]), parseInt(modal[1]) ];
-	} else {
-		var position = { my: "left+" + modal[0] + " top+" + modal[1], at: "left top" };
-	}
 	
-	var width = jQuery(window).width() - parseInt(modal[2]);
-	var height = jQuery(window).height() - parseInt(modal[3]);
-	
-	var settings = {
+	return {
 		modal: options.modal,
 		draggable: options.draggable,
 		resizable: options.resizable,
-		position: position, 
-		width: width, 
-		height: height,
+		position: [ parseInt(modal[0]), parseInt(modal[1]) ], 
+		width: jQuery(window).width() - parseInt(modal[2]),
+		height: jQuery(window).height() - parseInt(modal[3]),
 		hide: options.hide,
 		show: options.show, 
 		closeOnEscape: options.closeOnEscape,
-		closeText: '',
 		create: function(event, ui) {
 			if(options.hideOverflow) {
 				if(typeof parent.jQuery != "undefined") {
@@ -129,7 +119,6 @@ function pwModalWindowSettings(name) {
 			var $widget = jQuery(this).dialog("widget");
 			jQuery(".ui-dialog-titlebar-close", $widget)
 				.css('padding-top', 0)
-				.addClass('ui-state-default')
 				.prepend("<i class='fa fa-times'></i>")
 				.find('.ui-icon').remove();
 			if(frameElement) {
@@ -183,8 +172,6 @@ function pwModalWindowSettings(name) {
 			}
 		}
 	}
-	
-	return settings;
 };
 
 /**
@@ -258,12 +245,8 @@ function pwModalWindow(href, options, size) {
 		var _settings = pwModalWindowSettings(_size);
 		var $dialog = $iframe.closest('.ui-dialog');
 		if($dialog.length > 0) {
-			var $buttonPane = $dialog.find('.ui-dialog-buttonpane');
-			var $titleBar = $dialog.find('.ui-dialog-titlebar');
-			var subtractHeight = 0;
-			if($buttonPane.length) subtractHeight += $buttonPane.outerHeight();
-			if($titleBar.length) subtractHeight += $titleBar.outerHeight();
-			if(subtractHeight) _settings.height -= subtractHeight;
+			var subtractHeight = $dialog.find(".ui-dialog-buttonpane").outerHeight() + $dialog.find(".ui-dialog-titlebar").outerHeight();
+			_settings.height -= subtractHeight;
 		}
 		$iframe.dialog('option', 'width', _settings.width);
 		$iframe.dialog('option', 'height', _settings.height);
@@ -274,7 +257,7 @@ function pwModalWindow(href, options, size) {
 	}
 	updateWindowSize();
 	
-	jQuery(window).on('resize', updateWindowSize);
+	jQuery(window).resize(updateWindowSize);
 	
 	$iframe.refresh = function() {
 		lastWidth = 0; // force update
@@ -429,7 +412,7 @@ function pwModalOpenEvent(e) {
 						'class': ($button.is('.ui-priority-secondary') ? 'ui-priority-secondary' : ''),
 						'click': function(e) {
 							// jQuery(e.currentTarget).fadeOut('fast');
-							$button.trigger('click');
+							$button.click();
 							if(closeSelector.length > 0 && $button.is(closeSelector)) {
 								// immediately close if matches closeSelector
 								$iframe.dialog('close');
@@ -514,7 +497,7 @@ function pwModalDoubleClick() {
 			timer = setTimeout(function() {
 				clicks = 0;
 				allowClick = true;
-				$a[0].trigger('click');
+				$a[0].click();
 				return true;
 			}, 700);
 		} else {
@@ -558,3 +541,4 @@ jQuery(document).ready(function($) {
 	pwModalDoubleClick();
 
 });
+

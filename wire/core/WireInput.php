@@ -6,7 +6,7 @@
  * WireInputData and the WireInput class together form a simple 
  * front end to PHP's $_GET, $_POST, and $_COOKIE superglobals.
  * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2016 by Ryan Cramer
  * https://processwire.com
  *
  */
@@ -368,7 +368,6 @@ class WireInput extends Wire {
 			$this->cookieVars = $this->wire(new WireInputDataCookie($_COOKIE, $this->lazy));
 			$this->cookieVars->init();
 		}
-		$key = (string) $key;
 		if(!strlen($key)) return $this->cookieVars;
 		if($valid === null && $fallback === null && !strpos($key, '[]')) return $this->cookieVars->get($key);
 		return $this->getValidInputValue($this->cookieVars, $key, $valid, $fallback);
@@ -1683,7 +1682,7 @@ class WireInput extends Wire {
 	 * @param string $method Sanitizer method name or CSV string of sanitizer method names
 	 * @param string|array|null $value
 	 * @param bool $getArray
-	 * @return array|int|float|string|null
+	 * @return array|mixed|null
 	 * @throws WireException If given unknown sanitizer method
 	 * 
 	 */

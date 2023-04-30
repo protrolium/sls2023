@@ -27,8 +27,6 @@ class ProcessUser extends ProcessPageType {
 			'searchable' => 'users' 
 		);
 	}
-	
-	protected $rolesSelector = '';
 
 	/**
 	 * Construct and set default config values
@@ -46,10 +44,7 @@ class ProcessUser extends ProcessPageType {
 	public function init() {
 		$this->wire('pages')->addHookBefore('save', $this, 'hookPageSave');
 		parent::init();
-		if($this->lister) {
-			$this->lister->addHookBefore('execute', $this, 'hookListerExecute');
-			$this->lister->addHookAfter('getSelector', $this, 'hookListerGetSelector');
-		}
+		if($this->lister) $this->lister->addHookBefore('execute', $this, 'hookListerExecute');
 
 		// make this field translatable
 		$roles = $this->wire('fields')->get('roles');
@@ -200,19 +195,6 @@ class ProcessUser extends ProcessPageType {
 	}
 
 	/**
-	 * Hook after ProcessPageLister::getSelector
-	 * 
-	 * @param HookEvent $event
-	 * 
-	 */
-	public function hookListerGetSelector(HookEvent $event) {
-		if(empty($this->rolesSelector)) return;
-		$selector = $event->return;
-		if(strpos($selector, $this->rolesSelector) !== false) return;
-		$event->return .= $this->rolesSelector;
-	}
-
-	/**
 	 * Get settings to be used for Lister
 	 * 
 	 * @param ProcessPageLister $lister
@@ -224,57 +206,48 @@ class ProcessUser extends ProcessPageType {
 		
 		$settings = parent::getListerSettings($lister, $selector);
 		$selector = '';
-		$rolesSelector = '';
-		$filterRoleId = (int) $this->wire()->input->get('roles');
-		$filterRole = $filterRoleId ? $this->wire()->roles->get($filterRoleId) : null;
+		$role = (int) $this->wire()->input->get('roles');
 		$user = $this->wire()->user;
 		$session = $this->wire()->session;
 		$ajax = $this->wire('config')->ajax;
-	
-		if($filterRole && $filterRole->id) {
+
+		if($role) {
 			$lister->resetLister();
-			$session->setFor($this, 'listerRole', $filterRole->id);
+			$session->setFor($this, 'listerRole', $role);
 		} else if(!$ajax) {
 			if((int) $session->getFor($this, 'listerRole') > 0) {
 				$lister->resetLister();
 				$session->setFor($this, 'listerRole', 0);
 			}
 		} else {
-			$filterRoleId = $session->getFor($this, 'listerRole');
-			$filterRole = $this->wire()->roles->get($filterRoleId);
+			$role = $session->getFor($this, 'listerRole');
 		}
-		
-		if(!$filterRole || !$filterRole->id) $filterRole = null;
 
-		if(!$user->isSuperuser()) {
+		if(!$role && !$user->isSuperuser()) {
 			$userAdminAll = $this->wire()->permissions->get('user-admin-all');
 			if($userAdminAll->id && !$user->hasPermission($userAdminAll)) {
 				// system has user-admin-all permission, and user doesn't have it
 				// so limit them only to the permission user-admin-[role] roles that they have assigned
 				$roles = array();
-				$rolesSelector .= ", roles!=" . $this->wire()->config->superUserRolePageID;
 				foreach($user->getPermissions() as $permission) {
 					if(strpos($permission->name, 'user-admin-') !== 0) continue;
 					$roleName = str_replace('user-admin-', '', $permission->name);
-					$rolePage = $this->wire()->roles->get($roleName);
-					if($rolePage->id) $roles[$rolePage->id] = $rolePage->id;
+					$rolePage = $this->wire('roles')->get($roleName);
+					if($rolePage->id) $roles[] = $rolePage->id;
 				}
 				// allow them to view users that only have guest role
 				$config = $this->wire()->config;
 				$guestRoleID = $config->guestUserRolePageID;
 				$guestUserID = $config->guestUserPageID;
-				$rolesSelector .= ", id!=$guestUserID, roles=(roles.count=1, roles=$guestRoleID)";
+				$selector .= ", id!=$guestUserID, roles=(roles.count=1, roles=$guestRoleID)";
 				if(count($roles)) {
-					$rolesSelector .= ", roles=(roles=" . implode('|', $roles) . ")"; // string of | separated role IDs
-					if($filterRole && !isset($roles[$filterRole->id])) $filterRole = null;
+					$selector .= ", roles=(roles=" . implode('|', $roles) . ")"; // string of | separated role IDs
 				}
-				$selector .= $rolesSelector;
-				$this->rolesSelector = $rolesSelector;
 			}
 		}
 
 		$settings['initSelector'] .= $selector;
-		$settings['defaultSelector'] = "name%=, roles=" . ($filterRole ? $filterRole->id : '');
+		$settings['defaultSelector'] = "name%=, roles=" . ($role ? $role : '');
 		$settings['delimiters'] = array('roles' => ', ');
 		$settings['allowBookmarks'] = true;
 
@@ -289,13 +262,6 @@ class ProcessUser extends ProcessPageType {
 	 */
 	public function getPage() {
 		$page = parent::getPage();
-		if(!$page instanceof User) {
-			if(wireInstanceOf($page, 'RepeaterPage')) {
-				/** @var RepeaterPage $page */
-				$page = $page->getForPageRoot();
-			}
-		}
-		/** @var User $page */
 		if($page->id && !$page->get('_rolesPrevious') && $this->wire('input')->post('roles') !== null) {
 			$page->setQuietly('_rolesPrevious', clone $page->roles); 
 		}

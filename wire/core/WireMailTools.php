@@ -3,7 +3,7 @@
 /**
  * ProcessWire Mail Tools ($mail API variable)
  *
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
  * 
  * #pw-summary Provides an API interface to email and WireMail. 
@@ -66,10 +66,11 @@ class WireMailTools extends Wire {
 		/** @var WireMail|null $mail */
 		$mail = null;
 		
-		$modules = $this->wire()->modules;
+		/** @var Modules $modules */
+		$modules = $this->wire('modules');
 	
 		// merge config settings with requested options
-		$settings = $this->wire()->config->wireMail;
+		$settings = $this->wire('config')->wireMail;
 		if(!is_array($settings)) $settings = array();
 		if(count($options)) $settings = array_merge($settings, $options);
 		
@@ -178,7 +179,7 @@ class WireMailTools extends Wire {
 		$options = array_merge($defaults, $options);
 		
 		if(!empty($options['replyTo'])) {
-			$replyTo = $this->wire()->sanitizer->email($options['replyTo']);
+			$replyTo = $this->wire('sanitizer')->email($options['replyTo']);
 			if($replyTo) $options['headers']['Reply-to'] = $replyTo;
 			unset($options['replyTo']);
 		}
@@ -189,9 +190,7 @@ class WireMailTools extends Wire {
 			if(strlen($from)) $mail->from($from);
 			if(strlen($options['bodyHTML'])) $mail->bodyHTML($options['bodyHTML']);
 			if(strlen($options['body'])) $mail->body($options['body']);
-			if(count($options['headers'])) {
-				foreach($options['headers'] as $k => $v) $mail->header($k, $v);
-			}
+			if(count($options['headers'])) foreach($options['headers'] as $k => $v) $mail->header($k, $v);
 			// send along any options we don't recognize
 			foreach($options as $key => $value) {
 				if(!array_key_exists($key, $defaults)) $mail->$key = $value;
@@ -199,7 +198,7 @@ class WireMailTools extends Wire {
 			$numSent = $mail->send();
 
 		} catch(\Exception $e) {
-			if($this->wire()->config->debug) $mail->error($e->getMessage());
+			if($this->wire('config')->debug) $mail->error($e->getMessage());
 			$mail->trackException($e, false);
 			$numSent = 0;
 		}
@@ -384,9 +383,9 @@ class WireMailTools extends Wire {
 		return $this->new()->subject($subject);
 	}
 	
-	public function __get($name) {
-		if($name === 'new') return $this->new();
-		return parent::__get($name);
+	public function __get($key) {
+		if($key === 'new') return $this->new();
+		return parent::__get($key);
 	}
 	
 	/**
@@ -440,12 +439,12 @@ class WireMailTools extends Wire {
 
 		$options = count($options) ? array_merge($defaults, $options) : $defaults;
 		$blacklist = $options['blacklist'];
-		if(empty($blacklist)) $blacklist = $this->wire()->config->wireMail('blacklist');
+		if(empty($blacklist)) $blacklist = $this->wire('config')->wireMail('blacklist');
 		if(empty($blacklist)) return false;
 		if(!is_array($blacklist)) throw new WireException("Email blacklist must be array");
 
 		$inBlacklist = false;
-		$tt = $this->wire()->sanitizer->getTextTools();
+		$tt = $this->wire('sanitizer')->getTextTools();
 		$email = trim($tt->strtolower($email));
 		
 		if(strpos($email, '@') === false) {

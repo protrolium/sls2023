@@ -956,8 +956,7 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 	 * 
 	 */
 	public function ___processInput(WireInputData $input) {
-
-		$process = $this->wire()->process;
+		
 		$pages = $this->wire()->pages;
 		$user = $this->wire()->user;
 
@@ -969,15 +968,6 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 		$value = $this->attr('value'); 
 		$existingValueStr = $value ? "$value" : '';
 		$newValue = null;
-
-		// the $editPage is used when InputfieldPage used without FieldtypePage
-		if($process instanceof WirePageEditor) {
-			$editPage = $process->getPage();
-		} else if($this->hasPage) {
-			$editPage = $this->hasPage;
-		} else {
-			$editPage = new Page();
-		}
 		
 		if($inputfield instanceof InputfieldSupportsArrayValue) {
 			$value = $inputfield->getArrayValue();
@@ -987,6 +977,7 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 		
 		if(is_array($value)) {
 			$newValue = $pages->newPageArray();
+			$mockPage = new Page();
 			foreach($value as $v) {
 				$id = (int) $v; 
 				if(!$id) continue; 
@@ -994,9 +985,9 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 					// existing page
 					$page = $pages->get($id); 
 					
-					if(!$this->hasFieldtype && !self::isValidPage($page, $this, $editPage)) {
+					if(!$this->hasFieldtype && !self::isValidPage($page, $this, $mockPage)) {
 						// extra validation for usage without FieldtypePage
-						$error = $editPage->get('_isValidPage');
+						$error = $mockPage->get('_isValidPage');
 						if($error) $this->error($error);
 						continue;
 						
@@ -1021,8 +1012,9 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 			if($newValue->hasStatus(Page::statusUnpublished) && !$this->getSetting('allowUnpub')) {
 				$newValue = null; // disallow unpublished
 			} else if($newValue && $newValue->id && !$this->hasFieldtype) { 
-				if(!self::isValidPage($newValue, $this, $editPage)) {
-					$error = $editPage->get('_isValidPage');
+				$mockPage = new Page();
+				if(!self::isValidPage($newValue, $this, $mockPage)) {
+					$error = $mockPage->get('_isValidPage');
 					if($error) $this->error($error);
 					$newValue = null;
 				}
@@ -1383,14 +1375,36 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 		$field->required = true; 
 		$field->icon = 'plug';
 		$inputfieldSelection = $field;
-	
-		$options = $this->getInputfieldOptions();
-		$pageListTypes = $options['pageListTypes'];
 		
+		$singles = array();
+		$multiples = array();
+		$sortables = array();
+		$pageListTypes = array();
+		
+		$inputfieldClasses = $this->inputfieldClasses;
+		if($this->hasFieldtype) $inputfieldClasses = array_merge(self::$defaultInputfieldClasses, $inputfieldClasses);
+
+		foreach($inputfieldClasses as $class) {
+			$module = $modules->getModule($class, array('noInit' => true)); 
+			$info = $modules->getModuleInfo($module);
+			$label = ucfirst((string) $info['title']);
+			if($module instanceof InputfieldPageListSelection) {
+				$pageListTypes[] = $class;
+			}
+			if($module instanceof InputfieldHasSortableValue) {
+				$sortables[$class] = $label;
+			} else if($module instanceof InputfieldHasArrayValue || $module instanceof InputfieldSupportsArrayValue) {
+				$multiples[$class] = $label;
+			} else {
+				$singles[$class] = $label;
+			}
+			if($class == 'InputfieldPageAutocomplete') $singles["_$class"] = $label;
+		}
+
 		$multiLabel = $this->_('Multiple page selection');
-		$field->addOption($this->_('Single page selection'), $options['singles']);
-		$field->addOption($multiLabel, $options['multiples']);
-		$field->addOption($multiLabel . ' (' . $this->_('sortable') . ')', $options['sortables']); 
+		$field->addOption($this->_('Single page selection'), $singles);
+		$field->addOption($multiLabel, $multiples);
+		$field->addOption($multiLabel . ' (' . $this->_('sortable') . ')', $sortables); 
 		$inputfields->insertBefore($field, $selectablePagesFieldset);
 
 		if($this->hasFieldtype === false) {
@@ -1485,85 +1499,6 @@ class InputfieldPage extends Inputfield implements ConfigurableModule {
 		$this->configMode = false; // reverse what was set at the top of this function
 		
 		return $inputfields; 
-	}
-
-	/**
-	 * Get options available for page selection Inputfields
-	 * 
-	 * @return array
-	 * @since 3.0.213
-	 * 
-	 */
-	public function getInputfieldOptions() {
-		$modules = $this->wire()->modules;
-		
-		$singles = array();
-		$multiples = array();
-		$sortables = array();
-		$pageListTypes = array();
-
-		$inputfieldClasses = $this->inputfieldClasses;
-		if($this->hasFieldtype) $inputfieldClasses = array_merge(self::$defaultInputfieldClasses, $inputfieldClasses);
-
-		foreach($inputfieldClasses as $class) {
-			$module = $modules->getModule($class, array('noInit' => true));
-			$info = $modules->getModuleInfo($module);
-			$label = ucfirst((string) $info['title']);
-			if($module instanceof InputfieldPageListSelection) {
-				$pageListTypes[] = $class;
-			}
-			if($module instanceof InputfieldHasSortableValue) {
-				$sortables[$class] = $label;
-			} else if($module instanceof InputfieldHasArrayValue || $module instanceof InputfieldSupportsArrayValue) {
-				$multiples[$class] = $label;
-			} else {
-				$singles[$class] = $label;
-			}
-			if($class == 'InputfieldPageAutocomplete') $singles["_$class"] = $label;
-		}
-
-		return array(
-			'singles' => $singles,
-			'multiples' => $multiples,
-			'sortables' => $sortables, 
-			'pageListTypes' => $pageListTypes,
-		);
-	}
-
-	/**
-	 * Get recommended setups for FieldtypePage/InputfieldPage
-	 * 
-	 * @return array
-	 * @since 3.0.213
-	 * 
-	 */
-	public function getFieldSetups() {
-		$setups = array();
-		$options = $this->getInputfieldOptions();
-		$singleLabel = $this->_('Single page:');
-		$multiLabel = $this->_('Multiple pages:');
-		$sortLabel = $this->_('Multiple sortable pages:');
-		
-		foreach($options['singles'] as $class => $label) {
-			$name = str_replace('Inputfield', '', $class);
-			$setups[$name] = array(
-				'title' => "$singleLabel $label",
-				'derefAsPage' => FieldtypePage::derefAsPageOrNullPage,
-				'inputfield' => $class, 
-			);
-		}
-		
-		foreach(array_merge($options['multiples'], $options['sortables']) as $class => $label) {
-			$name = str_replace('Inputfield', '', $class);
-			$label = isset($options['sortables'][$class]) ? "$sortLabel $label" : "$multiLabel $label";
-			$setups[$name] = array(
-				'title' => $label,
-				'derefAsPage' => FieldtypePage::derefAsPageArray,
-				'inputfield' => $class, 
-			);
-		}
-		
-		return $setups;
 	}
 
 	/**

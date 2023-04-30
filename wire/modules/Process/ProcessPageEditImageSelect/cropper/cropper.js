@@ -65,11 +65,7 @@
       isNumber = function (n) {
         return typeof n === "number";
       },
-	  
-      isFunction = function (obj) { // RJC
-        return typeof obj === "function" && typeof obj.nodeType !== "number" && typeof obj.item !== "function";
-      },
-	
+
       toArray = function (obj, offset) {
         var args = [];
 
@@ -123,7 +119,7 @@
     constructor: Cropper,
 
     support: {
-      canvas: isFunction($("<canvas>")[0].getContext)
+      canvas: $.isFunction($("<canvas>")[0].getContext)
     },
 
     init: function () {
@@ -1598,7 +1594,7 @@
         $this.data("cropper", (data = new Cropper(this, options)));
       }
 
-      if (typeof options === "string" && isFunction((fn = data[options]))) {
+      if (typeof options === "string" && $.isFunction((fn = data[options]))) {
         result = fn.apply(data, args);
       }
     });

@@ -5,8 +5,9 @@ require_once(dirname(__FILE__) . '/ProcessPageListRender.php');
 /**
  * JSON implementation of the Page List rendering
  * 
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2020 by Ryan Cramer
  * https://processwire.com
+ * 
  *
  */
 class ProcessPageListRenderJSON extends ProcessPageListRender {
@@ -24,7 +25,7 @@ class ProcessPageListRenderJSON extends ProcessPageListRender {
 	 * 
 	 */
 	public function wired() {
-		$config = $this->wire()->config;
+		$config = $this->config;
 		$systemIDs = array(
 			$config->http404PageID,
 			$config->adminRootPageID,
@@ -50,7 +51,6 @@ class ProcessPageListRenderJSON extends ProcessPageListRender {
 
 		$outputFormatting = $page->outputFormatting;
 		$page->setOutputFormatting(true);
-		
 		$class = '';
 		$type = '';
 		$note = '';
@@ -89,6 +89,7 @@ class ProcessPageListRenderJSON extends ProcessPageListRender {
 		}
 
 		if($id == $config->trashPageID) {
+			$note = '';
 			if($this->superuser) {
 				$note = "&lt; " . $this->_("Trash open: drag pages below here to trash them"); // Message that appears next to the Trash page when open
 			}
@@ -106,20 +107,17 @@ class ProcessPageListRenderJSON extends ProcessPageListRender {
 			} else {
 				$numTotal = $numChildren;
 			}
-			
 		} else {
 			if($page->hasStatus(Page::statusTemp)) $icons[] = 'bolt';
 			if($page->hasStatus(Page::statusLocked)) $icons[] = 'lock';
 			if($page->hasStatus(Page::statusDraft)) $icons[] = 'paperclip';
 			if($page->hasStatus(Page::statusFlagged)) $icons[] = 'exclamation-triangle';
-			
 			$numChildren = $this->numChildren($page, 1);
 			$numTotal = strpos($this->qtyType, 'total') !== false ? $page->numDescendants : $numChildren;
 		}
-		
 		if(!$label) $label = $this->getPageLabel($page);
 		
-		if(count($icons)) foreach($icons as $icon) {
+		if(count($icons)) foreach($icons as $n => $icon) {
 			$label .= "<i class='PageListStatusIcon fa fa-fw fa-$icon'></i>";
 		}
 
@@ -138,6 +136,7 @@ class ProcessPageListRenderJSON extends ProcessPageListRender {
 		if($class) $a['addClass'] = trim($class);
 		if($type) $a['type'] = $type;
 		if($note) $a['note'] = $note;
+
 
 		$page->setOutputFormatting($outputFormatting);
 
@@ -213,9 +212,7 @@ class ProcessPageListRenderJSON extends ProcessPageListRender {
 		);
 
 		if($this->getOption('getArray')) return $json;
-		
 		header("Content-Type: application/json;");
-		
 		return json_encode($json);
 	}
 

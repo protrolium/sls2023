@@ -100,24 +100,14 @@ var AdminDataTable = {
 		$("table.AdminDataTableSortable").each(function() {
 			var $table = $(this);
 			var options = {};
-			var ths = [];
 			if($table.hasClass('AdminDataTableResizable')) {
 				options = {
 					widgets: ['resizable'], 
 					widgetOptions: { resizable: true }
 				}
 			}
-			$table.find('th.sorter-false').each(function() {
-				var $th = $(this);
-				$th.data('sorter', false);
-				ths.push($th);
-			});
 			if(jQuery().tablesorter) {
 				$table.tablesorter(options);
-				for(var n = 0; n < ths.length; n++) {
-					var $th = ths[n];
-					$th.removeClass('tablesorter-headerUnSorted');
-				}
 			}
 		});
 		$("table.AdminDataTableResizable").each(function() {
@@ -131,7 +121,7 @@ var AdminDataTable = {
 		});
 		
 		var resizeTimeout = null;
-		$(window).on('resize', function() {
+		$(window).resize(function() {
 			if(resizeTimeout) clearTimeout(resizeTimeout);
 			resizeTimeout = setTimeout(function() { AdminDataTable.resize() }, 500);
 		});

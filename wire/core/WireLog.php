@@ -8,7 +8,7 @@
  * 
  * #pw-summary Enables creation of logs, logging of events, and management of logs. 
  *
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2019 by Ryan Cramer
  * https://processwire.com
  * 
  * @method bool save($name, $text, $options = array())
@@ -139,15 +139,14 @@ class WireLog extends Wire {
 			if($options['url']) {
 				$url = $options['url'];
 			} else {
-				$input = $this->wire()->input;
-				$sanitizer = $this->wire()->sanitizer;
+				$input = $this->wire('input');
 				$url = $input ? $input->httpUrl() : '';
 				if(strlen($url) && $input) {
 					if(count($input->get)) {
 						$url .= "?";
 						foreach($input->get as $k => $v) {
-							$k = $sanitizer->name($k);
-							$v = $sanitizer->name($v);
+							$k = $this->wire('sanitizer')->name($k);
+							$v = $this->wire('sanitizer')->name($v);
 							$url .= "$k=$v&";
 						}
 						$url = rtrim($url, "&");
@@ -202,8 +201,7 @@ class WireLog extends Wire {
 	/**
 	 * Return array of all logs, sorted by name
 	 * 
-	 * Each item in returned array is an associative array that includes the following:
-	 * 
+	 * Each log entry is an array that includes the following:
 	 * 	- `name` (string): Name of log file, excluding extension.
 	 * 	- `file` (string): Full path and filename of log file. 
 	 * 	- `size` (int): Size in bytes
@@ -212,14 +210,19 @@ class WireLog extends Wire {
 	 * #pw-group-retrieval
 	 * 
 	 * @param bool $sortNewest Sort by newest to oldest rather than by name? (default=false) Added 3.0.143
-	 * @return array Indexed by log name
+	 * @return array 
 	 * 
 	 */
 	public function getLogs($sortNewest = false) {
 		
 		$logs = array();
+		$dir = new \DirectoryIterator($this->wire('config')->paths->logs); 
 		
-		foreach($this->getFiles() as $name => $file) {
+		foreach($dir as $file) {
+			if($file->isDot() || $file->isDir()) continue; 
+			if($file->getExtension() != $this->logExtension) continue; 
+			$name = basename($file, '.' . $this->logExtension); 
+			if($name != $this->wire('sanitizer')->pageName($name)) continue; 
 			
 			if($sortNewest) {
 				$sortKey = $file->getMTime();
@@ -238,15 +241,10 @@ class WireLog extends Wire {
 	
 		if($sortNewest) {
 			krsort($logs);
-			$a = array();
-			foreach($logs as $log) {
-				$a[$log['name']] = $log;
-			}
-			$logs = $a;
 		} else {
 			ksort($logs);
 		}
-	
+		
 		return $logs;	
 	}
 
@@ -262,37 +260,10 @@ class WireLog extends Wire {
 	 */
 	public function getFilename($name) {
 		$name = strtolower($name); 
-		if($name !== $this->wire()->sanitizer->pageName($name)) {
+		if($name !== $this->wire('sanitizer')->pageName($name)) {
 			throw new WireException("Log name must contain only [-_.a-z0-9] with no extension");
 		}
-		return $this->path() . $name . '.' . $this->logExtension;
-	}
-
-	/**
-	 * Get SplFileInfo objects for each log file indexed by log name
-	 * 
-	 * #pw-internal
-	 * 
-	 * @return \SplFileInfo[]
-	 * @throws WireException
-	 * @since 3.0.214
-	 * 
-	 */
-	public function getFiles() {
-		
-		$dir = new \DirectoryIterator($this->path());
-		$sanitizer = $this->wire()->sanitizer;
-		$files = array();
-
-		foreach($dir as $file) {
-			if($file->isDot() || $file->isDir()) continue;
-			if($file->getExtension() != $this->logExtension) continue;
-			$name = $file->getBasename(".$this->logExtension");
-			if($name != $sanitizer->pageName($name)) continue;
-			$files[$name] = clone $file;
-		}
-		
-		return $files;
+		return $this->wire('config')->paths->logs . $name . '.' . $this->logExtension;
 	}
 
 	/**
@@ -328,7 +299,7 @@ class WireLog extends Wire {
 	 * 
 	 */
 	public function getLines($name, array $options = array()) {
-		$pageNum = !empty($options['pageNum']) ? $options['pageNum'] : $this->wire()->input->pageNum;
+		$pageNum = !empty($options['pageNum']) ? $options['pageNum'] : $this->wire('input')->pageNum;
 		unset($options['pageNum']); 
 		$log = $this->getFileLog($name); 
 		$limit = isset($options['limit']) ? (int) $options['limit'] : 100; 
@@ -363,7 +334,7 @@ class WireLog extends Wire {
 		
 		$log = $this->getFileLog($name);
 		$limit = isset($options['limit']) ? $options['limit'] : 100; 
-		$pageNum = !empty($options['pageNum']) ? $options['pageNum'] : $this->wire()->input->pageNum; 
+		$pageNum = !empty($options['pageNum']) ? $options['pageNum'] : $this->wire('input')->pageNum; 
 		unset($options['pageNum']); 
 		$lines = $log->find($limit, $pageNum, $options); 
 		
@@ -475,7 +446,7 @@ class WireLog extends Wire {
 	 */
 	public function getDate($name, $dateFrom, $dateTo = 0, $limit = 100) {
 		$log = $this->getFileLog($name); 
-		$pageNum = $this->wire()->input->pageNum();
+		$pageNum = $this->wire('input')->pageNum();
 		return $log->getDate($dateFrom, $dateTo, $pageNum, $limit); 
 	}
 	
@@ -496,42 +467,13 @@ class WireLog extends Wire {
 	}
 
 	/**
-	 * Delete all log files
-	 * 
-	 * @param bool $throw Throw WireException if any delete fails? (default=false)
-	 * @return array Basenames of deleted log files
-	 * @since 3.0.214
-	 * 
-	 */
-	public function deleteAll($throw = false) {
-		
-		$deleted = array();
-		$failed = array();
-
-		foreach($this->getFiles() as $name => $file) {
-			$log = $this->getFileLog($name);
-			if($log && $log->delete()) {
-				$deleted[] = $name;
-			} else {
-				$failed[] = $name;
-			}
-		}
-		
-		if($throw && count($failed)) {
-			throw new WireException("Failed to delete logs: " . implode(', ', $failed));
-		}
-		
-		return $deleted;
-	}
-
-	/**
 	 * Prune log file to contain only entries from last [n] days
 	 * 
 	 * #pw-group-manipulation
 	 * 
 	 * @param string $name Name of log file, excluding path and extension.
 	 * @param int $days Number of days
-	 * @return int Number of items in newly pruned log file or boolean false on failure
+	 * @return int Number of items in new log file or boolean false on failure
 	 * @throws WireException
 	 * 
 	 */
@@ -543,22 +485,6 @@ class WireLog extends Wire {
 		return $log->pruneDate($oldestDate); 
 	}
 
-	/**
-	 * Prune all log files to given number of days
-	 * 
-	 * @param int $days
-	 * @return array
-	 * @since 3.0.214
-	 * 
-	 */
-	public function pruneAll($days) {
-		$result = array();
-		foreach($this->getFiles() as $name => $filename) {
-			$result[$name] = $this->prune($name, $days);
-		}
-		return $result;
-	}
-	
 	/**
 	 * Returns instance of FileLog for given log name
 	 * 
@@ -574,7 +500,6 @@ class WireLog extends Wire {
 		$filename = $this->getFilename($name);
 		$key = "$filename$delimiter";
 		if(isset($this->fileLogs[$key])) return $this->fileLogs[$key];
-		/** @var FileLog $log */
 		$log = $this->wire(new FileLog($filename));
 		$log->setDelimiter($delimiter);
 		$this->fileLogs[$key] = $log;
@@ -609,14 +534,4 @@ class WireLog extends Wire {
 		return $this;
 	}
 
-	/**
-	 * Return disk path to log files
-	 * 
-	 * @return string
-	 * @since 3.0.214
-	 * 
-	 */
-	public function path() {
-		return $this->wire()->config->paths->logs;
-	}
 }

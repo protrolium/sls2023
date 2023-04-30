@@ -19,7 +19,7 @@ var ProcessWireAdmin = {
 	},
 
 	setupNotices: function() {
-		$(".pw-notice-group-toggle").on('click', function() {
+		$(".pw-notice-group-toggle").click(function() {
 			var $parent = $(this).closest('.pw-notice-group-parent'); 
 			var $children = $parent.nextUntil('.pw-notice-group-parent');
 			if($parent.hasClass('pw-notice-group-open')) {
@@ -46,7 +46,7 @@ var ProcessWireAdmin = {
 				my: "center bottom", // bottom-20
 				at: "center top"
 			}
-		}).on('mouseenter', function() {
+		}).hover(function() {
 			var $a = $(this);
 			if($a.is('a')) {
 				$a.addClass('ui-state-hover');
@@ -56,7 +56,7 @@ var ProcessWireAdmin = {
 			}
 			$a.addClass('pw-tooltip-hover');
 			$a.css('cursor', 'pointer');
-		}).on('mouseleave', function() {
+		}, function() {
 			var $a = $(this);
 			$a.removeClass('pw-tooltip-hover ui-state-hover');
 			if(!$a.is('a')) {
@@ -135,7 +135,7 @@ var ProcessWireAdmin = {
 			if($a.is('button')) {
 				if($a.find('.ui-button-text').length == 0) $a.button();
 				if($a.attr('type') == 'submit') {
-					$a.on('click', function() {
+					$a.click(function() {
 						$a.addClass('pw-dropdown-disabled');
 						setTimeout(function() {
 							$a.removeClass('pw-dropdown-disabled');
@@ -147,7 +147,7 @@ var ProcessWireAdmin = {
 			}
 			
 			// hide nav when an item is selected to avoid the whole nav getting selected
-			$ul.find('a').on('click', function() {
+			$ul.find('a').click(function() {
 				$ul.hide();
 				return true;
 			});
@@ -171,10 +171,10 @@ var ProcessWireAdmin = {
 						$a.removeClass('hover pw-dropdown-toggle-open');
 					}, 1000);
 				}
-				$ul.on('mouseleave', mouseleaver);
-				$a.on('mouseleave', mouseleaver);
+				$ul.mouseleave(mouseleaver);
+				$a.mouseleave(mouseleaver);
 			} else {
-				$ul.on('mouseleave', function() {
+				$ul.mouseleave(function() {
 					//if($a.is(":hover")) return;
 					//if($a.filter(":hover").length) return;
 					$ul.hide();
@@ -202,7 +202,7 @@ var ProcessWireAdmin = {
 					$('.pw-dropdown-toggle-open').each(function() {
 						var $a = $(this);
 						var $ul = $a.data('pw-dropdown-ul');
-						$ul.trigger('mouseleave');
+						$ul.mouseleave();
 					});
 					$a.addClass('pw-dropdown-toggle-open');
 					/*
@@ -408,14 +408,14 @@ var ProcessWireAdmin = {
 				if(typeof href != "undefined" && href.length > 1) {
 					return true;
 				} else {
-					$item.trigger('mouseleave');
+					$item.mouseleave();
 				}
 			} else {
 				var datafrom = $item.attr('data-from');	
 				if(typeof datafrom == "undefined") var datafrom = '';
 				if(datafrom.indexOf('topnav') > -1) {
 					var from = datafrom.replace('topnav-', '') + '-';
-					$("a.pw-dropdown-toggle.hover:not('." + from + "')").attr('data-touchCnt', 0).trigger('mouseleave');
+					$("a.pw-dropdown-toggle.hover:not('." + from + "')").attr('data-touchCnt', 0).mouseleave();
 				}
 				$item.mouseenter();
 			}
@@ -497,12 +497,6 @@ if(typeof ProcessWire != "undefined") {
 			if(allowMarkup) {
 				vex.dialog.alert({unsafeMessage: message});
 			} else {
-				if(message.indexOf('&') > -1 && message.indexOf(';') > 1) {
-					// remove entitity encoded sequences since Vex already encodes
-					var v = document.createElement('textarea');
-					v.innerHTML = message;
-					message = v.value;
-				}
 				vex.dialog.alert(message);
 			}
 		} else {
@@ -525,20 +519,4 @@ if(typeof ProcessWire != "undefined") {
 	ProcessWire.entities = function(str) {
 		return $('<textarea />').text(str).html();
 	};
-	
-	/**
-	 * Trim any type of given value and return a trimmed string
-	 * 
-	 * @param str
-	 * @returns {string}
-	 * @since 3.0.216
-	 * 
-	 */
-	ProcessWire.trim = function(str) {
-		if(typeof str !== 'string') {
-			if(typeof str === 'undefined' || str === null || str === '') return '';
-			str = str.toString();
-		}
-		return str.trim();
-	}; 
 }

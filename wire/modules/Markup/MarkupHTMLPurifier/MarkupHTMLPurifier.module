@@ -33,7 +33,7 @@ class MarkupHTMLPurifier extends WireData implements Module {
 		return array(
 			'title' => 'HTML Purifier', 
 			'summary' => 'Front-end to the HTML Purifier library.', 
-			'version' => 497, 
+			'version' => 496, 
 			'singular' => false, 
 			'autoload' => false, 
 		);
@@ -66,7 +66,6 @@ class MarkupHTMLPurifier extends WireData implements Module {
 	 *
 	 */
 	public function __construct() {
-		parent::__construct();
 		require_once(dirname(__FILE__) . '/htmlpurifier/HTMLPurifier.standalone.php'); 
 		$this->settings = \HTMLPurifier_Config::createDefault();
 		$this->settings->autoFinalize = false;

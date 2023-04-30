@@ -196,9 +196,7 @@ class DatabaseQuerySelectFulltext extends Wire {
 	 * 
 	 */
 	protected function tableField() {
-		$fieldName = $this->fieldName;
-		if(!$fieldName) $fieldName = 'data';
-		return "$this->tableName.$fieldName";
+		return "$this->tableName.$this->fieldName";
 	}
 
 	/**

@@ -1267,9 +1267,8 @@ class ProcessPageEdit extends Process implements WirePageEditor, ConfigurableMod
 	 *
 	 */
 	protected function ___buildFormSettings() {
-	
-		$user = $this->wire()->user;
-		$superuser = $user->isSuperuser();
+		
+		$superuser = $this->wire('user')->isSuperuser();
 
 		/** @var InputfieldWrapper $wrapper */
 		$wrapper = $this->wire(new InputfieldWrapper());
@@ -1309,7 +1308,7 @@ class ProcessPageEdit extends Process implements WirePageEditor, ConfigurableMod
 		}
 
 		// page path history (previous URLs)
-		if($superuser || $user->hasPermission('page-edit-redirects', $this->page)) {
+		if($superuser) {
 			$f = $this->buildFormPrevPaths();
 			if($f) $wrapper->add($f);
 		}

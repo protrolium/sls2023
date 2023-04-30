@@ -85,7 +85,7 @@ var InputfieldSelector = {
 				// this ensures any data-template-ids attributes affect the field disabled state at the template-row level
 				InputfieldSelector.changeAny($(this)); 
 			}); 
-			$rows.eq(1).find(".input-value").trigger('change'); // first visible row, if present
+			$rows.eq(1).find(".input-value").change(); // first visible row, if present
 			$rows.each(function() {
 				var $row = $(this); 
 				$row.css('border-color', InputfieldSelector.borderColor); // match border color to current admin theme
@@ -104,7 +104,7 @@ var InputfieldSelector = {
 		$(".InputfieldSelector").each(function() {
 			if($(this).find(".selector-preview-disabled").length > 0) return;
 			// force items to populate previews
-			$(this).find(".input-value").eq(0).trigger('change');
+			$(this).find(".input-value:eq(0)").change();
 		}); 
 
 	},
@@ -116,7 +116,7 @@ var InputfieldSelector = {
 	 *
 	 */
 	disableOption: function($option) {
-		$option.prop('disabled', true).prop('hidden', true);
+		$option.attr('disabled', 'disabled');
 	},
 
 	/**
@@ -126,7 +126,8 @@ var InputfieldSelector = {
 	 *
 	 */
 	enableOption: function($option) {
-		$option.prop('disabled', false).prop('hidden', false);
+		$option.removeAttr('disabled');
+
 	},
 
 	/**
@@ -164,7 +165,7 @@ var InputfieldSelector = {
 		$newRow.find('.opval').html(''); 
 		$newRow.find('.select-field').val(''); // .select2();
 		$newRow.hide();
-		$newRow.find('option:disabled').prop('hidden', true);
+		$newRow.find("option[disabled=disabled]").remove();
 		$list.append($newRow); 
 		$newRow.slideDown('fast');
 		InputfieldSelector.normalizeHeightRow($newRow); 
@@ -182,7 +183,8 @@ var InputfieldSelector = {
 		if($selectField.val() == 'template') {
 			// if template setting is removed, restore any disabled fields
 			$row.parents(".InputfieldSelector").find("select.select-field").each(function() {
-				$(this).find("option:disabled").each(function() {
+				// $(this).find("option[disabled=disabled]").removeAttr('disabled'); 
+				$(this).find("option[disabled=disabled]").each(function() {
 					InputfieldSelector.enableOption($(this)); 
 				}); 
 			}); 
@@ -296,7 +298,7 @@ var InputfieldSelector = {
 				$data.fadeIn('fast', function() {
 					// if there is a default selected option, select it now
 					//var $option = $subfield.find('.select-subfield-default');
-					//if($option.length) $option.attr('selected', 'selected').parent('select').trigger('change');
+					//if($option.length) $option.attr('selected', 'selected').parent('select').change();
 				});
 				//$row.children('.subfield').html(data); 	
 			}
@@ -392,14 +394,15 @@ var InputfieldSelector = {
 				if(!ui.item) return;
 				var $input = $item.siblings(".input-value"); 
 				$input.val(ui.item.value).attr('data-label', ui.item.label); 
-				$item.trigger('blur').hide();
+				$item.blur().hide();
 				setTimeout(function() { 
 					$item.val(ui.item.label); 
+					//$item.attr('disabled', 'disabled'); 
 					$item.fadeIn('fast'); 
 				}, 100); 
 				InputfieldSelector.changeAny($input); 
 			}
-		}).on('focus', function() {
+		}).focus(function() {
 			var $input = $item.siblings(".input-value"); 
 			$input.val('');
 			$item.val(''); 
@@ -474,9 +477,9 @@ var InputfieldSelector = {
 			if(op && op.indexOf('"') > -1) {
 				// handle: 'is empty' or 'is not empty' operators
 				value = ' ';
-				$value.prop('disabled', true);
+				$value.attr('disabled', 'disabled'); 
 			} else if($value.is(":disabled")) {
-				$value.prop('disabled', false);
+				$value.removeAttr('disabled');
 			}
 
 			if(op && op.indexOf('!') === 0 && op !== '!=') {
@@ -516,18 +519,18 @@ var InputfieldSelector = {
 			
 			if(useOrValue) { //  && !$row.is('.has-or-value')) {
 				$row.addClass('has-or-value'); 
-				$row.find(".select-field, .select-operator, .select-subfield").prop('disabled', true);
+				$row.find(".select-field, .select-operator, .select-subfield").attr('disabled', 'disabled'); 
 			} else if($row.is('.has-or-value')) {
 				$row.removeClass('has-or-value'); 
-				$row.find(".select-field, .select-operator, .select-subfield").prop('disabled', false);
+				$row.find(".select-field, .select-operator, .select-subfield").removeAttr('disabled');
 			}
 
 			if(useOrField) { //  && !$row.is('.has-or-field')) {
 				$row.addClass('has-or-field'); 
-				$row.find('.input-value, .select-operator').prop('disabled', true);
+				$row.find(".input-value, .select-operator").attr('disabled', 'disabled'); 
 			} else if($row.is('.has-or-field')) {
 				$row.removeClass('has-or-field'); 
-				$row.find(".input-value, .select-operator").prop('disabled', false);
+				$row.find(".input-value, .select-operator").removeAttr('disabled'); 
 			}
 
 			selectors[n++] = {
@@ -560,6 +563,7 @@ var InputfieldSelector = {
 					var $option = $(this);
 					var templates = $option.attr('data-templates'); 
 					if(typeof templates != "undefined" && templates != "*") {
+						// $option.removeAttr('disabled'); 
 						InputfieldSelector.enableOption($option); 
 						var numFound = 0;
 						for(i = 0; i < templateIDs.length; i++) {
@@ -567,15 +571,17 @@ var InputfieldSelector = {
 						}
 						//if(templates.indexOf('|' + templatesID + '|') == -1) {
 						if(numFound) {
+							//$option.removeAttr('disabled'); 
 							InputfieldSelector.enableOption($option); 
 						} else {
+							//if(!$option.is(":selected")) $option.attr('disabled', 'disabled'); 
 							if(!$option.is(":selected")) InputfieldSelector.disableOption($option); 
 							numDisabledOptions++;
 						}
 					}
 				}); 
 				if(numDisabledOptions > 0 && !$select.parent().is(".selector-template-row")) {
-					$select.find('option:disabled').prop('hidden', true);
+					$select.find('option[disabled=disabled]').remove();
 				}
 			}); 
 			
@@ -618,14 +624,14 @@ var InputfieldSelector = {
 			if(s.field == '_custom') {
 				if(s.isOrGroup) {
 					s.value = s.value.replace('(', '').replace(')', '');
-					selector += s.field + '=' + '(' + ProcessWire.trim(s.value) + ')';
+					selector += s.field + '=' + '(' + $.trim(s.value) + ')';
 				} else {
 					//selector += s.value;
-					selector += s.field + '="' + ProcessWire.trim(s.value) + '"';
+					selector += s.field + '="' + $.trim(s.value) + '"';
 				}
 			} else {
 				if(s.not) selector += '!';
-				selector += s.field + s.operator + ProcessWire.trim(s.value); 
+				selector += s.field + s.operator + $.trim(s.value); 
 			}
 		}
 
@@ -659,7 +665,7 @@ var InputfieldSelector = {
 				$preview.hide();
 				$preview.siblings('.selector-counter').html('');
 			}
-			$hiddenInput.trigger('change'); // trigger change
+			$hiddenInput.change(); // trigger change
 		}
 
 		InputfieldSelector.selector = selector; 

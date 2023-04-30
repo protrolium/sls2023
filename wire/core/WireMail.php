@@ -550,7 +550,7 @@ class WireMail extends WireData implements WireMailInterface {
 		if(is_null($value)) {
 			$this->mail['attachments'] = array();
 		} else if(is_file($value)) { 
-			$filename = $filename ? basename($filename) : basename($value);
+			$filename = $filename ?: basename($value);
 			$this->mail['attachments'][$filename] = $value; 
 		}
 		return $this; 
@@ -634,14 +634,12 @@ class WireMail extends WireData implements WireMailInterface {
 		$config = $this->wire()->config;
 		$settings = $config->wireMail;
 		$from = $this->from;
-		$fromName = $this->fromName;
 		
 		if(!strlen($from) && !empty($settings['from'])) $from = $settings['from'];
 		if(!strlen($from)) $from = $config->adminEmail;
 		if(!strlen($from)) $from = 'processwire@' . $config->httpHost;
-		if(!strlen($fromName) && !empty($settings['fromName'])) $fromName = $settings['fromName'];
 		
-		$header = "From: " . ($fromName ? $this->bundleEmailAndName($from, $fromName) : $from);
+		$header = "From: " . ($this->fromName ? $this->bundleEmailAndName($from, $this->fromName) : $from);
 
 		foreach($this->header as $key => $value) {
 			$header .= "\r\n$key: $value";

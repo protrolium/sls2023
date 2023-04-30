@@ -549,7 +549,7 @@ class InputfieldWrapper extends Inputfield implements \Countable, \IteratorAggre
 		}
 		if($this->children()->has($item)) {
 			$this->children()->remove($item);
-		} else if($this->getChildByName($item->attr('name')) && $item->parent) {
+		} if($this->getChildByName($item->attr('name')) && $item->parent) {
 			$item->parent->remove($item);
 		}
 		return $this; 
@@ -775,8 +775,7 @@ class InputfieldWrapper extends Inputfield implements \Countable, \IteratorAggre
 				$errors = $inputfield->getErrors(true);
 				if(count($errors)) {
 					$collapsed = $renderValueMode ? Inputfield::collapsedNoLocked : Inputfield::collapsedNo;
-					$comma = $this->_(','); // Comma or other character to separate multiple error messages
-					$errorsOut = implode("$comma ", $errors);
+					$errorsOut = implode(', ', $errors);
 				}
 			} else $errors = array();
 		

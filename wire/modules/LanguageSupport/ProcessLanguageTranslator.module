@@ -5,7 +5,7 @@
  *
  * This is the process assigned to the processwire/setup/language-translator/ page.
  *
- * ProcessWire 3.x, Copyright 2023 by Ryan Cramer
+ * ProcessWire 3.x, Copyright 2022 by Ryan Cramer
  * https://processwire.com
  *
  * 
@@ -15,18 +15,16 @@
  * @method string executeEdit()
  * @method processEdit($form, $textdomain, $translations)
  * 
- * @property array $extensions Allowed file extensions for translatable files
- * 
  * 
  */
 
-class ProcessLanguageTranslator extends Process implements ConfigurableModule {
+class ProcessLanguageTranslator extends Process {
 
 	public static function getModuleInfo() {
 		return array(
 			'title' => __('Language Translator', __FILE__),
 			'summary' => __('Provides language translation capabilities for ProcessWire core and modules.', __FILE__),
-			'version' => 103,
+			'version' => 102,
 			'author' => 'Ryan Cramer',
 			'requires' => 'LanguageSupport',
 			'permission' => 'lang-edit'
@@ -82,11 +80,6 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 	 * 
 	 */
 	protected $fp = null;
-	
-	public function __construct() {
-		parent::__construct();
-		$this->set('extensions', array('php', 'module', 'inc')); 
-	}
 
 	/**
 	 * Initialize the module and setup the variables above
@@ -107,40 +100,6 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 	
 	public function __destruct() {
 		if($this->fp) fclose($this->fp);
-	}
-
-	/**
-	 * Set
-	 * 
-	 * @param string $key
-	 * @param mixed $value
-	 * @return self
-	 * 
-	 */
-	public function set($key, $value) {
-		if($key === 'extensions') return $this->setExtensions($value);
-		return parent::set($key, $value);
-	}
-
-	/**
-	 * Set allowed extensions
-	 * 
-	 * @param string|array $extensions
-	 * @since 3.0.212
-	 * 
-	 */
-	protected function setExtensions($extensions) {
-		if(!is_array($extensions)) {
-			$extensions = preg_replace('/[^a-zA-Z0-9 ]/', ' ', (string) $extensions);
-			$extensions = explode(' ', strtolower(trim($extensions)));
-			foreach($extensions as $k => $v) {
-				if(empty($v)) unset($extensions[$k]);
-			}
-		}
-		if(!in_array('php', $extensions)) $extensions[] = 'php';
-		if(!in_array('module', $extensions)) $extensions[] = 'module';
-		parent::set('extensions', $extensions);
-		return $this;
 	}
 
 	/**
@@ -437,40 +396,20 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 	protected function executeEditField($hash, $untranslated, $translated, $alternates) {
 
 		/** @var InputfieldText|InputfieldTextarea $field */
-		
-		$comment = isset($this->comments[$hash]) ? $this->comments[$hash] : '';
-		$type = '';
-		
-		if(stripos($comment, 'type=') !== false && preg_match('!type=(\w+)!i', $comment, $matches)) {
-			// if type=value appears in comment then use value as Inputfield module name
-			$type = ucfirst($matches[1]);
-			$comment = str_replace($matches[0], '', $comment);
-		}
-		
-		if(stripos($comment, 'rows=') !== false && preg_match('!rows=(\d+)!i', $comment, $matches)) {
-			// if rows=3 appears in comment then accept it as rows attribute for input
-			$rows = (int) $matches[1]; 
-			$comment = str_replace($matches[0], '', $comment);
-		} else if(strpos($untranslated, "\n") !== false) {
-			$qty1 = substr_count($untranslated, "\n")+1;
-			$qty2 = substr_count($translated, "\n")+1; 
-			$rows = max(2, $qty1, $qty2);
-		} else if(strlen($untranslated) < 128) {
-			$rows = 1;
-		} else {
-			$rows = 3;
-		}
-		
-		if(empty($type)) {
-			$type = $rows > 1 ? 'InputfieldTextarea' : 'InputfieldText';
-		} else if(strpos($type, 'Inputfield') !== 0) {
-			$type = "Inputfield$type";
-		}
-		
-		$field = $this->wire()->modules->get($type);
-		if(!$field) $field = $this->wire()->modules->get('InputfieldText');
-		if($rows > 1 && $field instanceof InputfieldTextarea) $field->attr('rows', $rows);
 
+		if(strpos($untranslated, "\n") !== false) {
+			$qty = substr_count($untranslated, "\n")+1;
+			$qty2 = substr_count($translated, "\n")+1; 
+			if($qty2 > $qty) $qty = $qty2;
+			$field = $this->wire()->modules->get("InputfieldTextarea");
+			$field->attr('rows', $qty > 2 ? $qty : 2);
+		} else if(strlen($untranslated) < 128) {
+			$field = $this->wire()->modules->get("InputfieldText");
+		} else {
+			$field = $this->wire()->modules->get("InputfieldTextarea");
+			$field->attr('rows', 3);
+		}
+	
 		/** @var InputfieldText $field */
 		$field->attr('id+name', $hash);
 		$field->set('textFormat', Inputfield::textFormatNone);
@@ -478,6 +417,8 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 		$field->label = $untranslated;
 		$field->addClass(strlen($translated) ? 'translated' : 'untranslated', 'wrapClass');
 		$field->addClass('translatable');
+
+		$comment = isset($this->comments[$hash]) ? $this->comments[$hash] : '';
 
 		if($comment) {
 			if(preg_match('{^(.*?)//(.*)$}', $comment, $m)) {
@@ -808,7 +749,6 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 		if(!is_dir($path)) throw new WireException(sprintf($this->_('%s does not exist or is not a directory'), $path));
 
 		static $level = 0;
-		$extensions = $this->extensions;
 
 		if(!$level) {
 			$cacheKey = "files_" . md5($path);
@@ -857,7 +797,7 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 			}
 
 			$ext = $file->getExtension();
-			if(!in_array(strtolower($ext), $extensions)) continue;
+			if($ext != 'php' && $ext != 'module' && $ext != 'inc') continue;
 			$pathname = $file->getPathname();
 			$text = file_get_contents($pathname);
 			$found = false;
@@ -940,21 +880,6 @@ class ProcessLanguageTranslator extends Process implements ConfigurableModule {
 		}
 		
 		return $abandoned;
-	}
-
-	/**
-	 * Module config
-	 * 
-	 * @param InputfieldWrapper $inputfields
-	 * 
-	 */
-	public function getModuleConfigInputfields(InputfieldWrapper $inputfields) {
-		$f = $inputfields->InputfieldText;
-		$f->attr('name', 'extensions');
-		$f->label = $this->_('Supported file extensions for translatable files'); 
-		$f->description = $this->_('Enter a space-separated list of file extensions (`php` and `module` are required).'); 
-		$f->val(implode(' ', $this->extensions));
-		$inputfields->add($f);
 	}
 }
 

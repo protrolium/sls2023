@@ -27,9 +27,10 @@ function InputfieldPageTitle($nameField) {
 			if($nameField.length) $nameField.val(val).trigger('blur');
 		}
 
-		$titleField.on('keyup change', titleKeyup);
+		$titleField.bind('keyup change', titleKeyup);
 
-		$('.InputfieldPageName input').on('change', function() {
+		// $nameField.focus(function() {
+		$('.InputfieldPageName input').change(function() {
 			// if they happen to change the name field on their own, then disable 
 			if($(this).val() != $(this).attr('data-prev')) $(this).addClass('InputfieldPageNameNoUpdate');
 		}).each(function() {
@@ -44,7 +45,7 @@ function InputfieldPageTitleCustom($titleField) {
 	if(!$nameInput.length || $nameInput.val().length) return;
 	
 	var delimiter = $titleField.attr('data-name-delimiter');
-	var $titleInput = $titleField.find('input').eq(0); 
+	var $titleInput = $titleField.find('input:eq(0)'); 
 	var replacements = ProcessWire.config.InputfieldPageTitle.replacements;
 	
 	function titleToName(title, strict) {

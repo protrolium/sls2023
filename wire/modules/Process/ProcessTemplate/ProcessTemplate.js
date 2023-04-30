@@ -16,7 +16,7 @@ function ProcessTemplateAsmSelect() {
 	function setupRows() {
 
 		var $inputfield = $('#wrap_fieldgroup_fields');
-		var $item = $inputfield.find('.asmListItem').eq(0);
+		var $item = $inputfield.find('.asmListItem:eq(0)');
 		var $lastItem = null;
 		var lastItemWidth = 0;
 		var total = 0;
@@ -313,7 +313,7 @@ function ProcessTemplateAsmSelect() {
 		/*
 		var toggleRequired = function() {
 			var $li = $(this).closest('.asmListItem');
-			var $a = $li.find('.asmListItemEdit').eq(0).children('a');
+			var $a = $li.find('.asmListItemEdit:eq(0)').children('a');
 			var url = $a.attr('href');
 			var $inputRequired = $li.find('.inputRequired');
 			var value = $inputRequired.text();
@@ -389,11 +389,8 @@ function ProcessTemplate() {
 	function setupAccessTab() {
 		
 		var redirectLoginClick = function() {
-			if($("#redirectLogin_-1:checked").length > 0) {
-				$("#wrap_redirectLoginURL").slideDown();
-			} else {
-				$("#wrap_redirectLoginURL").hide();
-			}
+			if($("#redirectLogin_-1:checked").length > 0) $("#wrap_redirectLoginURL").slideDown();
+			else $("#wrap_redirectLoginURL").hide();
 		}
 
 		var adjustAccessFields = function() {
@@ -412,6 +409,7 @@ function ProcessTemplate() {
 					}
 				});
 
+				// $("input.viewRoles").attr('checked', 'checked'); // JQM
 				$('input.viewRoles').prop('checked', true);
 
 			} else {
@@ -421,7 +419,7 @@ function ProcessTemplate() {
 					if($item.is(":visible")) return;
 					$item.slideDown("fast", function() {
 						if(!$item.is(".InputfieldStateCollapsed")) return;
-						$item.find(".InputfieldStateToggle").trigger('click');
+						$item.find(".InputfieldStateToggle").click();
 					});
 				});
 				redirectLoginClick();
@@ -429,11 +427,12 @@ function ProcessTemplate() {
 
 		};
 
-		$("#wrap_useRoles input").on('click', function() {
+		$("#wrap_useRoles input").click(function() {
 			if($("#useRoles_1:checked").length > 0) {
 				$("#wrap_redirectLogin").hide();
 				$("#wrap_guestSearchable").hide();
 				$("#useRolesYes").slideDown(400, function(){ $(this).css('overflow','visible') });
+				// $("#wrap_useRoles > label").click();
 				$("input.viewRoles").prop('checked', true);
 			} else {
 				$("#useRolesYes").slideUp();
@@ -447,8 +446,8 @@ function ProcessTemplate() {
 		}
 
 
-		$("#roles_37").on('click', adjustAccessFields);
-		$("input.viewRoles:not(#roles_37)").on('click', function() {
+		$("#roles_37").click(adjustAccessFields);
+		$("input.viewRoles:not(#roles_37)").click(function() {
 			// prevent unchecking 'view' for other roles when 'guest' role is checked
 			var $t = $(this);
 			if($("#roles_37").is(":checked")) return false;
@@ -469,8 +468,10 @@ function ProcessTemplate() {
 
 				if($t.is(":checked")) {
 					numChecked++;
+					// $createRoles.removeAttr('disabled'); // JQM
 					$createRoles.prop('disabled', false);
 				} else {
+					// $createRoles.removeAttr('checked').attr('disabled', 'disabled'); // JQM
 					$createRoles.prop('checked', false).prop('disabled', true);
 				}
 			});
@@ -495,13 +496,13 @@ function ProcessTemplate() {
 			numChecked > 0 ? $("#wrap_noInherit").slideDown() : $("#wrap_noInherit").hide();
 		};
 
-		$("#roles_editor input.editRoles").on('click', editRolesClick);
-		$("#roles_editor input.editRoles, #roles_editor input.addRoles").on('click', editOrAddClick);
+		$("#roles_editor input.editRoles").click(editRolesClick);
+		$("#roles_editor input.editRoles, #roles_editor input.addRoles").click(editOrAddClick);
 
 		editRolesClick();
 		editOrAddClick();
 
-		$("#wrap_redirectLogin input").on('click', redirectLoginClick);
+		$("#wrap_redirectLogin input").click(redirectLoginClick);
 
 		adjustAccessFields();
 		redirectLoginClick();
@@ -512,9 +513,9 @@ function ProcessTemplate() {
 	 * 
 	 */
 	function setupImportExport() {
-		$("#export_data").on('click', function() { $(this).select(); });
+		$("#export_data").click(function() { $(this).select(); });
 
-		$(".import_toggle input[type=radio]").on('change', function() {
+		$(".import_toggle input[type=radio]").change(function() {
 			var $table = $(this).parents('p.import_toggle').next('table');
 			var $fieldset = $(this).closest('.InputfieldFieldset');
 			if($(this).is(":checked") && $(this).val() == 0) {
@@ -524,7 +525,7 @@ function ProcessTemplate() {
 				$table.show();
 				$fieldset.removeClass('ui-priority-secondary');
 			}
-		}).trigger('change');
+		}).change();
 
 		$("#import_form table td:not(:first-child)").each(function() {
 			var html = $(this).html();
@@ -543,12 +544,12 @@ function ProcessTemplate() {
 	 * 
 	 */
 	function init() {
-		$("#wrap_filter_system input").on('click', function() {
-			$(this).parents("form").trigger('submit');
+		$("#wrap_filter_system input").click(function() {
+			$(this).parents("form").submit();
 		});
 
-		$("#filter_field").on('change', function() {
-			$(this).parents("form").trigger('submit');
+		$("#filter_field").change(function() {
+			$(this).parents("form").submit();
 		});
 
 		setupAccessTab();
@@ -566,7 +567,7 @@ function ProcessTemplate() {
 
 		setupImportExport();
 
-		$("#fieldgroup_fields").on('change', function() {
+		$("#fieldgroup_fields").change(function() {
 			$("#_fieldgroup_fields_changed").val('changed');
 		});
 	}

@@ -14,9 +14,11 @@ $(document).ready(function() {
 		var $input = $(this).find('input'); 
 		var $items = $(this).parents('.InputfieldFileList').find('.InputfieldFileDelete input');
 		if($input.is(":checked")) {
-			$items.prop('checked', false).trigger('change'); 
+			// $items.removeAttr('checked').change(); // JQM
+			$items.prop('checked', false).change(); 
 		} else {
-			$items.prop('checked', true).trigger('change'); 
+			// $items.attr('checked', 'checked').change(); // JQM
+			$items.prop('checked', true).change(); 
 		}
 		return false; 
 	}); 
@@ -81,12 +83,37 @@ $(document).ready(function() {
 				}
 			});
 
-		}).find(".ui-widget-header, .ui-state-default").on('mouseenter', function() {
+		}).find(".ui-widget-header, .ui-state-default").hover(function() {
 			$(this).addClass('ui-state-hover'); 
-		}).on('mouseleave', function() {
+		}, function() {
 			$(this).removeClass('ui-state-hover'); 
 		});
 	}
+
+	/**
+	 * Initialize non-HTML5 uploads
+	 *
+	function InitOldSchool() {
+		// $(".InputfieldFileUpload input[type=file]").live('change', function() {
+		$(document).on('change', '.InputfieldFileUpload input[type=file]', function() {
+			var $t = $(this); 
+			if($t.next("input.InputfieldFile").size() > 0) return; // not the last one
+			var maxFiles = parseInt($t.siblings('.InputfieldFileMaxFiles').val()); 
+			var numFiles = $t.parent('.InputfieldFileUpload').siblings('.InputfieldFileList').children('li').size() + $t.siblings('input[type=file]').size() + 1; 
+			if(maxFiles > 0 && numFiles >= maxFiles) return; 
+	
+			// if there are any empty inputs, then don't add another
+			var numEmpty = 0;
+			$t.siblings('input[type=file]').each(function() { if($(this).val().length < 1) numEmpty++; });
+			if(numEmpty > 0) return;
+	
+			// add another input
+			var $i = $t.clone().hide().val(''); 
+			$t.after($i); 	
+			$i.slideDown(); 
+		});
+	}
+	 */
 
 	function InitOldSchool() {
 		$("body").addClass("ie-no-drop"); // ??
@@ -254,7 +281,7 @@ $(document).ready(function() {
 				xhr.addEventListener("load", function() {
 					xhr.getAllResponseHeaders();
 
-					var response = JSON.parse(xhr.responseText); 
+					var response = $.parseJSON(xhr.responseText); 
 					if(response.error !== undefined) response = [response];
 					
 					// note the following loop will always contain only 1 item, unless a file containing more files (ZIP file) was uploaded
@@ -272,7 +299,7 @@ $(document).ready(function() {
 						} else {
 
 							if(r.replace) {
-								var $child = $this.find('.InputfieldFileList').children('li').first();
+								var $child = $this.find('.InputfieldFileList').children('li:eq(0)');
 								if($child.length > 0) $child.slideUp('fast', function() { $child.remove(); });
 							}
                            
@@ -587,11 +614,11 @@ $(document).ready(function() {
 	}
 
 	if(allowAjax) {
-		$(window).on('resize', function() {
+		$(window).resize(function() {
 			if(resizeActive) return;
 			resizeActive = true;
 			setTimeout(windowResize, 1000);
-		}).trigger('resize');
+		}).resize();
 		$(document).on('AjaxUploadDone', '.InputfieldFileHasTags', function(event) {
 			initTags($(this));
 		}); 

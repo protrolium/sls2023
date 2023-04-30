@@ -1,9 +1,10 @@
 $(document).ready(function() {
 
-	$(".not_installed").parent("a").css('opacity', 0.6).on('click', function() {
+	$(".not_installed").parent("a").css('opacity', 0.6).click(function() {
 
 		var name = $(this).children(".not_installed").attr('data-name');
 		var $btn = $(".install_" + name + ":visible"); 
+		var disabled = $btn.attr('disabled'); 	
 	
 		if($btn.length) {	
 			$btn.effect('highlight', 1000);
@@ -18,7 +19,7 @@ $(document).ready(function() {
 		return false;
 	});
 
-	$("button.ProcessModuleSettings").on('click', function() {
+	$("button.ProcessModuleSettings").click(function() {
 		var $a = $(this).parents('tr').find('.ConfigurableModule').parent('a');
 		window.location.href = $a.attr('href') + '&collapse_info=1'; 
 	}); 
@@ -30,7 +31,7 @@ $(document).ready(function() {
         });
     }
 	
-	$("select.modules_section_select").on('change', function() {
+	$("select.modules_section_select").change(function() {
 		var section = $(this).val();
 		var $sections = $(this).parent('p').siblings('.modules_section')
 		if(section == '') {
@@ -41,7 +42,7 @@ $(document).ready(function() {
 		}
 		document.cookie = $(this).attr('name') + '=' + section;
 		return true; 
-	}).trigger('change');
+	}).change();
 
 
 	$(document).on('click', '#head_button a', function() { 
@@ -50,9 +51,9 @@ $(document).ready(function() {
 		return true; 
 	});
 	
-	$("#Inputfield_new_seconds").on('change', function() {
-		$('#submit_check').removeAttr('hidden').trigger('click');
-		$(this).closest('form').trigger('submit');
+	$("#Inputfield_new_seconds").change(function() {
+		$('#submit_check').removeAttr('hidden').click();
+		$(this).closest('form').submit();
 	}); 
 	
 	$("#wrap_upload_module").removeClass('InputfieldItemList'); 

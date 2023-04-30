@@ -119,12 +119,12 @@ function InputfieldImage($) {
 			stop: function(e, ui) {
 				var $this = $(this);
 				if(timer !== null) {
-					ui.item.find(".InputfieldImageEdit__edit").trigger('click');
+					ui.item.find(".InputfieldImageEdit__edit").click();
 					clearTimeout(timer);
 				}
 				$this.children("li").each(function(n) {
 					var $sort = $(this).find(".InputfieldFileSort");
-					if($sort.val() != n) $sort.val(n).trigger('change');
+					if($sort.val() != n) $sort.val(n).change();
 				});
 				$el.removeClass('InputfieldImageSorting');
 				ui.item.find('.Inputfield').trigger('sort-stop');
@@ -210,9 +210,10 @@ function InputfieldImage($) {
 		var checked = $input.is(":checked");
 		var $items = $input.parents('.gridImages').find('.gridImage__deletebox');
 		if(checked) {
-			$items.prop("checked", "checked").trigger('change');
+			$items.prop("checked", "checked").change();
 		} else {
-			$items.prop("checked", false).trigger('change');
+			// $items.removeAttr("checked").change(); // JQM
+			$items.prop("checked", false).change();
 		}
 	}
 
@@ -848,12 +849,12 @@ function InputfieldImage($) {
 	function initGridEvents() {
 
 		// resize window event
-		$(window).on('resize', throttle(windowResize, 200));
+		$(window).resize(throttle(windowResize, 200));
 
 		// click or double click trash event
 		$(document).on('click dblclick', '.gridImage__trash', function(e) {
 			var $input = $(this).find("input");
-			$input.prop("checked", inverseState).trigger('change');
+			$input.prop("checked", inverseState).change();
 			if(e.type == "dblclick") {
 				setDeleteStateOnAllItems($input);
 				e.preventDefault();
@@ -878,7 +879,7 @@ function InputfieldImage($) {
 			
 			if($el.hasClass('gridImageEditing')) {
 				// if item already has its editor open, then close it
-				$edit.find(".InputfieldImageEdit__close").trigger('click');	
+				$edit.find(".InputfieldImageEdit__close").click();	
 				
 			} else {
 				moveEdit($el, $edit);
@@ -933,7 +934,7 @@ function InputfieldImage($) {
 				
 			} else if($el.is("input, textarea") && $el.closest(".InputfieldImageEditAll").length) {
 				// clicked input in "edit all" mode, disable sortable, focus it then assign a blur event
-				$el.trigger('focus').one('blur', function() {
+				$el.focus().one('blur', function() {
 					$el.closest('.gridImages').sortable('enable'); // re-enable sortable on blur
 				});
 				$el.closest('.gridImages').sortable('disable'); // disable sortable on focus
@@ -1032,7 +1033,7 @@ function InputfieldImage($) {
 
 			$span.on('keypress', function(e) {
 				if(e.which == 13) {
-					$span.trigger('blur');
+					$span.blur();
 					return false;
 				}
 				return true;
@@ -1043,12 +1044,12 @@ function InputfieldImage($) {
 				.attr('autocapitalize', 'off')
 				.attr('spellcheck', 'false');
 
-			$span.trigger('focus').on('blur', function() {
+			$span.focus().on('blur', function() {
 				var val = $(this).text();
-				if(val.trim().length < 1) {
+				if($.trim(val).length < 1) {
 					$span.text($input.val());
 				} else if(val != $input.val()) {
-					$input.val(val).trigger('change');
+					$input.val(val).change();
 					$list.closest('.Inputfield').trigger('change');
 					//console.log('changed to: ' + val);
 				}
@@ -1310,7 +1311,7 @@ function InputfieldImage($) {
 			
 			if(href == 'list') {
 				if(!$inputfield.hasClass('InputfieldImageEditAll')) {
-					$inputfield.find(".InputfieldImageEdit--active .InputfieldImageEdit__close").trigger('click');
+					$inputfield.find(".InputfieldImageEdit--active .InputfieldImageEdit__close").click();
 					$inputfield.addClass('InputfieldImageEditAll');
 				}
 				size = getCookieData($inputfield, 'listSize');
@@ -1336,14 +1337,14 @@ function InputfieldImage($) {
 			//hrefPrev = href; //hrefPrev == href && href != 'left' && href != 'list' ? '' : href;
 			//sizePrev = size;
 			setupSortable($inputfield.find('.gridImages'));
-			$a.trigger('blur');
+			$a.blur();
 			
 			return false;
 		};
 		
-		$list.on('click', toggleClick);
-		$left.on('click', toggleClick);
-		$grid.on('click', toggleClick);
+		$list.click(toggleClick);
+		$left.click(toggleClick);
+		$grid.click(toggleClick);
 		
 		if($target.hasClass('InputfieldImage')) {
 			$target.children('.InputfieldHeader').append($list).append($left).append($grid);
@@ -1353,9 +1354,9 @@ function InputfieldImage($) {
 		}
 
 		if(defaultMode == 'list') {
-			$list.trigger('click');
+			$list.click();
 		} else if(defaultMode == 'left') {
-			$left.trigger('click');
+			$left.click();
 		} else {
 			// grid, already clicked
 		}
@@ -1409,7 +1410,7 @@ function InputfieldImage($) {
 			'start': function(event, ui) {
 				gridSliding = true;
 				if($inputfield.find(".InputfieldImageEdit:visible").length) {
-					$inputfield.find(".InputfieldImageEdit__close").trigger('click');
+					$inputfield.find(".InputfieldImageEdit__close").click();
 				}
 			}, 
 			'stop': function(event, ui) {
@@ -1677,7 +1678,7 @@ function InputfieldImage($) {
 			function setupDropHere() {
 				$dropHere = $this.find('.AjaxUploadDropHere');
 				$dropHere.show(); 
-					.on('click', function() {
+					.click(function() {
 					var $i = $(this).find('.InputfieldImageRefresh');
 					if($i.is(":visible")) {
 						$i.hide().siblings('span').show();
@@ -1998,7 +1999,7 @@ function InputfieldImage($) {
 				// File uploaded: called for each file
 				xhr.addEventListener("load", function() {
 					xhr.getAllResponseHeaders();
-					var response = JSON.parse(xhr.responseText);
+					var response = $.parseJSON(xhr.responseText);
 					if(typeof response.ajaxResponse != "undefined") response = response.ajaxResponse; // ckeupload
 					var	wasZipFile = response.length > 1;
 					if(response.error !== undefined) response = [response];
@@ -2026,9 +2027,10 @@ function InputfieldImage($) {
 
 						// look for replacements
 						if(r.overwrite) $item = $fileList.children('#' + $markup.attr('id'));
+						// if(r.replace || maxFiles == 1) $item = $fileList.children('.InputfieldImageEdit:eq(0)');
 						
 						if(maxFiles == 1 || r.replace) {
-							$item = $fileList.children('.gridImage').first();
+							$item = $fileList.children('.gridImage:eq(0)');
 						} else if(uploadReplace.item && response.length == 1) { // && !singleMode) {
 							$item = uploadReplace.item;
 						}
@@ -2094,7 +2096,7 @@ function InputfieldImage($) {
 								$imageEditName.children('span').text(uploadReplaceName).removeAttr('contenteditable');
 							}
 							// re-open replaced item
-							$markup.find(".gridImage__edit").trigger('click');
+							$markup.find(".gridImage__edit").click();
 						}
 				
 						// reset uploadReplace data
@@ -2122,9 +2124,9 @@ function InputfieldImage($) {
 		
 				// close editor, if open
 				if(uploadReplace.edit) {
-					uploadReplace.edit.find('.InputfieldImageEdit__close').trigger('click');
+					uploadReplace.edit.find('.InputfieldImageEdit__close').click();
 				} else if($inputfield.find(".InputfieldImageEdit:visible").length) {
-					$inputfield.find(".InputfieldImageEdit__close").trigger('click');
+					$inputfield.find(".InputfieldImageEdit__close").click();
 				}
 				
 				// Present file info and append it to the list of files
@@ -2344,20 +2346,14 @@ function InputfieldImage($) {
 			initUploadHTML5($inputfield);
 			//console.log('InputfieldImage reloaded');
 			Inputfields.init($inputfield);
-			$('.InputfieldImageListToggle--active', $inputfield).trigger('click');
+			$('.InputfieldImageListToggle--active', $inputfield).click();
 		}).on('wiretabclick', function(e, $newTab, $oldTab) {
 			$newTab.find(".InputfieldImage").each(function() {
 				initInputfield($(this));
 			});
-		}).on('opened', function() {
-			var $t = $(this);
-			if($t.hasClass('InputfieldImage')) {
-				initInputfield($t);
-			} else {
-				$t.find('.InputfieldImage').each(function() {
-					initInputfield($(this));
-				});
-			}
+		}).on('opened', '.InputfieldImage', function() {
+			//console.log('InputfieldImage opened');
+			initInputfield($(this));
 		});
 	}
 	

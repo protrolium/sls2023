@@ -46,40 +46,28 @@ if(!defined("PROCESSWIRE")) die();
  * always have this disabled for live/production sites since it reveals more information
  * than is advisible for security. 
  * 
- * You may also set this to one of the constants:
- * - `Config::debugVerbose` (or int `2`) for verbose debug mode, which uses more memory/time. 
- * - `Config::debugDev` (or string `dev`) for core development debug mode, which makes it use
- *    newer JS libraries in some cases when we are testing them. 
+ * You may also set this to the constant `Config::debugVerbose` to enable verbose debug mode,
+ * which uses more memory and time. 
  * 
  * #notes This enables debug mode for ALL requests. See the debugIf option for an alternative.
  * 
- * @var bool|string|int 
+ * @var bool
  *
  */
 $config->debug = false;
 
 /**
  * Enable debug mode if condition is met
- * 
- * ~~~~~
- * $config->debug = false; // setting this to false required when using debugIf
- * $config->debugIf = '123.123.123.123'; // true if user matches this IP address
- * $config->debugIf = [ '123.123.123.123', '456.456.456.456' ]; // array of IPs (3.0.212)+
- * $config->debugIf = 'function_name_to_call'; // callable function name
- * $config->debugIf = function() { // callable function (3.0.212+)
- *   return $_SERVER['SERVER_PORT'] === '8888'; 
- * }; 
- * ~~~~~
  *
  * Set debug mode to be false above, and then specify any one of the following here:
- * - IP address of user required to enable debug mode;
- * - Array of IP addresses where that debug mode should be enabled for (3.0.212+).
- * - Your own callable function in /site/config.php that returns true or false for debug mode.
- * - PCRE regular expression to match IP address of user (must start and end with a "/"
- *   slash). If IP address matches, then debug mode is enabled. Regular expression
- *   example: `/^123\.456\.789\./` would match all IP addresses that started with 123.456.789.
+ * 1) IP address of user required to enable debug mode;
+ * 2) Your own callable function name (i.e. "debug_mode") in /site/config.php that returns
+ * true or false for debug mode;
+ * 3) PCRE regular expression to match IP address of user (must start and end with a "/"
+ * slash). If IP address matches, then debug mode is enabled. Regular expression
+ * example: /^123\.456\.789\./ would match all IP addresses that started with 123.456.789.
  * 
- * #notes When used, this will override a false $config->debug, changing it at runtime automatically. 
+ * #notes When used, this overrides $config->debug, changing it at runtime automatically. 
  * @var string
  *
  */
@@ -316,8 +304,8 @@ $config->sessionExpireSeconds = 86400;
  * Use this to determine at runtime whether or not a session is allowed for the current request. 
  * Otherwise, this should always be boolean TRUE. When using this option, we recommend 
  * providing a callable function like below. Make sure that you put in some logic to enable
- * sessions on admin pages at minimum. The callable function receives a single $session argument
- * which is the ProcessWire Session instance. 
+ * sessions on admin pages at minimum. The callable function receives a single $wire argument
+ * which is the ProcessWire instance. 
  * 
  * Note that the API is not fully ready when this function is called, so the current $page and
  * the current $user are not yet known, nor is the $input API variable available. 

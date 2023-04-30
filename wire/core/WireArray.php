@@ -1607,13 +1607,10 @@ class WireArray extends Wire implements \IteratorAggregate, \ArrayAccess, \Count
 				if(is_array($selector->field)) {
 					$value = array();
 					foreach($selector->field as $field) {
-						$v = $this->getItemPropertyValue($item, $field);
-						if(is_array($v)) $v = implode(' ', $this->wire()->sanitizer->flatArray($v));
-						$value[] = (string) $v;
+						$value[] = (string) $this->getItemPropertyValue($item, $field);
 					}
 				} else {
-					$value = $this->getItemPropertyValue($item, $selector->field);
-					$value = is_array($value) ? $this->wire()->sanitizer->flatArray($value) : (string) $value;
+					$value = (string) $this->getItemPropertyValue($item, $selector->field);
 				}
 				if($not === $selector->matches($value) && isset($this->data[$key])) {
 					$qtyMatch++;
