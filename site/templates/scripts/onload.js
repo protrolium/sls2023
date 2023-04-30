@@ -1,3 +1,7 @@
+const style = document.createElement('style');
+style.innerHTML = 'html{visibility: visible;opacity:1;}';
+document.head.appendChild(style);
+
 const recent = document.getElementById("recentContainer");
 let distanct = null;
 
