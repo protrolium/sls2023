@@ -18,7 +18,7 @@
     {* desktop row *}
     <div 
         id="recentContainer" class="uk-visible@m uk-child-width-1-3@m uk-grid-small uk-flex uk-flex-nowrap uk-overflow-auto" 
-        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 550; repeat: false;" 
+        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 400; repeat: false;" 
         uk-grid>
 
         {foreach $page->children() as $item}
@@ -47,7 +47,7 @@
                 </div>
 
                 {* card image *}
-                <div 
+                <div
                     class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" 
                     style="background-image: url('{$item->featured_image->first->url}');">
 
@@ -78,7 +78,7 @@
                     {else}
                         <a href="{$item->url}" alt="">
                     {/if}
-                            <span class="uk-text-emphasis">{$item->title|noescape|upper}</span>
+                        <span class="uk-text-emphasis">{$item->title|noescape|upper}</span>
                         </a>
                     </h1>
                     
@@ -95,8 +95,8 @@
 
     {* mobile column *}
     <div 
-        id="recentContainer" class="uk-hidden@m uk-child-width-1-3@m uk-grid-small uk-flex uk-overflow-auto" 
-        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 550; repeat: false;" 
+        id="recentContainer" class="uk-hidden@m uk-child-width-1-3@m uk-grid-small uk-flex uk-overflow-auto uk-animation-fade" 
+        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 400; repeat: false;" 
         uk-grid>
 
         {foreach $page->children() as $item}
