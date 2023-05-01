@@ -1,11 +1,4 @@
-// no longer advised to use @import method
-
-// Import UIkit default theme (or uikit.less with only core styles) 
-//@import "../uikit-3.15.10/src/less/uikit.theme.less";
-//@import (inline) "google-fonts.css";
-
 // available fonts
-
 // font-family: 'Cabin', sans-serif;
 // font-family: 'Major Mono Display', monospace;
 // font-family: 'Oswald', sans-serif;
@@ -94,7 +87,6 @@ h6,
     background-color: var(--bg-color);
 }
 
-
 // card image heading on /recents
 .card-mini-heading {
     border-top: var(--index-item-border-top);
@@ -143,19 +135,6 @@ a:has(> img, svg)::after,
 // override for firefox to cancel display external link icon after images
 a.noExternalSVG::after {
     display: none !important;
-}
-
-// search engine
-:focus-visible {
-    border-radius: 3rem;
-}
-
-#se-results {
-    background-color: var(--component-bg-color);
-    position: absolute;
-    padding: 1em 3em 0 3em;
-    border-radius: 3rem;
-    z-index: 1000;
 }
 
 #featured-image-bg.lazyLoad {

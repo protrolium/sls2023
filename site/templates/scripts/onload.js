@@ -1,9 +1,11 @@
+// FOUC from _main.php
 const style = document.createElement('style');
 style.innerHTML = 'html{visibility: visible;opacity:1;}';
 document.head.appendChild(style);
 
+// /recent horizontal scroll
 const recent = document.getElementById("recentContainer");
-let distanct = null;
+let distance = null;
 
 if (recent != null) {
     let distance = recent.clientWidth;
@@ -43,42 +45,6 @@ function displayTime() {
 if (document.getElementById('studio-time')) {
     displayTime();
 }
-
-//remove search engine pager from DOM
-let searchResults = document.getElementById('se-results');
-let themeSwitcher = document.getElementById('dark-mode-btn');
-
-// Get the current URL
-let currentUrl = window.location.href;
-
-// Find the index of the "?q=" string in the URL
-let urlStringToRemoveFrom = currentUrl.indexOf('?q=');
-
-// Extract the part of the URL before the "?q=tokimonsta" string
-let cleanedUrl = currentUrl.substring(0, urlStringToRemoveFrom);
-
-// Get the input element
-let searchInputField = document.getElementById('se-form-input');
-
-// Add an event listener to the document object to detect clicks
-document.addEventListener('click', function(event) {
-  
-    // Check if the target of the click event is the div or a descendant of the div
-    if (searchResults) {
-        if (!searchResults.contains(event.target)) {
-
-        // The target of the click event is not the div or a descendant of the div, so remove the div from the DOM tree
-        searchResults.parentNode.removeChild(searchResults);
-
-        // Change the URL of the current page to the new URL
-        // history.pushState({}, '', cleanedUrl);
-
-        // Clear the value of the input element
-        searchInputField.value = '';
-        }
-    }
-
-});
 
 document.addEventListener("DOMContentLoaded", function() {
     var lazyloadImages;    

@@ -24,6 +24,7 @@ $rockfrontend
 	->add("/site/templates/uikit/dist/js/uikit.min.js", "defer")
 	->add("/site/templates/uikit/dist/js/uikit-icons.min.js", "defer")
 	->add("/site/templates/scripts/main.js")
+	// ->add("/site/templates/scripts/onload.js", "defer")
 	;
 
 ?>
@@ -86,7 +87,7 @@ $rockfrontend
 
 		<!-- show our site content -->
 		<!-- <style>html{visibility: visible;opacity:1;}</style> -->
-		
+
 		<!-- unhide the site content set via inline css above -->
 		<script type="text/javascript">window.addEventListener('load', function () {document.body.classList.remove('preload');});</script>
 
