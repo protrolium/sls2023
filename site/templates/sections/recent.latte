@@ -15,14 +15,93 @@
         </div>
     </div>
 
+    {* desktop row *}
     <div 
-        id="recentContainer" class="recent-horz-flow uk-child-width-1-3@m uk-grid-small uk-animation-fade" 
-        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 400; repeat: false;" 
+        id="recentContainer" class="uk-visible@m uk-child-width-1-3@m uk-grid-small uk-flex uk-flex-nowrap uk-overflow-auto" 
+        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 550; repeat: false;" 
         uk-grid>
 
         {foreach $page->children() as $item}
 
-            <div class="uk-card recent-horz-flow-child">
+            <div class="uk-card uk-flex-none">
+
+                {* mini heading *}
+                <div class="uk-width-1-1">
+                    <div class="card-mini-heading uk-clearfix">
+                        
+                        <div class="uk-inline">
+                            <p class="uk-text-small uk-margin-remove-bottom">
+                                <span class="uk-text-lighter uk-text-uppercase">{$item->date}</span>
+                            </p>
+                        </div>
+
+                        <div class="uk-inline uk-float-right">
+                            <p class="uk-inline uk-text-light uk-margin-remove-bottom">
+                                {foreach $item->artist as $a}
+                                    <a href="{$a->url}">{$a->title|upper}</a>&nbsp;
+                                {/foreach}
+                            </p>
+                        </div>
+                    
+                    </div>
+                </div>
+
+                {* card image *}
+                <div 
+                    class="uk-card-media-top uk-cover-container uk-border-circle recent-image uk-background-cover uk-background-primary" 
+                    style="background-image: url('{$item->featured_image->first->url}');">
+
+                    {if $item??->page_reference != ''}
+                        <a href="{$item->page_reference->url}" alt="">
+                            <canvas width="1200" height="1200"></canvas>
+                        </a>
+                    {elseif $item??->hyperlink != ''}
+                        <a class="noExternalSVG" href="{$item->hyperlink}" alt="" target="_blank">
+                            <canvas width="1200" height="1200"></canvas>
+                        </a>
+                    {else}
+                        <a class="noExternalSVG" href="{$item->url}" alt="">
+                            <canvas width="1200" height="1200"></canvas>
+                        </a>
+                    {/if}
+                </div>
+
+
+                <div class="uk-card-body uk-padding-small">
+                    
+                    <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
+
+                    {if $item??->page_reference != ''}
+                        <a href="{$item->page_reference->url}" alt="">
+                    {elseif $item??->hyperlink != ''}
+                        <a href="{$item->hyperlink}" alt="" target="_blank">
+                    {else}
+                        <a href="{$item->url}" alt="">
+                    {/if}
+                            <span class="uk-text-emphasis">{$item->title|noescape|upper}</span>
+                        </a>
+                    </h1>
+                    
+                    <h3 class="uk-text-lighter uk-margin-remove uk-text-truncate uk-text-center">
+                        {$item->subtitle|noescape}
+                    </h3>
+
+                </div>
+            </div>
+
+        {/foreach}
+
+    </div>
+
+    {* mobile column *}
+    <div 
+        id="recentContainer" class="uk-hidden@m uk-child-width-1-3@m uk-grid-small uk-flex uk-overflow-auto" 
+        uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 550; repeat: false;" 
+        uk-grid>
+
+        {foreach $page->children() as $item}
+
+            <div class="uk-card">
 
                 {* mini heading *}
                 <div class="uk-width-1-1">
