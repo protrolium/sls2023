@@ -13,3 +13,11 @@ if(!defined("PROCESSWIRE")) die();
  * copy of all ProcessWire API variables.
  *
  */
+
+ if($page->template != 'admin') {
+    $wire->addHookAfter('Pageimage::url', function($event) {
+      static $n = 0;
+      if(++$n === 1) $event->return = $event->object->webp()->url();
+      $n--;
+    });
+  }
