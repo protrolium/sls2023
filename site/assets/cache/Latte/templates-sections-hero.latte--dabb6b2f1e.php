@@ -31,7 +31,11 @@ final class Templatedabb6b2f1e extends Latte\Runtime\Template
                     <source src="';
 			echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($config->urls->assets)) /* line 13 */;
 			echo 'video/reel-no-text-1024k.webm" type="video/webm; codecs=vp9">
+                    <source src="';
+			echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($config->urls->assets)) /* line 14 */;
+			echo 'video/reel-no-text-1024k.mp4" type="video/mp4" width="1280" height="720">
                 </video>
+                
 ';
 		}
 		echo '        </div>
