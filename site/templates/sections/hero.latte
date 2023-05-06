@@ -9,10 +9,17 @@
 
         <div class="uk-height-viewport uk-cover-container">
             {if isMobileDevice() != true} 
-                <video width="1280" height="720" autoplay playsinline loop muted uk-cover>
-                    <source src="{$config->urls->assets}video/reel-no-text-1024k.webm" type="video/webm; codecs=vp9">
-                    <source src="{$config->urls->assets}video/reel-no-text-1024k.mp4" type="video/mp4" width="1280" height="720">
+                <video id="autoplay" width="1280" height="720" playsinline loop muted uk-cover>
+                    <source src="{$config->urls->assets}video/reel-no-text-1024k.webm" type="video/webm; codecs=vp9" />
+                    <source src="{$config->urls->assets}video/reel-no-text-1024k.mp4" type="video/mp4" />
                 </video>
+
+                {* address autoplay param *}
+                <script>
+                    window.onload = function() {
+                        document.getElementById("autoplay").play()
+                    }
+                </script>
                 
                 {* <div class="uk-overlay uk-position-cover uk-flex uk-flex-center uk-flex-middle uk-padding-remove">
                     <span class="uk-heading-small uk-text-lighter uk-text-uppercase">Strangeloop Studios</span>
