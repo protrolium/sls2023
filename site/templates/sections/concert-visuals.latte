@@ -79,11 +79,11 @@
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {* if we are on an artist's child page, display the title, else display the project subtitle *}
                                     {if $page->parent->parent->parent == $pages->get('projects')}
-                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->title}</span>
-                                        <span class="uk-text-lighter uk-hidden@m">{$page->title}</span>
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->title|noescape}</span>
+                                        <span class="uk-text-lighter uk-hidden@m">{$page->title|noescape}</span>
                                     {else}
-                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->subtitle}</span>
-                                        <span class="uk-text-lighter uk-hidden@m">{$page->subtitle}</span>
+                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->subtitle|noescape}</span>
+                                        <span class="uk-text-lighter uk-hidden@m">{$page->subtitle|noescape}</span>
                                     {/if}
                                 </div>
                         

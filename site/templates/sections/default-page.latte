@@ -47,7 +47,7 @@
 
                     {* if a collaborator is also an artist, list all projects    *}  
                     {if $pages->find("artist.name={$page->name}") == true && $pages->find('collaborator.name={$page->name}') == true}
-                        {var $items = $pages->find("artist.name|collaborator.name={$page->name}, sort=-date")->not("template=news-item")}                       
+                        {var $items = $pages->find("artist.name|collaborator.name={$page->name}, sort=-date|date_range")->not("template=news-item")}                       
                     {else}
                         {* {var $items = $pages->find("collaborator.name={$page->name}, sort=-date")} *}
                     {/if}

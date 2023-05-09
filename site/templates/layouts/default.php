@@ -3,6 +3,7 @@
 <?= $rockfrontend->renderIf("sections/studio.latte", "name=studio") ?>
 <?= $rockfrontend->renderIf("sections/about.latte", "name=about") ?>
 <?= $rockfrontend->renderIf("sections/recent.latte", "template=recent") ?>
+<?= $rockfrontend->renderIf("sections/news-item.latte", "template=news-item") ?>
 <?= $rockfrontend->renderIf("sections/projects.latte", "name=projects") ?>
 <?= $rockfrontend->renderIf("sections/music-videos.latte", "template=music-videos") ?>
 <?= $rockfrontend->renderIf("sections/concert-visuals.latte", "template=concert-visuals") ?>

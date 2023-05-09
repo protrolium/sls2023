@@ -38,7 +38,9 @@
                         <div class="uk-inline uk-float-right">
                             <p class="uk-inline uk-text-light uk-margin-remove-bottom">
                                 {foreach $item->artist as $a}
-                                    <a href="{$a->url}">{$a->title|upper}</a>&nbsp;
+                                    {if $iterator->counter <= 3}
+                                        <a href="{$a->url}">{$a->title|upper}</a>&nbsp;
+                                    {/if}
                                 {/foreach}
                             </p>
                         </div>
