@@ -11,7 +11,7 @@
             >
 
             <a href="{$image->url}" data-caption="{$image->description}" data-fancybox="gallery">
-                <img src="{$image->maxSize(1024,576)->url}" alt="{$image->description}" uk-cover/>
+                <img src="{$image->url}" alt="{$image->description}" uk-cover/>
                 <canvas width="1280" height="720"></canvas>
             </a>
 

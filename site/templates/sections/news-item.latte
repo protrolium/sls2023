@@ -77,9 +77,16 @@
                         {* Artist Name(s) *}
                         <p class="uk-margin-remove">
                             <span class="project-item-categories uk-text-small">Artist:</span><br>
+                            <div class="uk-padding-small uk-padding-remove-top uk-padding-remove-bottom">
                             {foreach $page->artist as $artist}
-                                <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
+                                {* temporary fix for artists with no content on artist pages *}
+                                {if $artist->id != 1300 && $artist->id != 1301 && $artist->id != 1302}
+                                    <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
+                                {else}
+                                    <span class="uk-text-lighter"><a>{$artist->title}</a></span>
+                                {/if}
                             {/foreach}
+                            </div>
 
                         {* Project Collaborators if they exist *}
                         {if $page??->collaborator != ''}
