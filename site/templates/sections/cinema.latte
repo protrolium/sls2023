@@ -153,7 +153,7 @@
                 {if $page??->credits != ''}
                     <div class="creditsGrid uk-width-1-1 uk-padding-large uk-flex-center" uk-scrollspy="cls:uk-animation-fade">
                         <p class="">
-                            {$page->credits|breakLines|stripHtml|noescape}
+                            {$page->credits|noescape}
                         </p>
                     </div>
                 {/if}

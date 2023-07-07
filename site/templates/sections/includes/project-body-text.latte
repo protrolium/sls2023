@@ -1,18 +1,18 @@
 {* project body heading area *}
 <div class="page-item uk-text-large uk-text-light uk-padding-large uk-width-expand@m">
     <div class="">
-        <h2>{$page->project_body_heading|breakLines|stripHtml|noescape}</h2>
+        <h2>{$page->project_body_heading|noescape}</h2>
     </div>
 
     {* project body paragraph area *}
     <div class="uk-margin-medium-top">
-        <span class="">{$page->project_body_paragraph|breakLines|stripHtml|noescape}</span>
+        <span class="">{$page->project_body_paragraph|noescape}</span>
     </div>
 </div>
 
 {* project body full width paragraph area if it exists *}
 {if $page??->project_body_full_width_paragraph != ''}
     <div class="page-item uk-text-large uk-text-light uk-padding-large uk-padding-remove-top uk-width-1-1@m">
-        {$page->project_body_full_width_paragraph|breakLines|stripHtml|noescape}
+        {$page->project_body_full_width_paragraph|noescape}
     </div>
 {/if}

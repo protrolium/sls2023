@@ -379,9 +379,9 @@
 
                                         {* display the unique collaborators for the children of parent pages *}
                                         {foreach $unique_collaborator as $uc}
-                                            <a href="{$pages->get($uc)->url|stripHtml}" alt="">
+                                            <a href="{$pages->get($uc)->url}" alt="">
                                                 <span class="uk-text-default uk-text-middle uk-visible@m">
-                                                    {$pages->get($uc)->title|stripHtml|noescape}
+                                                    {$pages->get($uc)->title|noescape}
                                                 </span>
                                             </a>
                                         {/foreach}
