@@ -35,8 +35,12 @@
                         
                         <div class="uk-inline uk-float-right">
                             <p class="uk-inline uk-text-light uk-margin-remove-bottom">
-                                {if $item->name == 'virtual-artists' || $item->name == 'vj-tools'}
-                                    <a href="{$randomChild->hyperlink}" alt="" target="_blank">
+                                {if $item->name == 'virtual-artists' || $item->name == 'toolkits'}
+                                    {if $randomChild??->hyperlink}
+                                        <a href="{$randomChild->hyperlink}" alt="" target="_blank">
+                                    {else}
+                                        <a href="{$randomChild->url|stripHtml}">
+                                    {/if}
                                 {else}
                                     <a href="{$randomChild->url|stripHtml}">
                                 {/if}
@@ -101,7 +105,7 @@
                         style="background-image: url('{$randomChild->featured_image->first->url}');">
                             
                             {* check to see if the item has the template virtual-artist or visual-content-packs, and if they do, change the nature of the link *}
-                            {if $item->name == 'virtual-artists' || $item->name == 'vj-tools'}
+                            {if $item->name == 'virtual-artists'}
                                 
                                 <a class="noExternalSVG" href="{$randomChild->hyperlink}" alt="" target="_blank">
                                     <canvas width="1200" height="1200"></canvas>
@@ -121,7 +125,7 @@
                 <div class="uk-card-body uk-padding-small">    
                 
                 <h1 class="uk-heading-small uk-margin-remove-bottom uk-text-lighter uk-text-center">
-                    {if $item->name == 'virtual-artists' || $item->name == 'vj-tools'}
+                    {if $item->name == 'virtual-artists' || $item->template == 'external-link'}
 
                         <a href="{$randomChild->hyperlink}" alt="" target="_blank">
                         

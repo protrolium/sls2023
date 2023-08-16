@@ -49,7 +49,7 @@
             {* add a margin to the very top of the list for the short border *}
             <span style="margin-top: 10px;"></span>
 
-            {foreach $pages->get('projects')->children()->not('name=virtual-artists|vj-tools') as $item}
+            {foreach $pages->get('projects')->children()->not('name=virtual-artists') as $item}
                 
                 <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
                     <a 
