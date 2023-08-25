@@ -70,6 +70,24 @@ $rockfrontend
 		<?php $metadata = $modules->get('MarkupMetadata');?>
 		<?php echo $metadata->render();?>
 
+		<!-- threejs code -->
+    	<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+		
+		<!-- make the lv-2 object accessible in lvtk-webgl.js -->
+		<script>
+			const extrasUrl = "<?php echo $config->urls->templates?>scripts/extras/";
+		</script>
+
+		<!-- importmaps -->
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "<?php echo $config->urls->templates?>scripts/build/three.module.js",
+					"three/addons/": "<?php echo $config->urls->templates?>scripts/jsm/"
+				}
+			}
+		</script>
+
 	</head>
 	<body id="html-body">
 		<!-- make sure we are in dark mode -->

@@ -277,7 +277,7 @@
                                 {* condition for if the item is an external link, send to the hyperlink field *}
 
                                 {if $item->template == 'external-link'}
-                                    <a class="noExternalSVG" href="{$item->hyperlink}" alt="">
+                                    <a class="noExternalSVG" href="{$item->hyperlink}" target="_blank" alt="">
                                         <canvas class="uk-visible@m" width="1280" height="480"></canvas>
                                         <canvas class="uk-hidden@m" width="720" height="720"></canvas>                        
                                     </a>

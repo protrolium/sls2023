@@ -75,21 +75,43 @@
                         
                         {* Project Title *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Project:</span><br>
-                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
-                                    {* if we are on an artist's child page, display the title, else display the project subtitle *}
-                                    {if $page->parent->parent->parent == $pages->get('projects')}
-                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->title|noescape}</span>
-                                        <span class="uk-text-lighter uk-hidden@m">{$page->title|noescape}</span>
-                                    {else}
-                                        <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->subtitle|noescape}</span>
-                                        <span class="uk-text-lighter uk-hidden@m">{$page->subtitle|noescape}</span>
-                                    {/if}
-                                </div>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Project:
+                                {elseif $user->language->name == 'spanish'}
+                                    Proyecto:
+                                {elseif $user->language->name == 'japanese'}
+                                    プロジェクト:
+                                {/if}
+                            </span>
+                            
+                            <br>
+                            
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                {* if we are on an artist's child page, display the title, else display the project subtitle *}
+                                {if $page->parent->parent->parent == $pages->get('projects')}
+                                    <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->title|noescape}</span>
+                                    <span class="uk-text-lighter uk-hidden@m">{$page->title|noescape}</span>
+                                {else}
+                                    <span class="uk-text-lighter uk-text-nowrap uk-visible@m">{$page->subtitle|noescape}</span>
+                                    <span class="uk-text-lighter uk-hidden@m">{$page->subtitle|noescape}</span>
+                                {/if}
+                            </div>
                         
                         {* Artist Name(s) *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Artist:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Artist:
+                                {elseif $user->language->name == 'spanish'}
+                                    Artista:
+                                {elseif $user->language->name == 'japanese'}
+                                    アーティスト:
+                                {/if}
+                            </span>
+                            
+                            <br>
+
                             {foreach $page->artist as $artist}
                                 <span class="uk-text-lighter uk-padding-small"><a href="{$artist->url}">{$artist->title}</a></span>
                             {/foreach}
@@ -97,7 +119,19 @@
                         {* Project Collaborators if they exist *}
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
-                                <span class="project-item-categories uk-text-small">Collaborators:</span><br>                            
+                                <span class="project-item-categories uk-text-small">
+                                    {if $user->language->name == 'default'}
+                                        Collaborators:
+                                    {elseif $user->language->name == 'spanish'}
+                                        Colaboradores:  
+                                    {elseif $user->language->name == 'japanese'}
+                                        共同研究者:
+                                    {/if}
+
+                                </span>
+                                
+                                <br>
+
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter uk-text-nowrap uk-visible@m">
@@ -108,11 +142,23 @@
                                         </span>
                                     {/foreach}
                                 </div>
+                            
                         {/if}
 
                         {* Project Date *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Date:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Date:
+                                {elseif $user->language->name == 'spanish'}
+                                    Fecha:
+                                {elseif $user->language->name == 'japanese'}
+                                    日付:
+                                {/if}
+                            </span>
+                            
+                            <br>
+                            
                             <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 {if $page??->date_range != ''}
                                     <span class="uk-text-lighter">{$page->date_range}</span>

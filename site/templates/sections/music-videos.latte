@@ -51,26 +51,59 @@
                         
                         {* Title *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Title:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Title:
+                                {elseif $user->language->name == 'spanish'}
+                                    Título:
+                                {elseif $user->language->name == 'japanese'}
+                                    タイトル:
+                                {/if}
+                            </span>
+                            
+                            <br>
+                            
                             <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 <span class="uk-text-lighter">{$page->title|noescape}</span>
                             </div>
                         
                         {* Artist *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Artist:</span><br>
-                                <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
-                                    {foreach $page->artist as $artist}
-                                        <span class="uk-text-lighter">
-                                            <a href="{$artist->url}">{$artist->title}</a>                                
-                                        </span>
-                                    {/foreach}
-                                </div>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Artist:
+                                {elseif $user->language->name == 'spanish'}
+                                    Artista:
+                                {elseif $user->language->name == 'japanese'}
+                                    アーティスト:
+                                {/if}
+                            </span>
+                                
+                            <br>
+                                
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                {foreach $page->artist as $artist}
+                                    <span class="uk-text-lighter">
+                                        <a href="{$artist->url}">{$artist->title}</a>                                
+                                    </span>
+                                {/foreach}
+                            </div>
                         
                         {* Collaborator *}
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
-                                <span class="project-item-categories uk-text-small">Collaborators:</span><br>
+                                <span class="project-item-categories uk-text-small">
+                                    {if $user->language->name == 'default'}
+                                        Collaborators:
+                                    {elseif $user->language->name == 'spanish'}
+                                        Colaboradores:  
+                                    {elseif $user->language->name == 'japanese'}
+                                        共同研究者:
+                                    {/if}
+                                </span>
+
+                                <br>
+                                
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter">
@@ -82,12 +115,33 @@
 
                         {* Release Date *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Release Date:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Release Date:
+                                {elseif $user->language->name == 'spanish'}
+                                    Fecha de Lanzamiento:
+                                {elseif $user->language->name == 'japanese'}
+                                    リリース日:
+                                {/if}
+                            </span>
+                            
+                            <br>
+
                             <span class="uk-text-lighter uk-padding-small">{$page->date}</span>
 
                         {* Label *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Label:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Label:
+                                {elseif $user->language->name == 'spanish'}
+                                    Sello discográfico:
+                                {elseif $user->language->name == 'japanese'}
+                                    レーベル:
+                                {/if}
+                            </span>
+                            
+                            <br>
                             {foreach $page->record_label as $label}
                                 <span class="uk-text-lighter uk-padding-small">                            
                                     <a href="{$label->hyperlink}" target="_blank">{$label->title}</a>

@@ -93,7 +93,17 @@
                         
                         {* Project Title *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Project:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Project:
+                                {elseif $user->language->name == 'spanish'}
+                                    Proyecto:
+                                {elseif $user->language->name == 'japanese'}
+                                    プロジェクト:
+                                {/if}
+                            </span>
+                            
+                            <br>
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {* if we are on an artist's child page, display the title, else display the project subtitle *}
                                     {if $page->parent->parent->parent == $pages->get('projects')}
@@ -108,7 +118,18 @@
                         {* Artist if it exists *}
                         <p class="uk-margin-remove">                            
                             {if $page??->artist != ''}
-                                <span class="project-item-categories uk-text-small">Artist:</span><br>
+                                <span class="project-item-categories uk-text-small">
+                                    {if $user->language->name == 'default'}
+                                        Artist:
+                                    {elseif $user->language->name == 'spanish'}
+                                        Artista:
+                                    {elseif $user->language->name == 'japanese'}
+                                        アーティスト:
+                                    {/if}
+                                </span>
+                            
+                                <br>
+
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->artist as $artist}
                                         <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title}</a></span>
@@ -119,7 +140,18 @@
 
                         {* Organization *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Organization:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Organization:
+                                {elseif $user->language->name == 'spanish'}
+                                    Organización:
+                                {elseif $user->language->name == 'japanese'}
+                                    組織:
+                                {/if}
+                            </span>
+                            
+                            <br>
+                            
                             <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">                                
                                 <span class="uk-text-lighter"><a href="">{$page->organization}</a></span>
                             </div>
@@ -127,7 +159,19 @@
                         {* Collaborators *}
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
-                                <span class="project-item-categories uk-text-small">Collaborators:</span><br>
+                                <span class="project-item-categories uk-text-small">
+                                    {if $user->language->name == 'default'}
+                                        Collaborators:
+                                    {elseif $user->language->name == 'spanish'}
+                                        Colaboradores:  
+                                    {elseif $user->language->name == 'japanese'}
+                                        共同研究者:
+                                    {/if}
+
+                                </span>
+                                
+                                <br>
+
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter uk-text-nowrap">
@@ -139,7 +183,18 @@
 
                         {* Date *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Date:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Date:
+                                {elseif $user->language->name == 'spanish'}
+                                    Fecha:
+                                {elseif $user->language->name == 'japanese'}
+                                    日付:
+                                {/if}
+                            </span>
+                            
+                            <br>
+
                             {if $page??->date_range != ''}
                                 <span class="uk-text-lighter uk-padding-small">{$page->date_range}</span>
                             {else}
@@ -148,7 +203,17 @@
 
                         {* display location *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Location:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Location:
+                                {elseif $user->language->name == 'spanish'}
+                                    Ubicación:
+                                {elseif $user->language->name == 'japanese'}
+                                    場所:
+                                {/if}
+                            </span>
+                            
+                            <br>
                             <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 {if $page??->location != ''}
                                     <span class="uk-text-lighter">{$page->location|breakLines}</span>

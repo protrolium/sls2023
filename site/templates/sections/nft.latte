@@ -73,7 +73,18 @@
                         
                         {* Title *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Project:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Project:
+                                {elseif $user->language->name == 'spanish'}
+                                    Proyecto:
+                                {elseif $user->language->name == 'japanese'}
+                                    プロジェクト:
+                                {/if}
+                            </span>
+                            
+                            <br>
+
                             <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 <span class="uk-text-lighter">{$page->title|noescape}</span>
                             </div>
@@ -81,7 +92,18 @@
                         
                         {* Artists *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Artist:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Artist:
+                                {elseif $user->language->name == 'spanish'}
+                                    Artista:
+                                {elseif $user->language->name == 'japanese'}
+                                    アーティスト:
+                                {/if}
+                            </span>
+                            
+                            <br>
+
                             <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                 {foreach $page->artist as $artist}
                                     <span class="uk-text-lighter"><a href="{$artist->url}">{$artist->title|noescape}</a></span>
@@ -92,7 +114,19 @@
                         {* Collaborators *}
                         {if $page??->collaborator != ''}
                             <p class="uk-margin-remove">
-                                <span class="project-item-categories uk-text-small">Collaborators:</span><br>
+                                <span class="project-item-categories uk-text-small">
+                                    {if $user->language->name == 'default'}
+                                        Collaborators:
+                                    {elseif $user->language->name == 'spanish'}
+                                        Colaboradores:  
+                                    {elseif $user->language->name == 'japanese'}
+                                        共同研究者:
+                                    {/if}
+
+                                </span>
+                                
+                                <br>
+
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
                                     {foreach $page->collaborator as $collaborator}
                                         <span class="uk-text-lighter uk-text-nowrap">
@@ -104,7 +138,18 @@
 
                         {* Date *}
                         <p class="uk-margin-remove">
-                            <span class="project-item-categories uk-text-small">Date:</span><br>
+                            <span class="project-item-categories uk-text-small">
+                                {if $user->language->name == 'default'}
+                                    Date:
+                                {elseif $user->language->name == 'spanish'}
+                                    Fecha:
+                                {elseif $user->language->name == 'japanese'}
+                                    日付:
+                                {/if}
+                            </span>
+                            
+                            <br>
+
                             {if $page??->date_range != ''}
                                 <span class="uk-text-lighter uk-padding-small">{$page->date_range}</span>
                             {else}
@@ -114,7 +159,17 @@
                         {* Platform *}
                         {if $page??->platform != ''}
                             <p class="uk-margin-remove">
-                                <span class="project-item-categories uk-text-small">Platform:</span><br>
+                                <span class="project-item-categories uk-text-small">
+                                    {if $user->language->name == 'default'}
+                                        Platform:
+                                    {elseif $user->language->name == 'spanish'}
+                                        Plataforma:
+                                    {elseif $user->language->name == 'japanese'}
+                                        プラットフォーム:
+                                    {/if}
+                                </span>
+                                
+                                <br>
                                 <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">                            
                                     {foreach $page->platform as $p}
                                         <span class="uk-text-lighter uk-text-nowrap">

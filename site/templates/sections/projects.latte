@@ -7,7 +7,13 @@
 
         <div class="uk-float-right uk-visible@m">
             <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
-                Visuals • Animation • Design • Tours
+                {if $user->language->name == 'default'}
+                    Visuals • Animation • Design • Tours
+                {elseif $user->language->name == 'spanish'}
+                    Visuales • Animación • Diseño • Giras
+                {elseif $user->language->name == 'japanese'}
+                    ビジュアル • アニメーション • デザイン • ツアー
+                {/if}
             </p>
         </div>
     </div>

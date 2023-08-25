@@ -11,7 +11,8 @@
                         href="{$item->url}" 
                         n:class="$rockfrontend->isActive($item) ? 'uk-active'">
                             <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
-                                {if $item->title == 'Projects'}
+                                {* add horizontal line to Projects ID nav item *}
+                                {if $item->id == '1031'} 
                                     <span class="horizontal-line">{$item->title}</span>
                                 {else}
                                     {$item->title}
@@ -56,10 +57,10 @@
                         href="{$item->url}" 
                         n:class="$rockfrontend->isActive($item) ? 'uk-active'">
                             <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
-                                {if $item->title == "Concert Visuals"}
+                                {if $item->id === $pages->get('projects')->children()->first->id}
                                     <div class="projects-div-top"></div>
                                     {$item->title}
-                                {elseif $item->title == "NFT"}
+                                {elseif $item->id === $pages->get('projects')->children()->last->id}
                                     {$item->title}
                                     <div class="projects-div-bottom"></div>
                                 {else}

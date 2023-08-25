@@ -10,7 +10,13 @@
 
         <div class="uk-float-right uk-visible@m">
             <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
-                Events • Concerts • Broadcast • Virtual
+                {if $user->language->name == 'default'}
+                    Events • Concerts • Broadcast • Virtual
+                {elseif $user->language->name == 'spanish'}
+                    Eventos • Conciertos • Transmisión • Virtual
+                {elseif $user->language->name == 'japanese'}
+                    イベント • コンサート • 放送 • バーチャル
+                {/if}
             </p>
         </div>
     </div>
