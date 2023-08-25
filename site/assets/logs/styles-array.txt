@@ -1,4 +1,0 @@
-2023-05-01 14:56:40	entelec9	http://localhost:8888/sls2023/recent/	Recompiled RockFrontend /sls2023/site/templates/bundle/head.css
-2023-05-01 14:57:13	entelec9	http://localhost:8888/sls2023/recent/	Recompiled RockFrontend /sls2023/site/templates/bundle/head.css
-2023-05-01 14:57:50	entelec9	http://localhost:8888/sls2023/recent/	Recompiled RockFrontend /sls2023/site/templates/bundle/head.css
-2023-05-01 14:58:07	entelec9	http://localhost:8888/sls2023/recent/	Recompiled RockFrontend /sls2023/site/templates/bundle/head.css

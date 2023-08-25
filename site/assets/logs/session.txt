@@ -1,2 +1,0 @@
-2023-05-01 16:56:34	entelec9	http://localhost:8888/sls2023/processwire/login/logout/	Logout for 'entelec9'
-2023-05-05 12:52:00	entelec9	http://localhost:8888/sls2023/processwire/login/	Successful login for 'entelec9'

@@ -1,8 +1,0 @@
-2023-05-01 13:47:06	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/sections/recent.latte
-2023-05-01 13:47:19	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/sections/recent.latte
-2023-05-01 14:56:36	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/styles/custom.less
-2023-05-01 14:56:56	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/sections/includes/footer-nav.latte
-2023-05-01 14:57:09	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/styles/custom.less
-2023-05-01 14:57:27	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/sections/includes/footer-nav.latte
-2023-05-01 14:57:47	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/styles/custom.less
-2023-05-01 14:58:03	?	?	/Applications/MAMP/htdocs/sls2023/site/templates/styles/custom.less
