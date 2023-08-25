@@ -18,6 +18,8 @@ site/templates/uikit/
 # Ignore site assets + modules
 site/assets/*
 site/modules/*
+site/templates/scripts/build/*
+site/templates/scripts/extras/*
 site/templates/scripts/jsm/*
 
 # Ignore /wire/ core files
