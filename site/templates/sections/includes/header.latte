@@ -72,13 +72,13 @@
             </div>
 
             {* language selector nav *}
-            {foreach $languages as $language}
+            {* {foreach $languages as $language}
                 {if $user->language->id == $language->id}
                     <span class="active">{$language->title}</span>
                 {else}
-                    <a href="{$page->localUrl($language)}">{$language->title}</a>
+                    <a href="{$page->localUrl($language)}"><span class="uk-text-light">{$language->title}</span></a>
                 {/if}
-            {/foreach}
+            {/foreach} *}
 
             <div id="menuContainer">
                 <button id="header-nav-desktop" class="hamburger-nav" uk-toggle="target: #menu" type="button">
