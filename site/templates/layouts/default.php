@@ -14,3 +14,4 @@
 <?= $rockfrontend->renderIf("sections/nft.latte", "template=nft") ?>
 <?= $rockfrontend->renderIf("sections/includes/related-items.latte", "template=music-videos|concert-visuals|broadcast|virtual-reality|brands") ?>
 <?= $rockfrontend->renderIf("sections/lv-toolkit.latte", "name=lv-toolkit") ?>
+<?= $rockfrontend->renderIf("sections/for-translation.latte", "template=forTranslate") ?>

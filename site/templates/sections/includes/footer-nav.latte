@@ -34,10 +34,18 @@
 
             {* social media icons *}
             <span class="uk-float-right uk-margin-small-top uk-margin-small-bottom">
-                <a class="primary-color uk-margin-small-right" href="mailto:info@strangeloop-studios.com" uk-icon="icon: mail; ratio: 1.25;"></a>
-                <a class="primary-color uk-margin-small-right noExternalSVG" href="{$pages->get('twitter')->hyperlink}" title="Email" uk-icon="icon: twitter; ratio: 1.25;"></a>
-                <a class="primary-color uk-margin-small-right noExternalSVG" href="{$pages->get('instagram')->hyperlink}" title="Instagram" uk-icon="icon: instagram; ratio: 1.25;"></a>
-                <a class="primary-color noExternalSVG" href="{$pages->get('discord')->hyperlink}" title="Discord" uk-icon="icon: discord; ratio: 1.25;"></a>              
+                <a class="primary-color uk-margin-small-right uk-icon" href="mailto:info@strangeloop-studios.com" title="E-mail">
+                    {$pages->get('name=email, template=image')->markup|noescape}
+                </a>
+                <a class="primary-color uk-margin-small-right noExternalSVG uk-icon" href="{$pages->get('twitter')->hyperlink}" title="X">
+                    {$pages->get('name=x, template=image')->markup|noescape}
+                </a>
+                <a class="primary-color uk-margin-small-right noExternalSVG uk-icon" href="{$pages->get('instagram')->hyperlink}" title="Instagram">
+                    {$pages->get('name=instagram, template=image')->markup|noescape}
+                </a>
+                <a class="primary-color noExternalSVG uk-icon" href="{$pages->get('discord')->hyperlink}" title="Discord">
+                    {$pages->get('name=discord, template=image')->markup|noescape}
+                </a>              
             </span>
 
         </div>
