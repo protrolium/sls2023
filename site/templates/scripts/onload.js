@@ -94,3 +94,11 @@ document.addEventListener("DOMContentLoaded", function() {
       window.addEventListener("orientationChange", lazyload);
     }
   })
+
+
+  const div = document.getElementById('se-results');
+  
+  div.addEventListener('click', function() {
+    this.classList.add('hidden');
+  });
+  

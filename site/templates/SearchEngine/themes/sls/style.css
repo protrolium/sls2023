@@ -40,6 +40,7 @@
     width: 100%;
     background-color: var(--component-bg-color);
     color: var(--text-color);
+    padding-left: 10px;
 }
 
 .search-form__submit {
