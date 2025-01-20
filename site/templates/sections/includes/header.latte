@@ -25,13 +25,13 @@
             
             <div style="margin-top: 3px;">
                 <button id="dark-mode-btn" class="theme-toggle uk-text-large" onclick="toggleTheme()">
-                    <span>🌙</span>
+                    <span>{$pages->get('name=theme-switcher-svg, template=image')->markup|noescape}</span>
                 </button>
             </div>
 
             <div id="menuContainer">
                 <button id="header-nav" class="hamburger-nav" uk-toggle="target: #menu" type="button">
-                    <span uk-icon="icon: menu; ratio: 1.5;"></span>
+                    <span style="vertical-align: -webkit-baseline-middle;" uk-icon="icon: menu; ratio: 1.5;"></span>
                 </button>
             </div>
         </div>
@@ -65,24 +65,24 @@
                 {$searchengine->render()|noescape}
             </div>
             
-            <div style="margin-top: 3px;">
+            <div>
                 <button id="dark-mode-btn-desktop" class="theme-toggle uk-text-large" onclick="toggleTheme()">
-                    <span>🌙</span>
+                    <span>{$pages->get('name=theme-switcher-svg, template=image')->markup|noescape}</span>
                 </button>
             </div>
 
             {* language selector nav *}
-            {* {foreach $languages as $language}
+            {foreach $languages as $language}
                 {if $user->language->id == $language->id}
                     <span class="active">{$language->title}</span>
                 {else}
                     <a href="{$page->localUrl($language)}"><span class="uk-text-light">{$language->title}</span></a>
                 {/if}
-            {/foreach} *}
+            {/foreach}
 
             <div id="menuContainer">
                 <button id="header-nav-desktop" class="hamburger-nav" uk-toggle="target: #menu" type="button">
-                    <span uk-icon="icon: menu; ratio: 1.5;"></span>
+                    <span style="vertical-align: -webkit-baseline-middle;" uk-icon="icon: menu; ratio: 1.5;"></span>
                 </button>
             </div>
         </div>

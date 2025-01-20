@@ -8,14 +8,14 @@
     {/if}
 
         <div class="uk-height-viewport uk-cover-container">
-            {if isMobileDevice() != true} 
+            {* {if isMobileDevice() != true} 
                 <video id="autoplay" width="1280" height="720" playsinline loop muted uk-cover>
                     <source src="{$config->urls->assets}video/reel-2023-updated-v2-1280.webm" type="video/webm; codecs=vp9" />
                     <source src="{$config->urls->assets}video/reel-2023-updated-v2-1280.mp4" type="video/mp4" />
                 </video>
 
                 {* address autoplay param *}
-                <script>
+                {* <script>
                     window.onload = function() {
                         document.getElementById("autoplay").play()
                     }
@@ -24,7 +24,66 @@
                 {* <div class="uk-overlay uk-position-cover uk-flex uk-flex-center uk-flex-middle uk-padding-remove">
                     <span class="uk-heading-small uk-text-lighter uk-text-uppercase">Strangeloop Studios</span>
                 </div> *}
+
+            {* {/if} *}
+
+            {if isMobileDevice() != true}
+                <iframe 
+                id="youtube-player"
+                src="https://www.youtube.com/embed/mX7Ex0KGId8?si=6ZSjn3B-b2DR2vA4?autoplay=1&mute=1&loop=1&playlist=mX7Ex0KGId8&controls=0&rel=0"
+                width="1280"
+                height="720"
+                frameborder="0"
+                allowfullscreen
+                uk-cover
+                ></iframe>
+
+                <script>
+                    // Load YouTube API
+                    var tag = document.createElement('script');
+                    tag.src = "https://www.youtube.com/iframe_api";
+                    var firstScriptTag = document.getElementsByTagName('script')[0];
+                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+                    // Create YouTube player and autoplay when ready
+                    var player;
+                    function onYouTubeIframeAPIReady() {
+                        player = new YT.Player('youtube-player', {
+                        events: {
+                            'onReady': function(event) {
+                            event.target.playVideo();
+                            }
+                        }
+                        });
+                    }
+                </script>
             {/if}
+
+        </div>
+
+
+        <div class="uk-width-1-1 uk-padding uk-text-center">
+            
+            <div>
+                <p class="uk-text-uppercase">Projects With</p>
+            </div>
+
+            {foreach $pages->get("name=artists")->children()->not("name=lv4|e-elias-merhige|w-w|") as $item}
+                    <h2 class="uk-inline uk-text-lighter uk-margin-remove-bottom uk-margin-remove-top">
+                        {if $item != $iterator->last}
+                            {* check to see if $item has parent.name = concert-visuals, and show that *}
+                            <a class="index-item uk-text-secondary" href="{$item->url}">
+                                {$item->title|upper|noescape}
+                            </a> •
+                        {else}
+                            <a class="index-item uk-text-secondary" href="{$item->url}">
+                                {$item->title|upper|noescape}
+                            </a>
+                        {/if}
+                    </h2>
+
+            {/foreach}
+        
         </div>
 
 </section>
