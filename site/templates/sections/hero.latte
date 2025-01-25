@@ -67,21 +67,33 @@
             <div>
                 <p class="uk-text-uppercase">Projects With</p>
             </div>
+            
+            {* get all artist pages *}
+            {var $artists = $pages->get("name=artists")->children()}
+            
+            {* initialize relevantProjects array *}
+            {var $relevantProjects = []}
 
-            {foreach $pages->get("name=artists")->children()->not("name=lv4|e-elias-merhige|w-w|") as $item}
+            {* include only templates that we want to link to *}
+            {foreach $artists as $item}
+                {if $item->references()->find("template=concert-visuals|music-videos|broadcast|virtual-reality|brands")->count > 0}
+                    {var $relevantProjects[] = $item}
+                {/if}
+            {/foreach}
+
+            {foreach $relevantProjects as $item}
                     <h2 class="uk-inline uk-text-lighter uk-margin-remove-bottom uk-margin-remove-top">
                         {if $item != $iterator->last}
                             {* check to see if $item has parent.name = concert-visuals, and show that *}
-                            <a class="index-item uk-text-secondary" href="{$item->url}">
+                            <a class="index-item uk-text-secondary" href="{$item->getShowByArtist()->url}">
                                 {$item->title|upper|noescape}
                             </a> •
                         {else}
-                            <a class="index-item uk-text-secondary" href="{$item->url}">
+                            <a class="index-item uk-text-secondary" href="{$item->getShowByArtist()->url}">
                                 {$item->title|upper|noescape}
                             </a>
                         {/if}
                     </h2>
-
             {/foreach}
         
         </div>
