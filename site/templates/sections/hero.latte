@@ -76,7 +76,7 @@
 
             {* include only templates that we want to link to *}
             {foreach $artists as $item}
-                {if $item->references()->find("template=concert-visuals|music-videos|broadcast|virtual-reality|brands")->count > 0}
+                {if $item->references()->find("template!=news-item|nft")->count > 0}
                     {var $relevantProjects[] = $item}
                 {/if}
             {/foreach}
@@ -84,7 +84,7 @@
             {foreach $relevantProjects as $item}
                     <h2 class="uk-inline uk-text-lighter uk-margin-remove-bottom uk-margin-remove-top">
                         {if $item != $iterator->last}
-                            {* check to see if $item has parent.name = concert-visuals, and show that *}
+                            {* calls method defined in DefaultPage class *}
                             <a class="index-item uk-text-secondary" href="{$item->getShowByArtist()->url}">
                                 {$item->title|upper|noescape}
                             </a> •
