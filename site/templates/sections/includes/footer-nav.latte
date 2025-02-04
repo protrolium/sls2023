@@ -22,15 +22,6 @@
                 </span>
                     
             {/foreach}
-            
-            
-            {* <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
-                    <a href="https://spiritbomb.ai" target="_blank">
-                        <span class="uk-text-emphasis uk-text-lighter uk-text-uppercase">
-                            <span>Spirit Bomb</span>
-                        </span>
-                    </a>
-            </span> *}
 
             {* social media icons *}
             <span class="uk-float-right uk-margin-small-top uk-margin-small-bottom">
@@ -43,9 +34,9 @@
                 <a class="primary-color uk-margin-small-right noExternalSVG uk-icon" href="{$pages->get('instagram')->hyperlink}" title="Instagram">
                     {$pages->get('name=instagram, template=image')->markup|noescape}
                 </a>
-                <a class="primary-color noExternalSVG uk-icon" href="{$pages->get('discord')->hyperlink}" title="Discord">
-                    {$pages->get('name=discord, template=image')->markup|noescape}
-                </a>              
+                <a class="primary-color uk-margin-small-right noExternalSVG uk-icon" href="{$pages->get('youtube')->hyperlink}" title="Instagram">
+                    {$pages->get('name=youtube, template=image')->markup|noescape}
+                </a>
             </span>
 
         </div>
@@ -58,7 +49,7 @@
             {* add a margin to the very top of the list for the short border *}
             <span style="margin-top: 10px;"></span>
 
-            {foreach $pages->get('projects')->children()->not('name=virtual-artists') as $item}
+            {foreach $pages->get('projects')->children()->not('name=virtual-artists|nft|toolkits') as $item}
                 
                 <span class="uk-text-large uk-text-emphasis uk-margin-small-bottom">
                     <a 
@@ -68,7 +59,7 @@
                                 {if $item->id === $pages->get('projects')->children()->first->id}
                                     <div class="projects-div-top"></div>
                                     {$item->title}
-                                {elseif $item->id === $pages->get('projects')->children()->last->id}
+                                {elseif $iterator->last}
                                     {$item->title}
                                     <div class="projects-div-bottom"></div>
                                 {else}
