@@ -23,14 +23,14 @@
             {* project body heading area *}
             <div class="uk-text-large uk-text-lightest uk-padding-large uk-width-1-2@m">
                 <div class="">
-                    <h1>Seen All Over The World</h1>
+                    <h1>{$page->project_body_paragraph|noescape}</h1>
                     <span class="uk-heading-small">{$page->body_2|noescape}</span>
                     <h1><span class="uk-text-lighter">{$page->project_body_heading|noescape}</span></h1><br>
                 </div>
 
-                <div class="uk-text-large uk-text-light uk-width-1-@m">
+                <!-- <div class="uk-text-large uk-text-light uk-width-1-@m">
                     <span class="">{$page->project_body_paragraph|noescape}</span>
-                </div>
+                </div> -->
 
             </div>
 
@@ -74,9 +74,9 @@
             </div>
         {/if}
 
-        <div class="uk-flex uk-grid-collapse uk-flex-top uk-flex-center uk-visible@m" uk-height-match uk-grid uk-scrollspy="cls:uk-animation-fade">
+        <!-- <div class="uk-flex uk-grid-collapse uk-flex-top uk-flex-center uk-visible@m" uk-height-match uk-grid uk-scrollspy="cls:uk-animation-fade">
         
-            {* desktop *}
+            {* mobile *}
             <div class="uk-flex uk-flex-column uk-flex-around uk-text-large uk-text-light uk-padding-large uk-width-1-2@m">
                 <div>
                     <img alt="" class="hidpi" id="logo-studio" src="{$pages->get('sls-logo')->image->first->url}" width="150" height="141" />
@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> 
 
         <div class="uk-flex uk-grid-collapse uk-flex-top uk-flex-center uk-hidden@m" uk-height-match uk-grid uk-scrollspy="cls:uk-animation-fade">
         
@@ -188,6 +188,6 @@
 
             </div>
 
-        </div>
+        </div> -->
 
     </div>
