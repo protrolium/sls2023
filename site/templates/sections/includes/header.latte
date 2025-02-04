@@ -65,20 +65,20 @@
                 {$searchengine->render()|noescape}
             </div>
             
-            <div>
-                <button id="dark-mode-btn-desktop" class="theme-toggle uk-text-large" onclick="toggleTheme()">
-                    <span>{$pages->get('name=theme-switcher-svg, template=image')->markup|noescape}</span>
-                </button>
-            </div>
-
             {* language selector nav *}
-            {foreach $languages as $language}
+            {* {foreach $languages as $language}
                 {if $user->language->id == $language->id}
                     <span class="active">{$language->title}</span>
                 {else}
                     <a href="{$page->localUrl($language)}"><span class="uk-text-light">{$language->title}</span></a>
                 {/if}
-            {/foreach}
+            {/foreach} *}
+            
+            <div>
+                <button id="dark-mode-btn-desktop" class="theme-toggle uk-text-large" onclick="toggleTheme()">
+                    <span>{$pages->get('name=theme-switcher-svg, template=image')->markup|noescape}</span>
+                </button>
+            </div>
 
             <div id="menuContainer">
                 <button id="header-nav-desktop" class="hamburger-nav" uk-toggle="target: #menu" type="button">
