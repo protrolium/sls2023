@@ -7,7 +7,7 @@
         >
     {/if}
 
-        <div class="uk-height-viewport uk-cover-container">
+        <div class="uk-height-1-1 uk-child-width-expand">
             {* {if isMobileDevice() != true} 
                 <video id="autoplay" width="1280" height="720" playsinline loop muted uk-cover>
                     <source src="{$config->urls->assets}video/reel-2023-updated-v2-1280.webm" type="video/webm; codecs=vp9" />
@@ -30,12 +30,11 @@
             {if isMobileDevice() != true}
                 <iframe 
                 id="youtube-player"
-                src="https://www.youtube.com/embed/mX7Ex0KGId8?si=6ZSjn3B-b2DR2vA4?autoplay=1&mute=1&loop=1&playlist=mX7Ex0KGId8&controls=0&rel=0"
+                src="https://www.youtube.com/embed/mX7Ex0KGId8?autoplay=1&mute=1&loop=1&playlist=mX7Ex0KGId8&controls=0&rel=0"
                 width="1280"
                 height="720"
                 frameborder="0"
                 allowfullscreen
-                uk-cover
                 ></iframe>
 
                 <script>
