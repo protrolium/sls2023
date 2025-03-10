@@ -1,10 +1,14 @@
 // theme switcher
 const html = document.querySelector('html');
-html.dataset.theme = `theme-light`;
 let darkMode = localStorage.getItem('dark-mode');
 
+// Don't force theme-light - check localStorage first
+if (darkMode !== "enabled" && !html.dataset.theme) {
+  html.dataset.theme = `theme-light`;
+}
+
 function switchTheme(theme) {
-    html.dataset.theme = `theme-${theme}`;
+  html.dataset.theme = `theme-${theme}`;
 }
 
 function switchAssets(theme) {
@@ -55,11 +59,12 @@ function toggleTheme() {
     }
 }
 
-if (darkMode === "enabled") { // set state of darkMode on page load
-    document.addEventListener('DOMContentLoaded', (event) => {
-        switchAssets('dark');
-    });
-}
+// Apply assets after DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (darkMode === "enabled") {
+      switchAssets('dark');
+    }
+  });
 
 /*
 // listen to os preference

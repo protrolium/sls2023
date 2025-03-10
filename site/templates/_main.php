@@ -14,36 +14,44 @@
 /** @var RockFrontend $rockfrontend */
 
 $home = $pages->get('/'); // homepage directory
-$rockfrontend->styles()
-	->add("/site/templates/uikit/src/less/uikit.theme.less")
-	->add("/site/templates/styles/custom.less")
-	->addDefaultFolders()
-	;
-$rockfrontend
-	->scripts()
-	->add("/site/templates/uikit/dist/js/uikit.min.js") // remove , "defer" to prevent FOUC
-	->add("/site/templates/uikit/dist/js/uikit-icons.min.js", "defer")
-	->add("/site/templates/scripts/main.js")
-	;
 
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $user->language->languagecode; ?>">
 	<head id="html-head">
-		<!-- Google tag (gtag.js) -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-2N6CFM6P3B"></script>
+		<!-- Prevent FOUC and immediately apply correct theme -->
+		<!-- Dark mode handler - place at top of head section -->
 		<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-
-		gtag('config', 'G-2N6CFM6P3B');
+			(function() {
+				// Get dark mode preference before any rendering happens
+				const darkMode = localStorage.getItem('dark-mode');
+				if (darkMode === "enabled") {
+				document.documentElement.dataset.theme = 'theme-dark';
+				} else {
+				document.documentElement.dataset.theme = 'theme-light';
+				}
+			})();
 		</script>
 		
 		<!-- hide our site content -->
-		<style>html{visibility: hidden;opacity:0;}body.preload * {transition: none !important;animation: none !important;}body.preload .page-content {opacity: 0;visibility: hidden;}</style>
-
+		<style>html {visibility: hidden;opacity: 0; transition: opacity 0.2s ease;}body.preload * {transition: none !important;animation: none !important;}body.preload .page-content {opacity: 0;visibility: hidden;}</style>
+		
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		
+		<!-- add our styles and scripts -->
+		<?= $rockfrontend->styleTag($config->urls->templates . "/dst/styles.min.css") ?>
+		<?= $rockfrontend->scriptTag($config->urls->templates . "/dst/scripts.min.js") ?>
+		
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-2N6CFM6P3B"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			
+			gtag('config', 'G-2N6CFM6P3B');
+			</script>
+		
 		
 		<!-- make sure we get styling on mobile by setting meta viewport -->
 		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,19 +82,19 @@ $rockfrontend
 	</head>
 	<body id="html-body">
 		<!-- make sure we are in dark mode -->
-		<script type="text/javascript">
+		<!-- <script type="text/javascript">
 			const selectedTheme = localStorage.getItem('dark-mode');
 			if (selectedTheme === "enabled") {
 				html.dataset.theme = `theme-dark`;
 			};
-		</script>
+		</script> -->
 
 		<?= $rockfrontend->render("sections/includes/header.latte") ?>
 		<?= $rockfrontend->renderLayout($page) ?>
 		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
 
 		<!-- show our site content -->
-		<!-- <style>html{visibility: visible;opacity:1;}</style> -->
+		<style>html{visibility: visible;opacity:1;}</style>
 
 		<!-- unhide the site content set via inline css above -->
 		<script type="text/javascript">window.addEventListener('load', function () {document.body.classList.remove('preload');});</script>

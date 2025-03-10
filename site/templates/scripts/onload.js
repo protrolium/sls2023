@@ -1,8 +1,3 @@
-// FOUC from _main.php
-const style = document.createElement('style');
-style.innerHTML = 'html{visibility: visible;opacity:1;}';
-document.head.appendChild(style);
-
 // /recent horizontal scroll
 const recent = document.getElementById("recentContainer");
 let distance = null;
@@ -93,12 +88,15 @@ document.addEventListener("DOMContentLoaded", function() {
       window.addEventListener("resize", lazyload);
       window.addEventListener("orientationChange", lazyload);
     }
-  })
 
-
-  const div = document.getElementById('se-results');
-  
-  div.addEventListener('click', function() {
-    this.classList.add('hidden');
+    const div = document.getElementById('se-results');
+    
+    if (div) {
+      div.addEventListener('click', function() {
+        this.classList.add('hidden');
+      });
+    }
   });
+
+
   
