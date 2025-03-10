@@ -17,4 +17,8 @@
  * 
  */
 class HomePage extends Page {
+
+    // public function getShowByArtist() {
+    //     return $this->wire()->pages->get("template!=nft, sort=-date, artist.name='{$this->name}'");
+    // }
 }
