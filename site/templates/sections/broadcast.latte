@@ -4,7 +4,12 @@
         <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
             
             {* page title moble *}
-            <div class="uk-clearfix uk-blend-luminosity uk-hidden@m" uk-height-match>
+            <div 
+                class="uk-clearfix uk-blend-luminosity uk-hidden@m" 
+                uk-height-match
+                uk-scrollspy="cls: uk-animation-fade; target: > div; delay: 350; repeat: false;"
+                >
+
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('broadcast')->url}" alt="">
@@ -33,7 +38,12 @@
             </div>
             
             {* page title desktop *}
-            <div class="uk-clearfix uk-blend-luminosity uk-visible@m" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
+            <div 
+                class="uk-clearfix uk-blend-luminosity uk-visible@m" 
+                uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;"
+                uk-scrollspy="cls: uk-animation-fade; target: > div; delay: 350; repeat: false;"
+                >
+
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary uk-text-uppercase" href="{$pages->get('broadcast')->url}" alt="">
@@ -62,14 +72,14 @@
             </div>
 
             {* page content *}
-            <div class="">
+            <div uk-scrollspy="cls: uk-animation-fade; target: > div; delay: 350; repeat: false;">
 
                 {* get video embed 1, otherwise if it doesn't exist get the featured image *}
                 {if $page??->video_embed_1}
                     <div 
                         class="page-item uk-width-1-1 uk-cover uk-cover-container video-container" 
                         uk-flex uk-img="loading: lazy"
-                        uk-scrollspy="cls:uk-animation-fade">
+                        >
                             {$page->get('video_embed_1')|noescape}
                     </div>
 
@@ -78,7 +88,7 @@
                     <div 
                         class="page-item uk-width-1-1 uk-cover uk-cover-container" 
                         uk-flex uk-img="loading: lazy"
-                        uk-scrollspy="cls:uk-animation-fade">
+                        >
                             <img 
                                 src="{$page->get('featured_image')->first->url}" 
                                 alt="{$page->get('featured_image')->first->description}" 
@@ -88,7 +98,7 @@
 
                 {/if}
                 
-                <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
+                <div class="page-item uk-flex uk-grid-collapse" uk-grid>
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
                         
                         {* Project Title *}
@@ -228,19 +238,19 @@
 
                 {* video embed 2, if it exits *}
                 {if $page??->video_embed_2}
-                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
+                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex>
                         {$page->get('video_embed_2')|noescape}
                     </div>
                 {/if}
 
                 {* gallery *}
-                <div uk-scrollspy="cls: uk-animation-fade; delay: 250; repeat: false">
+                <div>
                     {$rockfrontend->render("/sections/includes/gallery.latte")}
                 </div>
 
                 {* video embed 3, if it exits *}
                 {if $page??->video_embed_3}
-                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex uk-scrollspy="cls:uk-animation-fade">
+                    <div class="page-item uk-width-1-1 video-container uk-margin-small" uk-flex>
                         {$page->get('video_embed_3')|noescape}
                     </div>
                 {/if}

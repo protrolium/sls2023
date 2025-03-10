@@ -1,0 +1,11 @@
+{var $bodyHeading = $pages->find("project_body_heading")}
+
+{* {= $pages->find("field=project_body_heading")} *}
+
+{foreach $pages->find("field=project_body_heading") as $item}
+    {$item->get("project_body_heading")|stripHtml}
+    {$item??->get("project_body_paragraph")|stripHtml}
+    {$item??->get("project_body_full_width_paragraph")|stripHtml}
+    &nbsp;
+    <br>
+{/foreach}

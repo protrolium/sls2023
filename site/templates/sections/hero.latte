@@ -1,5 +1,5 @@
 <section>
-    {if isMobileDevice() == true} 
+    {if ismobiledevice() == true} 
         <div 
             class="uk-background-cover" 
             data-src="{$pages->find('id=1059|1060|1064|1192|1259|1075|1271|1267|1084|1074|1208')->shuffle()->first->featured_image->first->url}" 
@@ -27,7 +27,7 @@
 
             {* {/if} *}
 
-            {if isMobileDevice() != true}
+            {if ismobiledevice() != true}
                 <iframe 
                 id="youtube-player"
                 src="https://www.youtube.com/embed/mX7Ex0KGId8?autoplay=1&mute=1&loop=1&playlist=mX7Ex0KGId8&controls=0&rel=0"
@@ -61,7 +61,9 @@
         </div>
 
 
-        <div class="uk-width-1-1 uk-padding uk-text-center">
+        <div 
+            class="uk-width-1-1 uk-padding uk-text-center" 
+            uk-scrollspy="cls: uk-animation-fade; target: > h2; delay: 100; repeat: false;">
             
             <div>
                 <p class="uk-text-uppercase">Projects With</p>

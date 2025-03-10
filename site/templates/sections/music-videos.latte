@@ -4,7 +4,12 @@
         <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
             
             {* page title mobile *}
-            <div class="uk-clearfix uk-blend-luminosity uk-hidden@m" uk-height-match>
+            <div 
+                class="uk-clearfix uk-blend-luminosity uk-hidden@m" 
+                uk-height-match
+                uk-scrollspy="cls: uk-animation-fade; target: > div; delay: 350; repeat: false;"
+                >
+
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
@@ -21,7 +26,13 @@
             </div>
             
             {* page title desktop *}
-            <div class="uk-clearfix uk-blend-luminosity uk-visible@m" uk-height-match uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;">
+            <div 
+                class="uk-clearfix uk-blend-luminosity uk-visible@m" 
+                uk-height-match 
+                uk-sticky="sel-target: .uk-navbar-container; end: !.page-content;"
+                uk-scrollspy="cls: uk-animation-fade; target: > div; delay: 350; repeat: false;"
+                >
+
                 <div class="uk-inline">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
@@ -38,15 +49,13 @@
             </div>
 
             {* page content *}
-            <div class="">
+            <div uk-scrollspy="cls: uk-animation-fade; target: > div; delay: 350; repeat: false;">
 
-                <div 
-                    class="page-item uk-width-1-1 video-container" 
-                    uk-flex uk-scrollspy="cls:uk-animation-fade">
+                <div class="page-item uk-width-1-1 video-container">
                         {$page->get('video_embed_1')|noescape}
                 </div>
                 
-                <div class="page-item uk-flex uk-grid-collapse" uk-grid uk-scrollspy="cls:uk-animation-fade">
+                <div class="page-item uk-flex uk-grid-collapse" uk-grid>
                     <div class="uk-text-large uk-text-light uk-padding-large uk-width-1-2@m silkscreen-text">
                         
                         {* Title *}

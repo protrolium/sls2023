@@ -1,11 +1,12 @@
 <main>
-    <div class="uk-padding-small uk-animation-fade">
+    <div class="uk-padding-small">
         
         <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
             
             {* page title *}
             <div class="uk-clearfix" uk-height-match>
-                <div class="uk-inline">
+
+                <div class="uk-inline" uk-scrollspy="cls: uk-animation-fade; target: > p; delay: 350; repeat: false;">
                     <p class="uk-heading-small uk-text-lighter">
                     <a class="uk-text-secondary" href="{$page->parent->url}" alt="">
                         
@@ -25,14 +26,12 @@
                 </div>
 
                 <div class="uk-float-right uk-visible@m">
-                    <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top">
-                    </p>
+                    <p class="uk-text-large uk-text-uppercase uk-text-lighter uk-margin-top"></p>
                 </div>
             </div>
             
             {* begin index list *}
-            <div
-                uk-scrollspy="cls: uk-animation-fade; target: .index-item-border-top; delay: 550; repeat: false;" uk-grid-match>
+            <div uk-grid-match uk-scrollspy="cls: uk-animation-fade; target: .index-item-border-top; delay: 550; repeat: false;">
             
                 {* get children as well as nested-children pages *}
                 {* {var $items = $page->find("children.count=0, sort=-date")} *}
