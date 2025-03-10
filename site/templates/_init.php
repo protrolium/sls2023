@@ -33,7 +33,7 @@ if ($config->rockdevtools) {
   }
 
 
-function isMobileDevice() {
+function ismobiledevice() {
     // Get the user agent string
     $userAgent = $_SERVER['HTTP_USER_AGENT'];
   
