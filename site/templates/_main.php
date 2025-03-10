@@ -19,7 +19,7 @@ $home = $pages->get('/'); // homepage directory
 <!DOCTYPE html>
 <html lang="<?php echo $user->language->languagecode; ?>">
 	<head id="html-head">
-		<!-- Prevent FOUC and immediately apply correct theme -->
+		
 		<!-- Dark mode handler - place at top of head section -->
 		<script>
 			(function() {
