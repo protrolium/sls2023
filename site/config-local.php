@@ -10,8 +10,8 @@ $config->dbName = 'sls';
 $config->dbUser = 'root';
 $config->dbPass = 'root';
 $config->dbPort = '3306';
-$config->userAuthSalt = '78803e005cab4acda2450f9dba0f05f98addc2f3'; 
-$config->tableSalt = '63ac0d934361327b80cb564feb3e4c2f6ffba6ef'; 
+$config->userAuthSalt = '44979bedc29501bc2505ad99cc5f9e9a844e124c'; 
+$config->tableSalt = '069f69ad0ac48471573b56bd886be9651cf8aa22'; 
 $config->httpHosts = array('localhost:8888', 'localhost:8888');
 
 // this prevents logout when switching between
