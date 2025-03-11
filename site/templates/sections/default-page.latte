@@ -40,7 +40,8 @@
                 
                 {* if we are looking at an artist page, define $items differently *}
                 {if $page->parent == $pages->get("artists")}
-                    {var $items = $pages->find("artist.name={$page->name}, sort=-date")->not("template=news-item")}
+                    {* exclude news-items that have an interal page_reference field *}
+                    {var $items = $pages->find("artist.name={$page->name}, sort=-date")->not("page_reference.count>0")}
 
                 {elseif $page->parent == $pages->get("collaborators")}
 
