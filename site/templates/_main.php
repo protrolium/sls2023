@@ -16,6 +16,7 @@
 $home = $pages->get('/'); // homepage directory
 
 ?>
+
 <!DOCTYPE html>
 <html lang="<?php echo $user->language->languagecode; ?>">
 	<head id="html-head">
@@ -39,8 +40,8 @@ $home = $pages->get('/'); // homepage directory
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		
 		<!-- add our styles and scripts -->
-		<?= $rockfrontend->styleTag($config->urls->templates . "/dst/styles.min.css") ?>
-		<?= $rockfrontend->scriptTag($config->urls->templates . "/dst/scripts.min.js") ?>
+		<?= $rockfrontend->styleTag($config->urls->templates . "dst/styles.min.css") ?>
+		<?= $rockfrontend->scriptTag($config->urls->templates . "dst/scripts.min.js") ?>
 		
 		<!-- Google tag (gtag.js) -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-2N6CFM6P3B"></script>
@@ -81,13 +82,6 @@ $home = $pages->get('/'); // homepage directory
 
 	</head>
 	<body id="html-body">
-		<!-- make sure we are in dark mode -->
-		<!-- <script type="text/javascript">
-			const selectedTheme = localStorage.getItem('dark-mode');
-			if (selectedTheme === "enabled") {
-				html.dataset.theme = `theme-dark`;
-			};
-		</script> -->
 
 		<?= $rockfrontend->render("sections/includes/header.latte") ?>
 		<?= $rockfrontend->renderLayout($page) ?>
