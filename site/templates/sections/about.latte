@@ -40,7 +40,13 @@
 
                 <div class="uk-margin-remove-top uk-margin-xlarge-bottom">
                     <h1>Connect</h1>
-                    <h3 class="uk-margin-remove-top">
+                    
+                    {* mobile *}
+                    <span class="uk-text-large uk-hidden@m">
+                        {$page->body_2|noescape}
+                    </span>
+                    
+                    <h3 class="uk-margin-remove-top uk-visible@m">
                         {$page->body_2|noescape}
                         {* mailing list *}
                     </h3>
