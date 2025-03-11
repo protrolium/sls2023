@@ -19,7 +19,7 @@ function switchAssets(theme) {
     const logosLightArray = [...logosLightList];
 
     if (theme === "dark") {
-        document.getElementById("dark-mode-btn").innerHTML = '<svg width="16pt" height="16pt" viewBox="0 0 16 18"><path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/></svg>';
+        document.getElementById("dark-mode-btn").innerHTML = '<svg width="16pt" height="16pt" viewBox="0 0 16 18" fill="white"><path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/></svg>';
         document.getElementById("dark-mode-btn-desktop").innerHTML = '<svg width="16pt" height="16pt" viewBox="0 0 16 18" fill="white"><path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/></svg>';
         document.getElementById("header-nav").style.color = "#fff";
         document.getElementById("header-nav-desktop").style.color = "#fff";
@@ -52,10 +52,12 @@ function toggleTheme() {
         switchTheme('dark');
         switchAssets('dark');
         localStorage.setItem("dark-mode", "enabled");
+        console.log("dark mode enabled");
     } else {
         switchTheme('light');
         switchAssets('light');
         localStorage.setItem("dark-mode", "disabled");
+        console.log("dark mode disabled");
     }
 }
 
