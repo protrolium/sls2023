@@ -1,10 +1,10 @@
 <main>
-    <div class="uk-padding-small">
+    <div class="">
         
         <div class="uk-flex uk-flex-column uk-width-1-1 uk-height-viewport">
             
             {* page title *}
-            <div class="uk-clearfix" uk-height-match>
+            <div class="uk-clearfix uk-padding-small uk-padding-remove-bottom" uk-height-match>
 
                 <div class="uk-inline" uk-scrollspy="cls: uk-animation-fade; target: > p; delay: 350; repeat: false;">
                     <p class="uk-heading-small uk-text-lighter">
@@ -61,215 +61,9 @@
                 {* loop through items *}
                 {foreach $items as $item}
                     
-                    <div class="index-item-border-top">
-                        <div class="uk-clearfix">
-                            
-                            <div class="uk-inline">
-                                 <h1 class="uk-text-lighter">
-
-                                    {* condition for when the item is an external link, send the title to the hyperlink field *}
-                                    {if $item->template == 'external-link'}
-                                        <a class="uk-text-emphasis" href="{$item->hyperlink}" alt="">{$item->title|upper|noescape}</a>
-                                    
-                                    {else}
-                                        
-                                        {* otherwise do as we normally would with the title *}
-                                        <a class="uk-text-emphasis" href="{$item->url}" alt="">
-                                            {* if page has children, display some info relevant to the item *}
-                                            {if $item->template == 'default-page' && $item->hasChildren()}
-
-                                                {if $item->template == 'brands'}
-                                                    {$item->organization|upper|noescape}
-                                                {else}
-                                                    {* {$item->title|upper} *}
-                                                {/if}
-                                                    
-                                            {/if}
-
-                                            {* if no artist present use organization *}
-                                            {if $item->template != 'broadcast' 
-                                                && $item->template != 'brands' 
-                                                && $item->template != 'cinema' 
-                                                && $item->template != 'concert-visuals'
-                                                && $item->template != 'virtual-reality'
-                                                }
-
-                                                {if $page->parent != $pages->get('name=artists|collaborators')}
-                                                    
-                                                    {* display artist name except on artist and collaborator pages *}
-                                                    {if $item->artist??->first}
-                                                        {$item->artist->first->title|upper|noescape}
-                                                    {else}
-                                                        {$item->title|upper|noescape}
-                                                    {/if}
-
-                                                {/if}
-                                            {/if}   
-
-                                            {* first check to make sure if we are on an artist or collaborator index page *}
-                                            {if $page->parent == $pages->get('name=artists|collaborators') && $page->template == 'default-page'}
-                                                
-                                                {* if $item has the concert-visuals template, display the title *}
-                                                {if $item->template == 'concert-visuals'}
-                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                    <span class="uk-hidden@m">
-                                                        {* display the title if we are on a concert-visuals item with children (i.e. Bonobo) *}
-                                                        {if $item??->subtitle}
-                                                            {$item->subtitle|upper|noescape}
-                                                        {else}
-                                                            {$item->title|upper|noescape}
-                                                        {/if}
-                                                    </span>
-                                                {/if}
-
-                                                {* if $item has the virtual-reality or nft template, display the title *}
-                                                {if $item->template == 'virtual-reality' || $item->template == 'nft'}
-                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-
-                                                {* if $item has the brands template, display the title *}
-                                                {elseif $item->template == 'cinema'}
-                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-                                        
-                                                {* display title on other templates (i.e. music-videos) *}
-                                                {elseif $item->template == 'music-videos'}
-                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                    <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-
-                                                {* display the subtitle for broadcast template *}
-                                                {elseif $item->template == 'broadcast'}
-                                                    <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                    <span class="uk-hidden@m">
-                                                        {* display the title if we are on a broadcast item with children (i.e. lil-nas-x) *}
-                                                        {if $item??->subtitle}
-                                                            {$item->subtitle|upper|noescape}
-                                                        {else}
-                                                            {$item->title|upper|noescape}
-                                                        {/if}
-                                                    </span>
-
-                                                {* display the news-item title if template calls for it *}
-                                                {elseif $item->template == 'news-item'}
-                                                    {$item->title|upper|noescape}
-                                                
-                                                {* display the title if item is a project that has children *}
-                                                {elseif $item->parent->parent->parent == $pages->get('name=projects')}
-                                                    {* {$item->artist->first->title|upper|noescape} *}
-                                                
-                                                {* display the subtitle except on cinema items on artist/collaborator index pages *}
-                                                {* {elseif $item->template != 'cinema' || $item->template != 'concert-visuals'}
-                                                    {$item->subtitle|upper|noescape} *}
-                                                {/if}
-                                                                                                                        
-                                            {/if}
-
-                                            {if $page->parent != $pages->get('name=artists|collaborators')}                           
-                                            
-                                                {* if no aritst present use organization *}
-                                                {if $item->template == 'broadcast' 
-                                                    && $page->parent != $pages->find('name=artists|collaborators')}
-                                                        {if $item->artist??->first}
-                                                            <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                        {else}
-                                                            <span class="uk-visible@m">{$item->title|upper|noescape}</span>
-                                                        {/if}                                                
-                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-                                                {/if}
-
-                                                {* if item has virtual-reality template, display the artist *}
-                                                {if $item->template == 'virtual-reality' 
-                                                    && $page->parent != $pages->find('name=artists|collaborators')}
-                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                
-                                                {/if}
-
-                                                {* if item has cinema template, display the title *}
-                                                {if $item->template == 'cinema' 
-                                                    && $item->parent == $pages->get('name=cinema')}
-                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                    
-                                                {/if}
-
-                                                {* if concert-visuals item has children, display the title  *}
-                                                {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
-                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
-                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
-                                                        {* {$item->title|upper|noescape} *}
-                                                {/if}
-
-                                                {* if item has brands template and is a parent, display the title *}
-                                                {if $item->template == 'brands' 
-                                                    && $page->template == 'default-page'}
-                                                        {$item->title|upper|noescape}                                                                            
-                                                {/if}
-                                            {/if}
-
-                                        </a>
-                                    {/if}
-
-                                </h1>                            
-                            </div>
-
-                            <div class="uk-inline uk-float-right uk-visible@m">
-                                <h1 class="uk-text-lighter uk-text-muted" href="{$item->url}">
-                                    
-                                    {if $page->parent != $pages->find('name=artists|collaborators')}
-                                        
-                                        {* if no subtitle present use the title *}
-                                        {if $item->template == 'broadcast' 
-                                            || $item->template == 'concert-visuals' 
-                                            || $item->template == 'default-page'
-                                            || $item->template == 'external-link'
-                                            || $item->template == 'webgl-project'}
-                                            
-                                            {* if $item has the subtitle field, display it *}
-                                            {if $item??->subtitle}
-                                                {$item->subtitle|upper|noescape}
-
-                                            {* if $item has children display the parent's title, unless there are no remaining children *}
-                                            {elseif $item->template == 'default-page'}
-                                                {$item->parent->title|upper|noescape}
-                                            
-                                            {* if subtitle is empty and we are on the concert-visuals index, display the parent name (i.e. concert visuals) *}
-                                            {elseif $item->parent == $pages->find('concert-visuals')}
-                                                {$item->parent->title|upper|noescape}
-                                            
-                                            {else}
-                                                {$item->title|upper|noescape}
-
-                                            {/if}
-                                
-                                        {* if $item has the virtual-reality or nft template, display the title *}
-                                        {elseif $item->template == 'virtual-reality' || $item->template == 'nft'}
-                                            {$item->title|upper|noescape}
-                                            {* {$item->artist->first->title|upper|noescape} *}
-
-                                        {* if $item has the cinema template, display the title *}
-                                        {elseif $item->template == 'cinema'}
-                                            {$item->title|upper|noescape}
-                                
-                                        {* display title on other templates (i.e. music-videos) *}
-                                        {elseif $item->template == 'music-videos'}
-                                            {$item->title|upper|noescape}
-
-                                        {* display the news-item title if template calls for it *}
-                                        {elseif $item->template == 'news-item'}
-                                            {$item->title|upper|noescape}       
-
-                                        {* if item has the brands template display the organization *}
-                                        {elseif $item->template == 'brands'}
-                                            {$item->organization|upper|noescape}
-                                    
-                                        {/if}
-
-                                    {/if}
-
-                                </h1>
-                            </div>
-                        </div>
-
+                    <div class="index-item-border-top uk-padding-remove">
                         {* featured image div *}
+                        
                         <div 
                             id="featured-image-bg"
                             class="uk-cover-container uk-background-cover lazyLoad"
@@ -279,144 +73,345 @@
                                 {if $item->template == 'external-link'}
                                     <a class="noExternalSVG" href="{$item->hyperlink}" target="_blank" alt="">
                                         <canvas class="uk-visible@m" width="1280" height="480"></canvas>
-                                        <canvas class="uk-hidden@m" width="720" height="720"></canvas>                        
+                                        <canvas class="uk-hidden@m" width="720" height="720"></canvas> 
+                                        {* overlay color *}
+                                        <div class="overlay-projects uk-position-cover"></div>                       
                                     </a>
                                 {else}
                                     <a href="{$item->url}" alt="">
                                         <canvas class="uk-visible@m" width="1280" height="480"></canvas>
-                                        <canvas class="uk-hidden@m" width="720" height="720"></canvas>                        
+                                        <canvas class="uk-hidden@m" width="720" height="720"></canvas>
+                                        {* overlay color *}
+                                        <div class="overlay-projects uk-position-cover"></div>                   
                                     </a>
                                 {/if}
-                        </div>
 
-                    </div>
 
-                    {* item footer info *}
-                    <div class="uk-margin-large-bottom">
-                        <div class="uk-clearfix uk-margin-small-bottom">
-                            <div class="uk-float-left">
-                                <p class="uk-text-lighter uk-margin-remove">
-                                    
-                                    <span uk-icon="icon: world; ratio: 1.1;"></span>&nbsp;
-
-                                    {* display the date range if it exists *}
-                                    {if $item??->date_range}
-                                        <span class="uk-text-default uk-text-middle">
-                                            {$item->date_range}
-                                        </span>
-                                    {else}
-                                        <span class="uk-text-default uk-text-middle">
-                                            {$item->date}
-                                        </span>
-                                    {/if}
-
-                                    {* display child info if $item is a parent *}
-                                    {if $item->template == 'default-page'}
-                                        <span class="uk-text-default uk-text-middle">
-
-                                            {* display how many children there are *}
-                                            {* {$item->children->count} Projects *}
-                                            
-                                            {* display the different years *}
-                                            {$item->children->count} Projects
-                                            {foreach $item->children as $child}
-                                                <a href="{$child->url}" alt="">
-                                                    {$child->date|date:"Y"}
-                                                </a>
-                                            {/foreach}
-                                        </span>
-                                    {/if}
-
-                                </p>
-                            </div>
-
-                            <div class="uk-float-right">
-                                <p class="uk-text-lighter uk-margin-remove">
-                                    
-                                    {if $item??->collaborator}
-                                        <span uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
+                            
+                            {* title / footer text parent div *}
+                            <div class="uk-clearfix uk-overlay">
                                 
-                                        {* get the first three collaborators  *}
-                                        {foreach $item->collaborator->slice(0, 3) as $collaborator}
-                                            <a href="{$collaborator->url}" alt="">
-                                                <span class="uk-text-default uk-text-middle uk-visible@m">
-                                                    {$collaborator->title|noescape}
-                                                </span>
+                                <div class="uk-position-top uk-padding-small">
+                                    <h1 class="uk-text-lighter">
+
+                                        {* condition for when the item is an external link, send the title to the hyperlink field *}
+                                        {if $item->template == 'external-link'}
+                                            <a class="text-light" href="{$item->hyperlink}" alt="">
+                                                {$item->title|upper|noescape}
                                             </a>
-                                        {/foreach}
                                         
-                                        {* get the first collaborator for mobile  *}
-                                        {if $item??->collaborator && $item->template != 'brands' && $item->template != 'broadcast'}
-                                        <span class="uk-text-default uk-text-middle uk-hidden@m">
-                                            {if $item??->collaborator != ''}
-                                                <a href="{$item->collaborator->first->url}" alt="">
-                                                    {$item->collaborator->first->title|noescape}
-                                                </a>
-                                            {/if}
-                                        </span>
-                                        {/if}
+                                        {else}
+                                            
+                                            {* otherwise do as we normally would with the title *}
+                                            <a class="text-light" href="{$item->url}" alt="">
+                                                {* if page has children, display some info relevant to the item *}
+                                                {if $item->template == 'default-page' && $item->hasChildren()}
 
-                                    {/if}
-                                    
-                                    {* display the organization string *}
-                                    {if $item??->organization}
-                                        <span class="uk-text-default uk-text-middle">
-                                            {* conditional for if the child is an external link or an internal page *}
-                                            {if $item->template == 'external-link'}
-                                                <a href="{$item->hyperlink}" alt="">
-                                                    {$item->organization|noescape}
-                                                </a>
-                                            {else}
-                                                <a href="{$item->url}" alt="">
-                                                    {$item->organization|noescape}                                            
-                                                </a>
-                                            {/if}
-                                        </span>
-                                    {/if}
-
-                                    {* display child info if $item is a parent *}
-                                    {if $item->template == 'default-page'}
-                                        <span uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
-                                    
-                                        {* get unique collaborators *}
-                                        {var $unique_collaborator = []}
-                                        {foreach $item->children() as $child}                                        
-
-                                            {* show collaborators on any page with children except brand pages *}
-                                            {if $child??->collaborator}
-                                                {foreach $child->collaborator as $collaborator}
-                                                    {* add ids to the $unique_collaborator array *}
-                                                    {if !in_array($collaborator->id, $unique_collaborator)}
-                                                        {var $unique_collaborator[] = $collaborator->id}
+                                                    {if $item->template == 'brands'}
+                                                        {$item->organization|upper|noescape}
+                                                    {else}
+                                                        {* {$item->title|upper} *}
                                                     {/if}
-                                                {/foreach}
-                                            {/if}
+                                                        
+                                                {/if}
 
-                                        {/foreach}
+                                                {* if no artist present use organization *}
+                                                {if $item->template != 'broadcast' 
+                                                    && $item->template != 'brands' 
+                                                    && $item->template != 'cinema' 
+                                                    && $item->template != 'concert-visuals'
+                                                    && $item->template != 'virtual-reality'
+                                                    }
 
-                                        {* show organizations on any page with children except brand pages *}
-                                        {if $child??->organization}
-                                            <span class="uk-text-default uk-text-middle">    
-                                                <a href="{$child->url}" alt="">
-                                                    {$child->organization|noescape}
-                                                </a>
-                                            </span>
+                                                    {if $page->parent != $pages->get('name=artists|collaborators')}
+                                                        
+                                                        {* display artist name except on artist and collaborator pages *}
+                                                        {if $item->artist??->first}
+                                                            {$item->artist->first->title|upper|noescape}
+                                                        {else}
+                                                            {$item->title|upper|noescape}
+                                                        {/if}
+
+                                                    {/if}
+                                                {/if}   
+
+                                                {* first check to make sure if we are on an artist or collaborator index page *}
+                                                {if $page->parent == $pages->get('name=artists|collaborators') && $page->template == 'default-page'}
+                                                    
+                                                    {* if $item has the concert-visuals template, display the title *}
+                                                    {if $item->template == 'concert-visuals'}
+                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                        <span class="uk-hidden@m">
+                                                            {* display the title if we are on a concert-visuals item with children (i.e. Bonobo) *}
+                                                            {if $item??->subtitle}
+                                                                {$item->subtitle|upper|noescape}
+                                                            {else}
+                                                                {$item->title|upper|noescape}
+                                                            {/if}
+                                                        </span>
+                                                    {/if}
+
+                                                    {* if $item has the virtual-reality or nft template, display the title *}
+                                                    {if $item->template == 'virtual-reality' || $item->template == 'nft'}
+                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+
+                                                    {* if $item has the brands template, display the title *}
+                                                    {elseif $item->template == 'cinema'}
+                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+                                            
+                                                    {* display title on other templates (i.e. music-videos) *}
+                                                    {elseif $item->template == 'music-videos'}
+                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                        <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+
+                                                    {* display the subtitle for broadcast template *}
+                                                    {elseif $item->template == 'broadcast'}
+                                                        <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                        <span class="uk-hidden@m">
+                                                            {* display the title if we are on a broadcast item with children (i.e. lil-nas-x) *}
+                                                            {if $item??->subtitle}
+                                                                {$item->subtitle|upper|noescape}
+                                                            {else}
+                                                                {$item->title|upper|noescape}
+                                                            {/if}
+                                                        </span>
+
+                                                    {* display the news-item title if template calls for it *}
+                                                    {elseif $item->template == 'news-item'}
+                                                        {$item->title|upper|noescape}
+                                                    
+                                                    {* display the title if item is a project that has children *}
+                                                    {elseif $item->parent->parent->parent == $pages->get('name=projects')}
+                                                        {* {$item->artist->first->title|upper|noescape} *}
+                                                    
+                                                    {* display the subtitle except on cinema items on artist/collaborator index pages *}
+                                                    {* {elseif $item->template != 'cinema' || $item->template != 'concert-visuals'}
+                                                        {$item->subtitle|upper|noescape} *}
+                                                    {/if}
+                                                                                                                            
+                                                {/if}
+
+                                                {if $page->parent != $pages->get('name=artists|collaborators')}                           
+                                                
+                                                    {* if no aritst present use organization *}
+                                                    {if $item->template == 'broadcast' 
+                                                        && $page->parent != $pages->find('name=artists|collaborators')}
+                                                            {if $item->artist??->first}
+                                                                <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                            {else}
+                                                                <span class="uk-visible@m">{$item->title|upper|noescape}</span>
+                                                            {/if}                                                
+                                                            <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+                                                    {/if}
+
+                                                    {* if item has virtual-reality template, display the artist *}
+                                                    {if $item->template == 'virtual-reality' 
+                                                        && $page->parent != $pages->find('name=artists|collaborators')}
+                                                            <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                            <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                
+                                                    {/if}
+
+                                                    {* if item has cinema template, display the title *}
+                                                    {if $item->template == 'cinema' 
+                                                        && $item->parent == $pages->get('name=cinema')}
+                                                            <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                            <span class="uk-hidden@m">{$item->title|upper|noescape}</span>                                                    
+                                                    {/if}
+
+                                                    {* if concert-visuals item has children, display the title  *}
+                                                    {if $item->template == 'concert-visuals' && $page->template == 'default-page'}
+                                                            <span class="uk-visible@m">{$item->artist->first->title|upper|noescape}</span>
+                                                            <span class="uk-hidden@m">{$item->title|upper|noescape}</span>
+                                                            {* {$item->title|upper|noescape} *}
+                                                    {/if}
+
+                                                    {* if item has brands template and is a parent, display the title *}
+                                                    {if $item->template == 'brands' 
+                                                        && $page->template == 'default-page'}
+                                                            {$item->title|upper|noescape}                                                                            
+                                                    {/if}
+                                                {/if}
+
+                                            </a>
                                         {/if}
 
-                                        {* display the unique collaborators for the children of parent pages *}
-                                        {foreach $unique_collaborator as $uc}
-                                            <a href="{$pages->get($uc)->url}" alt="">
-                                                <span class="uk-text-default uk-text-middle uk-visible@m">
-                                                    {$pages->get($uc)->title|noescape}
-                                                </span>
-                                            </a>
-                                        {/foreach}
+                                    </h1>                            
+                                </div>
 
-                                        {* {implode(', ', $unique_collaborator)} *}
+                                <div class="uk-position-right uk-padding-small uk-float-right uk-visible@m">
+                                    <h1 class="uk-text-lighter text-light-muted" href="{$item->url}">
+                                        
+                                        {if $page->parent != $pages->find('name=artists|collaborators')}
+                                            
+                                            {* if no subtitle present use the title *}
+                                            {if $item->template == 'broadcast' 
+                                                || $item->template == 'concert-visuals' 
+                                                || $item->template == 'default-page'
+                                                || $item->template == 'external-link'
+                                                || $item->template == 'webgl-project'}
+                                                
+                                                {* if $item has the subtitle field, display it *}
+                                                {if $item??->subtitle}
+                                                    {$item->subtitle|upper|noescape}
 
-                                    {/if}
+                                                {* if $item has children display the parent's title, unless there are no remaining children *}
+                                                {elseif $item->template == 'default-page'}
+                                                    {$item->parent->title|upper|noescape}
+                                                
+                                                {* if subtitle is empty and we are on the concert-visuals index, display the parent name (i.e. concert visuals) *}
+                                                {elseif $item->parent == $pages->find('concert-visuals')}
+                                                    {$item->parent->title|upper|noescape}
+                                                
+                                                {else}
+                                                    {$item->title|upper|noescape}
 
-                                </p>
+                                                {/if}
+                                    
+                                            {* if $item has the virtual-reality or nft template, display the title *}
+                                            {elseif $item->template == 'virtual-reality' || $item->template == 'nft'}
+                                                {$item->title|upper|noescape}
+                                                {* {$item->artist->first->title|upper|noescape} *}
+
+                                            {* if $item has the cinema template, display the title *}
+                                            {elseif $item->template == 'cinema'}
+                                                {$item->title|upper|noescape}
+                                    
+                                            {* display title on other templates (i.e. music-videos) *}
+                                            {elseif $item->template == 'music-videos'}
+                                                {$item->title|upper|noescape}
+
+                                            {* display the news-item title if template calls for it *}
+                                            {elseif $item->template == 'news-item'}
+                                                {$item->title|upper|noescape}       
+
+                                            {* if item has the brands template display the organization *}
+                                            {elseif $item->template == 'brands'}
+                                                {$item->organization|upper|noescape}
+                                        
+                                            {/if}
+
+                                        {/if}
+
+                                    </h1>
+                                </div>
+
+                                {* item footer info *}
+                                <div class=" uk-position-bottom uk-padding-small">
+                                    <div class="uk-clearfix uk-margin-small-bottom">
+                                        <div class="uk-float-left">
+                                            <p class="uk-text-lighter uk-margin-remove">
+                                                
+                                                <span class="text-light" uk-icon="icon: world; ratio: 1.1;"></span>&nbsp;
+
+                                                {* display the date range if it exists *}
+                                                {if $item??->date_range}
+                                                    <span class="text-light uk-text-middle">
+                                                        {$item->date_range}
+                                                    </span>
+                                                {else}
+                                                    <span class="text-light uk-text-middle">
+                                                        {$item->date}
+                                                    </span>
+                                                {/if}
+
+                                                {* display child info if $item is a parent *}
+                                                {if $item->template == 'default-page'}
+                                                    <span class="text-light-muted uk-text-middle">
+
+                                                        {* display how many children there are *}
+                                                        {* {$item->children->count} Projects *}
+                                                        
+                                                        {* display the different years *}
+                                                        {$item->children->count} Projects
+                                                        {foreach $item->children as $child}
+                                                            <a class="text-light" href="{$child->url}" alt="">{$child->date|date:"Y"}</a>
+                                                        {/foreach}
+                                                    </span>
+                                                {/if}
+
+                                            </p>
+                                        </div>
+
+                                        <div class="uk-float-right">
+                                            <p class="uk-text-lighter uk-margin-remove">
+                                                
+                                                {if $item??->collaborator}
+                                                    <span class="text-light" uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
+                                            
+                                                    {* get the first three collaborators  *}
+                                                    {foreach $item->collaborator->slice(0, 3) as $collaborator}
+                                                        <a href="{$collaborator->url}" alt=""><span class="text-light uk-text-middle uk-visible@m">{$collaborator->title|noescape}</span></a>
+                                                    {/foreach}
+                                                    
+                                                    {* get the first collaborator for mobile  *}
+                                                    {if $item??->collaborator && $item->template != 'brands' && $item->template != 'broadcast'}
+                                                    <span class="uk-text-middle uk-hidden@m">
+                                                        {if $item??->collaborator != ''}
+                                                            <a class="text-light" href="{$item->collaborator->first->url}" alt="">{$item->collaborator->first->title|noescape}</a>
+                                                        {/if}
+                                                    </span>
+                                                    {/if}
+
+                                                {/if}
+                                                
+                                                {* display the organization string *}
+                                                {if $item??->organization}
+                                                    <span class="text-light uk-text-middle">
+                                                        {* conditional for if the child is an external link or an internal page *}
+                                                        {if $item->template == 'external-link'}
+                                                            <a class="text-light" href="{$item->hyperlink}" alt="">
+                                                                {$item->organization|noescape}
+                                                            </a>
+                                                        {else}
+                                                            <a class="text-light" href="{$item->url}" alt="">
+                                                                {$item->organization|noescape}                                            
+                                                            </a>
+                                                        {/if}
+                                                    </span>
+                                                {/if}
+
+                                                {* display child info if $item is a parent *}
+                                                {if $item->template == 'default-page'}
+                                                    <span class="text-light" uk-icon="icon: users; ratio: 1.1;"></span>&nbsp;
+                                                
+                                                    {* get unique collaborators *}
+                                                    {var $unique_collaborator = []}
+                                                    {foreach $item->children() as $child}                                        
+
+                                                        {* show collaborators on any page with children except brand pages *}
+                                                        {if $child??->collaborator}
+                                                            {foreach $child->collaborator as $collaborator}
+                                                                {* add ids to the $unique_collaborator array *}
+                                                                {if !in_array($collaborator->id, $unique_collaborator)}
+                                                                    {var $unique_collaborator[] = $collaborator->id}
+                                                                {/if}
+                                                            {/foreach}
+                                                        {/if}
+
+                                                    {/foreach}
+
+                                                    {* show organizations on any page with children except brand pages *}
+                                                    {if $child??->organization}
+                                                        <span class="uk-text-middle">    
+                                                            <a class="text-light" href="{$child->url}" alt="">{$child->organization|noescape}</a>
+                                                        </span>
+                                                    {/if}
+
+                                                    {* display the unique collaborators for the children of parent pages *}
+                                                    {foreach $unique_collaborator as $uc}
+                                                        <a class="text-light uk-text-middle uk-visible@m" href="{$pages->get($uc)->url}" alt="">{$pages->get($uc)->title|noescape}</a>
+                                                    {/foreach}
+
+                                                    {* {implode(', ', $unique_collaborator)} *}
+
+                                                {/if}
+
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
