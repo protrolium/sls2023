@@ -123,9 +123,11 @@
                             
                             <br>
 
-                            {foreach $page->artist as $artist}
-                                <span class="uk-text-lighter uk-padding-small"><a href="{$artist->url}">{$artist->title}</a></span>
-                            {/foreach}
+                            <div class="uk-padding-small uk-padding-remove-bottom uk-padding-remove-top uk-padding-remove-right">
+                                {foreach $page->artist as $artist}
+                                    <span class="uk-text-lighter uk-text-nowrap"><a href="{$artist->url}">{$artist->title}</a></span>
+                                {/foreach}
+                            </div>
 
                         {* Project Collaborators if they exist *}
                         {if $page??->collaborator != ''}
