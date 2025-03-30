@@ -41,13 +41,7 @@ if (document.getElementById('studio-time')) {
     displayTime();
 }
 
-// this is an example of how to use the search engine module for ProcessWire to provide an AJAX
-// "live search"; likely not a perfect solution, but should give you a general idea of how to
-// set this type of functionality up :)
-
-// see https://processwire.com/talk/topic/21941-searchengine/?do=findComment&comment=248152 for
-// alternative solution using htmx
-
+// display SearchEngine results dynamically with AJAX
 const searchForm = document.getElementById('se-form')
 if (searchForm) {
     
@@ -87,7 +81,6 @@ if (searchForm) {
 						if (!response.ok) {
 							throw new Error('Network response was not ok')
 						}
-            console.log(response);
 						return response.json()
 					})
 					.then((data) => {
