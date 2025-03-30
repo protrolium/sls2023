@@ -41,6 +41,195 @@ if (document.getElementById('studio-time')) {
     displayTime();
 }
 
+// this is an example of how to use the search engine module for ProcessWire to provide an AJAX
+// "live search"; likely not a perfect solution, but should give you a general idea of how to
+// set this type of functionality up :)
+
+// see https://processwire.com/talk/topic/21941-searchengine/?do=findComment&comment=248152 for
+// alternative solution using htmx
+
+const searchForm = document.getElementById('se-form')
+if (searchForm) {
+    
+	const searchInput = searchForm.querySelector('input[name="q"]')
+	const searchCache = {}
+
+	let searchTimeout
+	let searchResults
+
+	const findResults = () => {
+		window.clearTimeout(searchTimeout)
+		searchTimeout = window.setTimeout(() => {
+			if (searchResults) {
+				searchResults.setAttribute('hidden', 'true')
+			}
+			if (searchInput.value.length > 2) {
+				if (searchCache[searchInput.value]) {
+					renderResults(searchForm, searchCache[searchInput.value])
+					return
+				}
+				if (searchInput.hasAttribute('data-request')) {
+					return
+				}
+				searchInput.setAttribute('data-request', 'true')
+				searchInput.setAttribute('disabled', 'true')
+				const searchParams = new URLSearchParams()
+				searchParams.append('q', searchInput.value)
+				fetch(`${pwConfig.rootUrl}search/?${searchParams}`, {
+					headers: {
+						// set the request header to indicate to ProcessWire that this is an AJAX request; this
+						// way we can check $config->ajax in the template file and return JSON instead of HTML
+						// by calling $modules->get('SearchEngine')->renderResultsJSON()
+						'X-Requested-With': 'XMLHttpRequest',
+					},
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok')
+						}
+            console.log(response);
+						return response.json()
+					})
+					.then((data) => {
+						searchCache[searchInput.value] = data
+						renderResults(searchForm, data)
+						searchInput.removeAttribute('data-request')
+						searchInput.removeAttribute('disabled')
+						searchInput.focus()
+					})
+					.catch((error) => {
+						console.error('Error fetching search results:', error)
+						searchInput.removeAttribute('data-request')
+						searchInput.removeAttribute('disabled')
+						searchInput.focus()
+					})
+			}
+		}, 300)
+	}
+
+	const maybeHideResults = () => {
+		if (searchResults) {
+			window.setTimeout(() => {
+				if (!searchResults.querySelector(':focus')) {
+					searchResults.setAttribute('hidden', 'true')
+				}
+			}, 100)
+		}
+	}
+
+	const hideResults = () => {
+    if (searchResults) {
+      searchResults.setAttribute('hidden', 'true');
+    }
+  }
+  
+  const renderResults = (form, data) => {
+    // Check if results container exists, create it if not
+    searchResults = document.getElementById('se-results');
+    if (!searchResults) {
+      searchResults = document.createElement('div');
+      searchResults.id = 'se-results';
+      searchResults.addEventListener('focusout', maybeHideResults);
+      form.insertAdjacentElement('afterend', searchResults);
+    }
+    
+    // Clear previous results
+    searchResults.innerHTML = '';
+    
+    // Create heading
+    const heading = document.createElement('h2');
+    heading.className = 'search-results__heading';
+    heading.textContent = 'Search results';
+    searchResults.appendChild(heading);
+    
+    if (data.results.length > 0) {
+      // Create summary paragraph
+      const summary = document.createElement('p');
+      summary.className = 'search-results__summary';
+      summary.id = 'se-results-summary';
+      summary.textContent = `${data.results.length} results for "${data.query}":`;
+      searchResults.appendChild(summary);
+      
+      // Create results list
+      const resultsList = document.createElement('ul');
+      resultsList.className = 'search-results__list';
+      resultsList.setAttribute('aria-labelledby', 'se-results-summary');
+      
+      // Add each result to the list
+      data.results.forEach((item) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'search-results__list-item';
+        
+        // Create result container
+        const resultContainer = document.createElement('div');
+        resultContainer.className = 'search-result';
+        
+        // Create link
+        const link = document.createElement('a');
+        link.className = 'search-result__link';
+        link.href = item.url;
+        link.textContent = item.title;
+        resultContainer.appendChild(link);
+        
+        // Create path display
+        const path = document.createElement('div');
+        path.className = 'search-result__path';
+        path.textContent = item.url;
+        resultContainer.appendChild(path);
+        
+        // Add result to list item
+        listItem.appendChild(resultContainer);
+        resultsList.appendChild(listItem);
+      });
+      
+      // Add results list to container
+      searchResults.appendChild(resultsList);
+      searchResults.removeAttribute('hidden');
+    } else {
+      // No results found
+      const summary = document.createElement('p');
+      summary.className = 'search-results__summary';
+      summary.textContent = `No results found for "${data.query}"`;
+      searchResults.appendChild(summary);
+      searchResults.removeAttribute('hidden');
+    }
+  }
+
+	searchInput.addEventListener('keyup', findResults)
+
+	searchInput.addEventListener('focus', (event) => {
+		if (searchInput.value.length > 2) {
+			findResults(event)
+		}
+	})
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			hideResults(event)
+		}
+	})
+} 
+
+// clearing the search field input field means clearing the se-results markup
+const searchInput = document.querySelector('input[name="q"]');
+if (searchInput) {
+  // Add an event listener for the input event
+  searchInput.addEventListener('input', function() {
+    // If the input is empty, hide the results
+    if (this.value === '') {
+      // Find the search results container
+      const resultsContainer = document.getElementById('se-results');
+      if (resultsContainer) {
+        resultsContainer.setAttribute('hidden', 'true');
+      }
+    }
+  });
+}
+
+/////////
+////////
+//////
+
 document.addEventListener("DOMContentLoaded", function() {
     var lazyloadImages;    
   
