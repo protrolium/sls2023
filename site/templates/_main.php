@@ -14,6 +14,7 @@
 /** @var RockFrontend $rockfrontend */
 
 $home = $pages->get('/'); // homepage directory
+$searchEngine = $modules->get('SearchEngine');
 
 ?>
 
@@ -42,6 +43,8 @@ $home = $pages->get('/'); // homepage directory
 		<!-- add our styles and scripts -->
 		<?= $rockfrontend->styleTag($config->urls->templates . "dst/styles.min.css") ?>
 		<?= $rockfrontend->scriptTag($config->urls->templates . "dst/scripts.min.js") ?>
+		<?= $searchEngine->renderStyles() ?>
+   		<?= $searchEngine->renderScripts() ?>
 		
 		<!-- Google tag (gtag.js) -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-2N6CFM6P3B"></script>
@@ -49,11 +52,17 @@ $home = $pages->get('/'); // homepage directory
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
-			
 			gtag('config', 'G-2N6CFM6P3B');
-			</script>
-		
-		
+		</script>
+
+		<!-- Create a global object to store ProcessWire paths for ajax search hook -->
+		<script>
+			var pwConfig = {
+				rootUrl: '<?= $config->urls->root ?>',
+				templateUrl: '<?= $config->urls->templates ?>'
+			};
+		</script>
+
 		<!-- make sure we get styling on mobile by setting meta viewport -->
 		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Strangeloop Studios · <?php echo $page->title; ?></title>
