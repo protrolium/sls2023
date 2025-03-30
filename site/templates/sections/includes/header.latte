@@ -60,10 +60,16 @@
 
         <div class="uk-navbar-right uk-padding-small">
 
-            <div class="uk-visible@m">
-                {var $searchengine = $modules->get('SearchEngine')}
-                {$searchengine->render()|noescape}
-            </div>
+                <div class="uk-visible@m">
+                    {var $searchengine = $modules->get('SearchEngine')}
+                    
+                    {* Pass the form_action parameter to point to your search.php file *}
+                    {var $formOptions = ['form_action' => $config->urls->root . 'search/']}
+                    
+                    {$searchengine->renderForm($formOptions)|noescape} 
+
+                    {$searchengine->renderResults()|noescape}
+                </div>
             
             {* language selector nav *}
             {* {foreach $languages as $language}
