@@ -201,7 +201,14 @@ if (searchForm) {
 			hideResults(event)
 		}
 	})
-} 
+}
+
+// Find and disable the submit button within the form
+const submitButton = searchForm.querySelector('input[type="submit"]') || 
+                     searchForm.querySelector('button[type="submit"]');
+if (submitButton) {
+  submitButton.disabled = true;
+}
 
 // clearing the search field input field means clearing the se-results markup
 const searchInput = document.querySelector('input[name="q"]');
