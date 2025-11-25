@@ -42,7 +42,7 @@ $searchEngine = $modules->get('SearchEngine');
 		
 		<!-- add our styles and scripts -->
 		<?= $rockfrontend->styleTag($config->urls->templates . "dst/styles.min.css") ?>
-		<?= $rockfrontend->scriptTag($config->urls->templates . "dst/scripts.min.js") ?>
+		<?= $rockfrontend->scriptTag($config->urls->templates . "dst/scripts.min.js", "defer") ?>
 		<?= $searchEngine->renderStyles() ?>
    		<?= $searchEngine->renderScripts() ?>
 		
@@ -77,7 +77,8 @@ $searchEngine = $modules->get('SearchEngine');
 		<!-- fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?&family=Oswald:wght@200;300;400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css2?&family=Oswald:wght@200;300;400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+		<noscript><link href="https://fonts.googleapis.com/css2?&family=Oswald:wght@200;300;400;500;600;700&family=Silkscreen&display=swap" rel="stylesheet"></noscript> 
 		
 		<!-- favicons -->
 		<link rel="apple-touch-icon" sizes="180x180" href="<?php echo $config->urls->assets?>favicon/apple-touch-icon.png">
@@ -96,8 +97,31 @@ $searchEngine = $modules->get('SearchEngine');
 		<?= $rockfrontend->renderLayout($page) ?>
 		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
 
-		<!-- show our site content -->
-		<style>html{visibility: visible;opacity:1;}</style>
+		<!-- show our site content after CSS is loaded -->
+		<script type="text/javascript">
+			(function() {
+				// Wait for DOM and CSS to be ready before showing content
+				function showContent() {
+					document.documentElement.style.visibility = 'visible';
+					document.documentElement.style.opacity = '1';
+				}
+				
+				// Use DOMContentLoaded which fires after HTML and CSS are parsed
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', function() {
+						// Use requestAnimationFrame to ensure styles are applied
+						requestAnimationFrame(function() {
+							requestAnimationFrame(showContent);
+						});
+					});
+				} else {
+					// DOM already loaded, show immediately
+					requestAnimationFrame(function() {
+						requestAnimationFrame(showContent);
+					});
+				}
+			})();
+		</script>
 
 		<!-- unhide the site content set via inline css above -->
 		<script type="text/javascript">window.addEventListener('load', function () {document.body.classList.remove('preload');});</script>
