@@ -1,1 +1,1 @@
-<?= $rockfrontend->renderIf("sections/hero.latte", "template=home") ?>
+<?= $rockfrontend->renderIf("sections/dev.latte", "template=home") ?>
