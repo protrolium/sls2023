@@ -92,10 +92,15 @@ $searchEngine = $modules->get('SearchEngine');
 
 	</head>
 	<body id="html-body">
-
-		<?= $rockfrontend->render("sections/includes/header.latte") ?>
-		<?= $rockfrontend->renderLayout($page) ?>
-		<?= $rockfrontend->render("sections/includes/footer.latte") ?>
+		
+		<!-- if we are on the home page, only show renderLayout($page) -->
+		<?php if ($page->template == 'home') { ?>
+			<?= $rockfrontend->renderLayout($page) ?>
+		<?php } else { ?>
+			<?= $rockfrontend->render("sections/includes/header.latte") ?>
+			<?= $rockfrontend->renderLayout($page) ?>
+			<?= $rockfrontend->render("sections/includes/footer.latte") ?>
+		<?php } ?>
 
 		<!-- show our site content after CSS is loaded -->
 		<script type="text/javascript">
